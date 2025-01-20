@@ -1,7 +1,8 @@
 """
-Breakout Init
-=============
-Package init for resources shared accross the whole project
+Brick
+=====
+Implement the Brick object and related interactions/physics
+Should be added to a group of sprites to represent the overall level, use spritecollide
 
 Class
 -----

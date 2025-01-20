@@ -1,7 +1,10 @@
 """
-Breakout Init
-=============
-Package init for resources shared accross the whole project
+Breakout
+========
+The main driver script for the overall Breakout game
+Run game loop
+Control window/screen state
+3 screens - start, gameplay, game over
 
 Class
 -----

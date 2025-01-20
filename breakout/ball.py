@@ -1,7 +1,7 @@
 """
-Breakout Init
-=============
-Package init for resources shared accross the whole project
+Ball
+====
+Implement the Ball object and related interactions/physics
 
 Class
 -----

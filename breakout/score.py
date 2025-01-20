@@ -1,7 +1,8 @@
 """
-Breakout Init
-=============
-Package init for resources shared accross the whole project
+Score
+========
+Implement the leaderboard
+Implement score tracking display during gameplay
 
 Class
 -----
