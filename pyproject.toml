@@ -6,8 +6,9 @@ authors = ["TRJackson998 <85368064+TRJackson998@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = ">=3.12,<3.14"
 pygame = "^2.6.1"
+pyinstaller = "^6.11.1"
 
 
 [build-system]
