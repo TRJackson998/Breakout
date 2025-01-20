@@ -2,6 +2,7 @@
 Ball
 ====
 Implement the Ball object and related interactions/physics
+Subclass of BreakoutSprite
 
 Class
 -----
@@ -24,3 +25,11 @@ Last Edited
 -----------
 1.20.25
 """
+
+from breakout.sprite import BreakoutSprite
+
+
+class Ball(BreakoutSprite):
+    def __init__(self, *groups, radius=0):
+        super().__init__(*groups)
+        self.radius = radius

@@ -2,6 +2,7 @@
 Paddle
 ========
 Implement the Paddle object and related interactions/physics
+Subclass of BreakoutSprite
 
 Class
 -----
@@ -24,3 +25,12 @@ Last Edited
 -----------
 1.20.25
 """
+
+from breakout.sprite import BreakoutSprite
+
+
+class Paddle(BreakoutSprite):
+    def __init__(self, *groups, width=0, height=0):
+        super().__init__(*groups)
+        self.width = width
+        self.height = height
