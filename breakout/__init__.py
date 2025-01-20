@@ -25,6 +25,6 @@ Last Edited
 1.20.25
 """
 
-from breakout import ball, bricks, paddle, powerups, score
+from breakout import ball, bricks, paddle, powerups, score, sprite
 
-__all__ = ["ball", "bricks", "paddle", "powerups", "score"]
+__all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite"]
