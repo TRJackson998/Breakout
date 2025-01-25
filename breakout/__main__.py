@@ -37,7 +37,7 @@ def main():
     clock = pygame.time.Clock()
 
     # Create the brick layout using the Brick class
-    brick_group = Brick.create_brick_layout(rows=7, cols=9)
+    brick_group = Brick.create_brick_layout(rows=9, cols=9)
 
     running = True
     while running:

@@ -68,8 +68,10 @@ class BreakoutSprite(Sprite, ABC):
 
     def appear(self):
         """Make the sprite appear on the screen"""
-        pass
-
+        if self.image is not None:
+            self.image.fill(self.color)
+        
     def disappear(self):
         """Make the sprite disappear from the screen"""
-        pass
+        self.kill()
+        
