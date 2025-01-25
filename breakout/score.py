@@ -1,7 +1,8 @@
 """
-Breakout Init
-=============
-Package init for resources shared accross the whole project
+Score
+========
+Implement the leaderboard
+Implement score tracking display during gameplay
 
 Class
 -----
@@ -24,7 +25,3 @@ Last Edited
 -----------
 1.20.25
 """
-
-from breakout import ball, bricks, paddle, powerups, score, sprite
-
-__all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite"]
