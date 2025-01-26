@@ -25,6 +25,17 @@ Last Edited
 1.20.25
 """
 
-screen_size = (500, 500)
+from dataclasses import dataclass
+
+
+@dataclass
+class Size:
+    """Dataclass to store sizes for easy access"""
+
+    width: int
+    height: int
+
+
+screen_size = Size(500, 500)
 
 __all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite", "screen_size"]
