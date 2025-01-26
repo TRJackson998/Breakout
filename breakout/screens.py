@@ -30,6 +30,7 @@ from typing import Literal
 
 import pygame
 from pygame.color import Color
+from pygame.font import Font
 from pygame.surface import Surface
 
 from breakout import screen_size
@@ -64,6 +65,8 @@ class _Button:
     on each screen, so buttons can be in two positions: top or bottom.
     """
 
+    _font = Font(None, screen_size.width // 20)
+
     def __init__(
         self,
         text: str,
@@ -95,6 +98,27 @@ class _Button:
 
         # make the rectangle
         self.rect = pygame.Rect(x, y, width, height)
+
+    def draw(self, screen: pygame.surface.Surface):
+        """
+        Screen elements need to be able to draw themselves
+        Write the button text using the font
+        Blit the rectangle on the screen
+        """
+        # Determine if mouse is hovering over this button
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            # mouse is hovering, draw button in hover color, text in color
+            pygame.draw.rect(screen, self.hover_color, self.rect)
+            text_surface = _Button._font.render(self.text, True, self.color)
+        else:
+            # mouse is not hovering, draw button in color, render text in hover color
+            pygame.draw.rect(screen, self.color, self.rect)
+            text_surface = _Button._font.render(self.text, True, self.hover_color)
+
+        # get the center of the rectangle and blit the text onto the screen there
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        screen.blit(text_surface, text_rect)
 
 
 @dataclass
