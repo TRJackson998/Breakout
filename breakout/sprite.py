@@ -29,7 +29,7 @@ Last Edited
 
 from abc import ABC
 
-from pygame import Color
+from pygame import Color, Surface
 from pygame.sprite import Sprite
 
 
@@ -43,7 +43,7 @@ class BreakoutSprite(Sprite, ABC):
         x_position: int = 0,
         y_position: int = 0,
         color: Color = Color(0, 0, 0),
-        image
+        image: Surface
     ):
         super().__init__(*groups)
         self.speed = speed
