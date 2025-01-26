@@ -28,21 +28,22 @@ Last Edited
 
 import pygame
 
+from breakout import screen_size
 from breakout.sprite import BreakoutSprite
 
 
 class Paddle(BreakoutSprite):
     """Carries all of the characteristics of the paddle"""
 
-    WIDTH = 100
-    HEIGHT = 20
+    WIDTH = screen_size.width // 5
+    HEIGHT = screen_size.height // 25
 
     def __init__(
         self,
         *groups,
         color=pygame.Color(255, 255, 255),
-        x_position=200,
-        y_position=400,
+        x_position=screen_size.width // 2.5,
+        y_position=screen_size.height // 1.25,
         speed=5
     ):
 
