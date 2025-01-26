@@ -61,7 +61,7 @@ def main():
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             paddle.move_left()
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            paddle.move_right(screen_width=screen_size[0])
+            paddle.move_right()
 
         # Draw paddle and bricks
         paddle_group.draw(window)

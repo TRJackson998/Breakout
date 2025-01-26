@@ -65,7 +65,7 @@ class BreakoutSprite(Sprite, ABC):
         """Move the sprite left"""
         pass
 
-    def move_right(self, screen_width):
+    def move_right(self):
         """Move the sprite right"""
         pass
 

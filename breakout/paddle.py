@@ -63,6 +63,6 @@ class Paddle(BreakoutSprite):
         """Move the paddle to the left"""
         self.move_horizontal(direction=-1, screen_width=screen_size[0])
 
-    def move_right(self, screen_width):
+    def move_right(self):
         """Move the paddle to the right"""
         self.move_horizontal(direction=1, screen_width=screen_size[0])
