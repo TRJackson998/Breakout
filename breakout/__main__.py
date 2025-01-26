@@ -35,6 +35,7 @@ import pygame
 
 from breakout import screen_size
 from breakout.bricks import Brick
+from breakout.paddle import Paddle
 from breakout.screens import Button, Screens
 
 CURRENT_SCREEN = None
@@ -77,9 +78,13 @@ def main():
     """The main function initializes the game, sets up the winbdow, and runs the game loop"""
     global CURRENT_SCREEN
     window = pygame.display.set_mode(astuple(screen_size))
-    pygame.display.set_caption("Breakout")
     clock = pygame.time.Clock()
     CURRENT_SCREEN = Screens.START
+
+    # Create the paddle
+    paddle_group = pygame.sprite.Group()
+    paddle = Paddle(paddle_group)
+    Screens.GAME.add_element(paddle_group)
 
     # Create the brick layout using the Brick class
     brick_group = Brick.create_brick_layout(rows=9, cols=9)
@@ -100,12 +105,17 @@ def main():
                     # Groups of Sprites like bricks do not handle events
                     pass
 
+        # handle player input to move paddle with wasd and arrow keys
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            paddle.move_left()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            paddle.move_right()
+
         CURRENT_SCREEN.draw(window)
 
         pygame.display.update()
         clock.tick(60)
-
-    pygame.quit()
 
 
 if __name__ == "__main__":
