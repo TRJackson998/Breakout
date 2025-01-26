@@ -35,13 +35,18 @@ import pygame
 from breakout import screen_size
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
+from breakout.ball import Ball
 
 
 def main():
     """The main function initializes the game, sets up the winbdow, and runs the game loop"""
     pygame.init()
-    window = pygame.display.set_mode(astuple(screen_size))
+    window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
     clock = pygame.time.Clock()
+
+    # Create the ball
+    ball_group = pygame.sprite.Group()
+    ball = Ball(ball_group)
 
     # Create the paddle
     paddle_group = pygame.sprite.Group()
@@ -65,9 +70,13 @@ def main():
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             paddle.move_right()
 
-        # Draw paddle and bricks
+        # Move the ball
+        ball.move(screen_size, paddle)
+
+        # Draw paddle, bricks and ball
         paddle_group.draw(window)
         brick_group.draw(window)
+        ball_group.draw(window)
 
         pygame.display.update()
         clock.tick(60)
