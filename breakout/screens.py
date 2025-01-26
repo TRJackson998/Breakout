@@ -130,6 +130,21 @@ class Screens:
     This is the class to access outside this script
     """
 
-    START = _Screen([])
-    GAME = _Screen([])
-    END = _Screen([])
+    START = _Screen(
+        [
+            _Button("START", lambda: print("Switch to Game Screen"), "top"),
+            _Button("QUIT", lambda: print("Quit"), "bottom"),
+        ]
+    )
+    GAME = _Screen(
+        [
+            _Button("PAUSE", lambda: print("Pause"), "top"),
+            _Button("END", lambda: print("Switch to End Screen"), "bottom"),
+        ]
+    )
+    END = _Screen(
+        [
+            _Button("START", lambda: print("Switch to Game Screen"), "top"),
+            _Button("QUIT", lambda: print("Quit"), "bottom"),
+        ]
+    )
