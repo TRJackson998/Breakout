@@ -34,9 +34,35 @@ import pygame
 
 from breakout import screen_size
 from breakout.bricks import Brick
-from breakout.screens import Screens
+from breakout.screens import Button, Screens
 
 CURRENT_SCREEN = None
+
+
+def pause_game():
+    """Placeholder for pause functionality"""
+    print("Pause")
+
+
+def quit_game():
+    """Placeholder for quit functionality"""
+    print("Quit")
+
+
+Screens.START.add_element(
+    Button("START GAME", lambda: print("Switch to GAME screen"), "top")
+)
+Screens.START.add_element(Button("QUIT", quit_game, "bottom"))
+
+Screens.GAME.add_element(Button("PAUSE GAME", pause_game, "top"))
+Screens.GAME.add_element(
+    Button("END GAME", lambda: print("Switch to END screen"), "bottom")
+)
+
+Screens.END.add_element(
+    Button("START GAME", lambda: print("Switch to GAME screen"), "top")
+)
+Screens.END.add_element(Button("QUIT", quit_game, "bottom"))
 
 
 def main():
