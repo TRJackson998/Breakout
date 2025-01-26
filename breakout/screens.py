@@ -65,7 +65,8 @@ class _Button:
     on each screen, so buttons can be in two positions: top or bottom.
     """
 
-    _font = Font(None, screen_size.width // 20)
+    # dynamically determine with screen size, never below 12pt font
+    _font = Font(None, max(screen_size.width // 20, 12))
 
     def __init__(
         self,
@@ -81,9 +82,10 @@ class _Button:
         self.hover_color = hover_color
 
         # dynamically determine button size based on screen size
-        width: int = screen_size.width // 5
-        height: int = screen_size.height // 15
+        # max() to never make them so small they can't be seen
+        width: int = max(screen_size.width // 5, 50)
         pad: int = screen_size.width // 100
+        height: int = max(screen_size.height // 15, 12 + pad)
 
         # dynamically place in middle of the screen
         x = (screen_size.width // 2) - (width // 2)
