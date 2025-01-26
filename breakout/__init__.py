@@ -27,4 +27,6 @@ Last Edited
 
 from breakout import ball, bricks, paddle, powerups, score, sprite
 
-__all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite"]
+screen_size = (500, 500)
+
+__all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite", "screen_size"]

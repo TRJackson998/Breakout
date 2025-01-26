@@ -29,6 +29,8 @@ Last Edited
 """
 
 import pygame
+
+from breakout import screen_size
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
 
@@ -36,7 +38,7 @@ from breakout.paddle import Paddle
 def main():
     """The main function initializes the game, sets up the winbdow, and runs the game loop"""
     pygame.init()
-    window = pygame.display.set_mode((500, 500))
+    window = pygame.display.set_mode(screen_size)
     clock = pygame.time.Clock()
 
     # Create the paddle
@@ -59,7 +61,7 @@ def main():
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             paddle.move_left()
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            paddle.move_right(screen_width=500)
+            paddle.move_right(screen_width=screen_size[0])
 
         # Draw paddle and bricks
         paddle_group.draw(window)
