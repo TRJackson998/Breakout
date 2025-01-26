@@ -36,13 +36,16 @@ from breakout import screen_size
 from breakout.bricks import Brick
 from breakout.screens import Screens
 
+CURRENT_SCREEN = None
+
 
 def main():
     """The main function initializes the game, sets up the winbdow, and runs the game loop"""
+    global CURRENT_SCREEN
     window = pygame.display.set_mode(astuple(screen_size))
     pygame.display.set_caption("Breakout")
     clock = pygame.time.Clock()
-    current_screen = Screens.GAME
+    CURRENT_SCREEN = Screens.GAME
 
     # Create the brick layout using the Brick class
     brick_group = Brick.create_brick_layout(rows=9, cols=9)
@@ -55,7 +58,7 @@ def main():
                 running = False
 
             # Check if any of the elements on the screen need to handle an event
-            for element in current_screen.elements:
+            for element in CURRENT_SCREEN.elements:
                 try:
                     # Button elements on the screen run functions when clicked
                     element.handle_event(event)
@@ -63,7 +66,7 @@ def main():
                     # Groups of Sprites like bricks do not handle events
                     pass
 
-        current_screen.draw(window)
+        CURRENT_SCREEN.draw(window)
 
         pygame.display.update()
         clock.tick(60)
