@@ -33,9 +33,9 @@ from dataclasses import astuple
 import pygame
 
 from breakout import screen_size
+from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.ball import Ball
 
 
 def main():
@@ -76,6 +76,7 @@ def main():
         # Draw paddle, bricks and ball
         paddle_group.draw(window)
         brick_group.draw(window)
+        ball_group.draw(window)
         ball_group.draw(window)
 
         pygame.display.update()

@@ -27,7 +27,9 @@ Last Edited
 """
 
 import random
+
 import pygame
+
 from breakout.sprite import BreakoutSprite
 
 
