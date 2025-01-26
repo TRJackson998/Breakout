@@ -28,6 +28,7 @@ Last Edited
 1.20.25
 """
 
+import sys
 from dataclasses import astuple
 
 import pygame
@@ -52,7 +53,8 @@ def pause_game():
 
 def quit_game():
     """Placeholder for quit functionality"""
-    print("Quit")
+    pygame.quit()
+    sys.exit()
 
 
 Screens.START.add_element(
