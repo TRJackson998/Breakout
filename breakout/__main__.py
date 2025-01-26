@@ -54,6 +54,15 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            # Check if any of the elements on the screen need to handle an event
+            for element in current_screen.elements:
+                try:
+                    # Button elements on the screen run functions when clicked
+                    element.handle_event(event)
+                except AttributeError:
+                    # Groups of Sprites like bricks do not handle events
+                    pass
+
         current_screen.draw(window)
 
         pygame.display.update()

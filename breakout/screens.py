@@ -122,6 +122,16 @@ class _Button:
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
 
+    def handle_event(self, event: pygame.event.Event):
+        """If this button is clicked, run the function associated with it"""
+        if (
+            event.type == pygame.MOUSEBUTTONDOWN  # a mouse has been clicked
+            and event.button == 1  # the left mouse button has been clicked
+            and self.rect.collidepoint(event.pos)  # the event collided with this button
+        ):
+            # run the function associated with this button
+            self.on_click()
+
 
 @dataclass
 class Screens:
