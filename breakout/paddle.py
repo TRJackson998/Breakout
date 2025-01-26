@@ -27,6 +27,8 @@ Last Edited
 """
 
 import pygame
+
+from breakout import screen_size
 from breakout.sprite import BreakoutSprite
 
 
@@ -59,8 +61,8 @@ class Paddle(BreakoutSprite):
 
     def move_left(self):
         """Move the paddle to the left"""
-        self.move_horizontal(direction=-1, screen_width=500)
+        self.move_horizontal(direction=-1, screen_width=screen_size[0])
 
     def move_right(self, screen_width):
         """Move the paddle to the right"""
-        self.move_horizontal(direction=1, screen_width=500)
+        self.move_horizontal(direction=1, screen_width=screen_size[0])
