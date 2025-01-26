@@ -36,10 +36,14 @@ class Paddle(BreakoutSprite):
 
     WIDTH = 100
     HEIGHT = 20
-    SPEED = 5
 
     def __init__(
-        self, *groups, color=pygame.Color(255, 255, 255), x_position=200, y_position=400
+        self,
+        *groups,
+        color=pygame.Color(255, 255, 255),
+        x_position=200,
+        y_position=400,
+        speed=5
     ):
 
         # Create the paddle surface
@@ -52,7 +56,7 @@ class Paddle(BreakoutSprite):
             y_position=y_position,
             color=color,
             image=image,
-            speed=self.SPEED
+            speed=speed
         )
 
         # Initialize the rectangle for positioning
