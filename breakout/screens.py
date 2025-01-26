@@ -56,9 +56,9 @@ class _Screen:
             element.draw(pygame_window)
 
 
-class _Button:
+class Button:
     """
-    A class to create Button objects, private to screens.py
+    A class to create Button objects
 
     Buttons have text, run an 'on_click' function, and change color when a mouse hovers over them
     Position is used to determine where to place the button. There will be two buttons
@@ -112,11 +112,11 @@ class _Button:
         if self.rect.collidepoint(mouse_pos):
             # mouse is hovering, draw button in hover color, text in color
             pygame.draw.rect(screen, self.hover_color, self.rect)
-            text_surface = _Button._font.render(self.text, True, self.color)
+            text_surface = Button._font.render(self.text, True, self.color)
         else:
             # mouse is not hovering, draw button in color, render text in hover color
             pygame.draw.rect(screen, self.color, self.rect)
-            text_surface = _Button._font.render(self.text, True, self.hover_color)
+            text_surface = Button._font.render(self.text, True, self.hover_color)
 
         # get the center of the rectangle and blit the text onto the screen there
         text_rect = text_surface.get_rect(center=self.rect.center)
@@ -138,25 +138,9 @@ class Screens:
     """
     Store all my screen objects here
     Then I can do things like Screens.START.draw()
-    TBD fill in all the elements belonging to each screen
-    This is the class to access outside this script
+    Init the screens here, fill in elements later to avoid circular logic
     """
 
-    START = _Screen(
-        [
-            _Button("START", lambda: print("Switch to Game Screen"), "top"),
-            _Button("QUIT", lambda: print("Quit"), "bottom"),
-        ]
-    )
-    GAME = _Screen(
-        [
-            _Button("PAUSE", lambda: print("Pause"), "top"),
-            _Button("END", lambda: print("Switch to End Screen"), "bottom"),
-        ]
-    )
-    END = _Screen(
-        [
-            _Button("START", lambda: print("Switch to Game Screen"), "top"),
-            _Button("QUIT", lambda: print("Quit"), "bottom"),
-        ]
-    )
+    START = _Screen([])
+    GAME = _Screen([])
+    END = _Screen([])
