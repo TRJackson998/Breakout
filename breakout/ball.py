@@ -76,7 +76,7 @@ class Ball(BreakoutSprite):
         # initialize area for collision detection
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, paddle):
+    def move(self, screen_size, paddle, brick_group):
         """Handles movement and colision with walls and paddle"""
         # update the position
         self.x_position += self.speed_x
@@ -112,6 +112,13 @@ class Ball(BreakoutSprite):
             self.speed_x += offset // 10
 
             self.can_collide_with_paddle = False
+
+        # Handle collisions with bricks
+        hit_bricks = pygame.sprite.spritecollide(self, brick_group, False)
+        for brick in hit_bricks:
+            if brick.health > 0:
+                brick.hit()  # Reduce the brick's health or remove it
+                self.bounce_y()  # Reverse vertical direction on collision
 
         if self.y_position > paddle.rect.bottom:
             self.can_collide_with_paddle = True

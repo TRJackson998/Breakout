@@ -71,7 +71,7 @@ def main():
             paddle.move_right()
 
         # Move the ball
-        ball.move(screen_size, paddle)
+        ball.move(screen_size, paddle, brick_group)
 
         # Draw paddle, bricks and ball
         paddle_group.draw(window)
