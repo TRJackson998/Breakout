@@ -45,7 +45,7 @@ def main():
     window = pygame.display.set_mode(astuple(screen_size))
     pygame.display.set_caption("Breakout")
     clock = pygame.time.Clock()
-    CURRENT_SCREEN = Screens.GAME
+    CURRENT_SCREEN = Screens.START
 
     # Create the brick layout using the Brick class
     brick_group = Brick.create_brick_layout(rows=9, cols=9)
