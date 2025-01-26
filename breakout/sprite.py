@@ -42,13 +42,15 @@ class BreakoutSprite(Sprite, ABC):
         speed: int = 0,
         x_position: int = 0,
         y_position: int = 0,
-        color: Color = Color(0, 0, 0)
+        color: Color = Color(0, 0, 0),
+        image
     ):
         super().__init__(*groups)
         self.speed = speed
         self.x_position = x_position
         self.y_position = y_position
         self.color = color
+        self.image = image
 
     def move_up(self):
         """Move the sprite up"""
@@ -70,8 +72,7 @@ class BreakoutSprite(Sprite, ABC):
         """Make the sprite appear on the screen"""
         if self.image is not None:
             self.image.fill(self.color)
-        
+
     def disappear(self):
         """Make the sprite disappear from the screen"""
         self.kill()
-        

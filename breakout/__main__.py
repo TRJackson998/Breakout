@@ -29,9 +29,11 @@ Last Edited
 """
 
 import pygame
-from breakout.bricks import *
+from breakout.bricks import Brick
+
 
 def main():
+    """The main function initializes the game, sets up the winbdow, and runs the game loop"""
     pygame.init()
     window = pygame.display.set_mode((500, 500))
     clock = pygame.time.Clock()
