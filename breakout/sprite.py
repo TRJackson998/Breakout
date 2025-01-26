@@ -65,16 +65,14 @@ class BreakoutSprite(Sprite, ABC):
 
     def move_left(self):
         """Move the paddle to the left"""
-        self.move_horizontal(direction=-1, screen_width=screen_size[0])
+        new_x = self.x_position - self.speed
+        self.x_position = max(0, min(screen_size[0] - self.rect.width, new_x))
+        self.rect.x = self.x_position
 
     def move_right(self):
         """Move the paddle to the right"""
-        self.move_horizontal(direction=1, screen_width=screen_size[0])
-
-    def move_horizontal(self, direction: int, screen_width: int):
-        """Handles horizontal movement"""
-        new_x = self.x_position + direction * self.speed
-        self.x_position = max(0, min(screen_width - self.rect.width, new_x))
+        new_x = self.x_position + self.speed
+        self.x_position = max(0, min(screen_size[0] - self.rect.width, new_x))
         self.rect.x = self.x_position
 
     def appear(self):
