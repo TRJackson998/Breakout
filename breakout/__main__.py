@@ -39,6 +39,12 @@ from breakout.screens import Button, Screens
 CURRENT_SCREEN = None
 
 
+def switch_screen(screen: Screens):
+    """Update the current screen global variable with the new screen passed in"""
+    global CURRENT_SCREEN
+    CURRENT_SCREEN = screen
+
+
 def pause_game():
     """Placeholder for pause functionality"""
     print("Pause")
@@ -50,17 +56,17 @@ def quit_game():
 
 
 Screens.START.add_element(
-    Button("START GAME", lambda: print("Switch to GAME screen"), "top")
+    Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
 )
 Screens.START.add_element(Button("QUIT", quit_game, "bottom"))
 
 Screens.GAME.add_element(Button("PAUSE GAME", pause_game, "top"))
 Screens.GAME.add_element(
-    Button("END GAME", lambda: print("Switch to END screen"), "bottom")
+    Button("END GAME", lambda: switch_screen(Screens.END), "bottom")
 )
 
 Screens.END.add_element(
-    Button("START GAME", lambda: print("Switch to GAME screen"), "top")
+    Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
 )
 Screens.END.add_element(Button("QUIT", quit_game, "bottom"))
 
