@@ -23,11 +23,12 @@ Developer
 ---------
 Terrence
 
-Last Edited
------------
+Created
+-------
 1.20.25
 """
 
+import sys
 from dataclasses import astuple
 
 import pygame
@@ -36,32 +37,80 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
+from breakout.screens import Button, Screens
+
+CURRENT_SCREEN = None
+
+
+def switch_screen(screen: Screens):
+    """Update the current screen global variable with the new screen passed in"""
+    global CURRENT_SCREEN
+    CURRENT_SCREEN = screen
+
+
+def pause_game():
+    """Placeholder for pause functionality"""
+    print("Pause")
+
+
+def quit_game():
+    """Placeholder for quit functionality"""
+    pygame.quit()
+    sys.exit()
+
+
+Screens.START.add_element(
+    Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
+)
+Screens.START.add_element(Button("QUIT", quit_game, "bottom"))
+
+Screens.GAME.add_element(Button("PAUSE GAME", pause_game, "top"))
+Screens.GAME.add_element(
+    Button("END GAME", lambda: switch_screen(Screens.END), "bottom")
+)
+
+Screens.END.add_element(
+    Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
+)
+Screens.END.add_element(Button("QUIT", quit_game, "bottom"))
 
 
 def main():
     """The main function initializes the game, sets up the winbdow, and runs the game loop"""
-    pygame.init()
+    global CURRENT_SCREEN
     window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
+    pygame.display.set_caption("Breakout")
     clock = pygame.time.Clock()
+    CURRENT_SCREEN = Screens.START
 
     # Create the ball
     ball_group = pygame.sprite.Group()
     ball = Ball(ball_group)
+    Screens.GAME.add_element(ball_group)
 
     # Create the paddle
     paddle_group = pygame.sprite.Group()
     paddle = Paddle(paddle_group)
+    Screens.GAME.add_element(paddle_group)
 
     # Create the brick layout using the Brick class
     brick_group = Brick.create_brick_layout(rows=9, cols=9)
+    Screens.GAME.add_element(brick_group)
 
     running = True
     while running:
-        window.fill((0, 0, 0))  # Clear screen
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
+            # Check if any of the elements on the screen need to handle an event
+            for element in CURRENT_SCREEN.elements:
+                try:
+                    # Button elements on the screen run functions when clicked
+                    element.handle_event(event)
+                except AttributeError:
+                    # Groups of Sprites like bricks do not handle events
+                    pass
 
         # Handle paddle movement
         keys = pygame.key.get_pressed()
@@ -73,11 +122,7 @@ def main():
         # Move the ball
         ball.move(screen_size, paddle, brick_group)
 
-        # Draw paddle, bricks and ball
-        paddle_group.draw(window)
-        brick_group.draw(window)
-        ball_group.draw(window)
-        ball_group.draw(window)
+        CURRENT_SCREEN.draw(window)
 
         pygame.display.update()
         clock.tick(60)

@@ -27,6 +27,8 @@ Last Edited
 
 from dataclasses import dataclass
 
+import pygame
+
 
 @dataclass
 class Size:
@@ -36,6 +38,7 @@ class Size:
     height: int
 
 
+pygame.init()
 screen_size = Size(500, 500)
 
 __all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite", "screen_size"]
