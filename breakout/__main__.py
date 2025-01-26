@@ -56,9 +56,9 @@ def main():
 
         # Handle paddle movement
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             paddle.move_left()
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             paddle.move_right(screen_width=500)
 
         # Draw paddle and bricks
