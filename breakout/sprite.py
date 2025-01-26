@@ -51,6 +51,7 @@ class BreakoutSprite(Sprite, ABC):
         self.y_position = y_position
         self.color = color
         self.image = image
+        self.rect = None
 
     def move_up(self):
         """Move the sprite up"""
@@ -64,9 +65,15 @@ class BreakoutSprite(Sprite, ABC):
         """Move the sprite left"""
         pass
 
-    def move_right(self):
+    def move_right(self, screen_width):
         """Move the sprite right"""
         pass
+
+    def move_horizontal(self, direction: int, screen_width: int):
+        """Handles horizontal movement"""
+        new_x = self.x_position + direction * self.speed
+        self.x_position = max(0, min(screen_width - self.rect.width, new_x))
+        self.rect.x = self.x_position
 
     def appear(self):
         """Make the sprite appear on the screen"""

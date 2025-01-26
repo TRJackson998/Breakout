@@ -26,11 +26,41 @@ Last Edited
 1.20.25
 """
 
+import pygame
 from breakout.sprite import BreakoutSprite
 
 
 class Paddle(BreakoutSprite):
-    def __init__(self, *groups, width=0, height=0):
-        super().__init__(*groups)
-        self.width = width
-        self.height = height
+    """Carries all of the characteristics of the paddle"""
+
+    WIDTH = 100
+    HEIGHT = 20
+    SPEED = 5
+
+    def __init__(
+        self, *groups, color=pygame.Color(255, 255, 255), x_position=200, y_position=400
+    ):
+
+        # Create the paddle surface
+        image = pygame.Surface((self.WIDTH, self.HEIGHT))
+        image.fill(color)
+
+        super().__init__(
+            *groups,
+            x_position=x_position,
+            y_position=y_position,
+            color=color,
+            image=image,
+            speed=self.SPEED
+        )
+
+        # Initialize the rectangle for positioning
+        self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
+
+    def move_left(self):
+        """Move the paddle to the left"""
+        self.move_horizontal(direction=-1, screen_width=500)
+
+    def move_right(self, screen_width):
+        """Move the paddle to the right"""
+        self.move_horizontal(direction=1, screen_width=500)

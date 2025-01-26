@@ -30,6 +30,7 @@ Last Edited
 
 import pygame
 from breakout.bricks import Brick
+from breakout.paddle import Paddle
 
 
 def main():
@@ -37,6 +38,10 @@ def main():
     pygame.init()
     window = pygame.display.set_mode((500, 500))
     clock = pygame.time.Clock()
+
+    # Create the paddle
+    paddle_group = pygame.sprite.Group()
+    paddle = Paddle(paddle_group)
 
     # Create the brick layout using the Brick class
     brick_group = Brick.create_brick_layout(rows=9, cols=9)
@@ -49,13 +54,19 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        # Draw all bricks
+        # Handle paddle movement
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            paddle.move_left()
+        if keys[pygame.K_RIGHT]:
+            paddle.move_right(screen_width=500)
+
+        # Draw paddle and bricks
+        paddle_group.draw(window)
         brick_group.draw(window)
 
         pygame.display.update()
         clock.tick(60)
-
-    pygame.quit()
 
 
 if __name__ == "__main__":
