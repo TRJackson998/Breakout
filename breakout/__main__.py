@@ -39,7 +39,6 @@ from breakout.screens import Screens
 
 def main():
     """The main function initializes the game, sets up the winbdow, and runs the game loop"""
-    pygame.init()
     window = pygame.display.set_mode(astuple(screen_size))
     pygame.display.set_caption("Breakout")
     clock = pygame.time.Clock()
