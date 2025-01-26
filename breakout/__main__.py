@@ -28,14 +28,18 @@ Last Edited
 1.20.25
 """
 
+from dataclasses import astuple
+
 import pygame
+
+from breakout import screen_size
 from breakout.bricks import Brick
 
 
 def main():
     """The main function initializes the game, sets up the winbdow, and runs the game loop"""
     pygame.init()
-    window = pygame.display.set_mode((500, 500))
+    window = pygame.display.set_mode(astuple(screen_size))
     clock = pygame.time.Clock()
 
     # Create the brick layout using the Brick class
