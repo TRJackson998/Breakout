@@ -32,6 +32,8 @@ from abc import ABC
 from pygame import Color, Surface
 from pygame.sprite import Sprite
 
+from breakout import screen_size
+
 
 class BreakoutSprite(Sprite, ABC):
     """Implementation of the pygame Sprite object with movement functionality"""
@@ -62,12 +64,12 @@ class BreakoutSprite(Sprite, ABC):
         pass
 
     def move_left(self):
-        """Move the sprite left"""
-        pass
+        """Move the paddle to the left"""
+        self.move_horizontal(direction=-1, screen_width=screen_size[0])
 
     def move_right(self):
-        """Move the sprite right"""
-        pass
+        """Move the paddle to the right"""
+        self.move_horizontal(direction=1, screen_width=screen_size[0])
 
     def move_horizontal(self, direction: int, screen_width: int):
         """Handles horizontal movement"""

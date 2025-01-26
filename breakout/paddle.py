@@ -28,7 +28,6 @@ Last Edited
 
 import pygame
 
-from breakout import screen_size
 from breakout.sprite import BreakoutSprite
 
 
@@ -58,11 +57,3 @@ class Paddle(BreakoutSprite):
 
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
-
-    def move_left(self):
-        """Move the paddle to the left"""
-        self.move_horizontal(direction=-1, screen_width=screen_size[0])
-
-    def move_right(self):
-        """Move the paddle to the right"""
-        self.move_horizontal(direction=1, screen_width=screen_size[0])
