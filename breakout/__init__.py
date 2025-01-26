@@ -25,6 +25,20 @@ Last Edited
 1.20.25
 """
 
-from breakout import ball, bricks, paddle, powerups, score, sprite
+from dataclasses import dataclass
 
-__all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite"]
+import pygame
+
+
+@dataclass
+class Size:
+    """Dataclass to store sizes for easy access"""
+
+    width: int
+    height: int
+
+
+pygame.init()
+screen_size = Size(500, 500)
+
+__all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite", "screen_size"]
