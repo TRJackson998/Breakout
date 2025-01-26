@@ -67,9 +67,7 @@ class Brick(BreakoutSprite):
 
     def hit(self):
         """Actions when bricks are hit by the ball"""
-        self.health -= 1
-        if self.health == 0:
-            self.disappear()  # remove the brick from the game
+        self.disappear()  # remove the brick from the game
 
     @classmethod
     def create_brick_layout(cls, rows, cols, x_offset=5, y_offset=5):
