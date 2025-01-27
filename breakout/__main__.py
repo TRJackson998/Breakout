@@ -125,7 +125,7 @@ def main():
         CURRENT_SCREEN.draw(window)
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(50)
 
 
 if __name__ == "__main__":

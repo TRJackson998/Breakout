@@ -89,7 +89,7 @@ class Ball(BreakoutSprite):
             self.x_position <= 0
             or self.x_position >= screen_size.width - self.rect.width
         ):
-            self.speed_x = -self.speed_x  # Reverse the horizontal movement
+            self.bounce_x()  # Reverse horizontal movement
 
         # Handle collision with the ceiling
         if self.y_position <= 0:
@@ -102,8 +102,9 @@ class Ball(BreakoutSprite):
             and self.x_position > paddle.rect.x - self.rect.width
         ):
             self.bounce_y()  # Reverse vertical direction
-            # Adjust position to avoid sticking
-            self.y_position = paddle.rect.top - self.rect.height
+            self.y_position = (
+                paddle.rect.top - self.rect.height
+            )  # Adjust position to avoid sticking
 
             # Adjust horizontal speed based on where the ball hits the paddle
             paddle_center = paddle.rect.centerx
@@ -115,11 +116,30 @@ class Ball(BreakoutSprite):
 
         # Handle collisions with bricks
         hit_bricks = pygame.sprite.spritecollide(self, brick_group, False)
-        if hit_bricks:
-            # Process the first brick hit
-            brick = hit_bricks[0]
-            brick.hit()  # Remove the brick, can probably remove the hit function and just use disappear
-            self.bounce_y()  # Reverse vertical direction
+        reversed_x = False
+        reversed_y = False
+
+        for brick in hit_bricks:
+            # Calculate the collision axis for each brick
+            vertical_overlap = min(
+                abs(self.rect.bottom - brick.rect.top),
+                abs(self.rect.top - brick.rect.bottom),
+            )
+            horizontal_overlap = min(
+                abs(self.rect.right - brick.rect.left),
+                abs(self.rect.left - brick.rect.right),
+            )
+
+            # Reverse direction based on the smallest overlap
+            if vertical_overlap < horizontal_overlap and not reversed_y:
+                self.bounce_y()
+                reversed_y = True
+            elif horizontal_overlap < vertical_overlap and not reversed_x:
+                self.bounce_x()
+                reversed_x = True
+
+            # Remove the brick
+            brick.hit()
 
         # Reset paddle collision flag
         if self.y_position > paddle.rect.bottom:
@@ -128,6 +148,10 @@ class Ball(BreakoutSprite):
         # Update the rect/collision area position
         self.rect.x = self.x_position
         self.rect.y = self.y_position
+
+    def bounce_x(self):
+        """Reverse the horizontal direction of the ball"""
+        self.speed_x = -self.speed_x
 
     def bounce_y(self):
         """Reverse the vertical direction of the ball"""

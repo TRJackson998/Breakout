@@ -82,20 +82,15 @@ class Brick(BreakoutSprite):
             # Assign colors based on dynamic boundaries
             if row < red_rows:
                 color = pygame.Color(255, 0, 0)  # Red
-                health = 3
             elif row < red_rows + yellow_rows:
                 color = pygame.Color(255, 255, 0)  # Yellow
-                health = 2
             else:
                 color = pygame.Color(0, 255, 0)  # Green is all remaining rows
-                health = 1
 
             for col in range(cols):
                 x = col * (cls.WIDTH + x_offset)
                 y = row * (cls.HEIGHT + y_offset)
-                brick = cls(
-                    brick_group, color=color, x_position=x, y_position=y, health=health
-                )
+                brick = cls(brick_group, color=color, x_position=x, y_position=y)
                 brick_group.add(brick)
 
         return brick_group
