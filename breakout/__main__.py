@@ -37,7 +37,7 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.screens import Button, Screens
+from breakout.screens import Button, CurrentScore, Screens
 
 CURRENT_SCREEN = None
 
@@ -59,6 +59,7 @@ def quit_game():
     sys.exit()
 
 
+current_score = CurrentScore()
 Screens.START.add_element(
     Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
 )
@@ -68,6 +69,7 @@ Screens.GAME.add_element(Button("PAUSE GAME", pause_game, "top"))
 Screens.GAME.add_element(
     Button("END GAME", lambda: switch_screen(Screens.END), "bottom")
 )
+Screens.GAME.add_element(current_score)
 
 Screens.END.add_element(
     Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
@@ -97,7 +99,6 @@ def main():
     brick_group = Brick.create_brick_layout(rows=6, cols=7)
     Screens.GAME.add_element(brick_group)
 
-    current_score = 0
     running = True
     while running:
         for event in pygame.event.get():
