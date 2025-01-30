@@ -38,8 +38,17 @@ class Brick(BreakoutSprite):
     HEIGHT = 20
 
     def __init__(
-        self, *groups, color=pygame.Color(255, 0, 0), x_position=0, y_position=0
+        self,
+        *groups,
+        color=pygame.Color(255, 0, 0),
+        x_position=0,
+        y_position=0,
+        health=1,
     ):
+
+        # Establish brick health
+        self.health = health
+
         # Create the surface/rect for the brick
         image = pygame.Surface((self.WIDTH, self.HEIGHT))  # Create the image surface
         image.fill(color)  # Fill it with the provided color
@@ -50,11 +59,15 @@ class Brick(BreakoutSprite):
             x_position=x_position,
             y_position=y_position,
             color=color,
-            image=image
+            image=image,
         )
 
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
+
+    def hit(self):
+        """Actions when bricks are hit by the ball"""
+        self.disappear()  # remove the brick from the game
 
     @classmethod
     def create_brick_layout(cls, rows, cols, x_offset=5, y_offset=5):
