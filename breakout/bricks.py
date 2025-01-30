@@ -68,6 +68,13 @@ class Brick(BreakoutSprite):
             image=image,
         )
 
+        if self.color == pygame.Color("red"):
+            self.points = 3
+        elif self.color == pygame.Color("green"):
+            self.points = 2
+        else:
+            self.points = 1
+
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
 
