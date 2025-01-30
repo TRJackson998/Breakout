@@ -97,6 +97,7 @@ def main():
     brick_group = Brick.create_brick_layout(rows=6, cols=7)
     Screens.GAME.add_element(brick_group)
 
+    current_score = 0
     running = True
     while running:
         for event in pygame.event.get():
@@ -120,7 +121,8 @@ def main():
             paddle.move_right()
 
         # Move the ball
-        ball.move(screen_size, paddle, brick_group)
+        points = ball.move(screen_size, paddle, brick_group)
+        current_score.increase_score(points)
 
         CURRENT_SCREEN.draw(window)
 

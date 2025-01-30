@@ -78,7 +78,7 @@ class Ball(BreakoutSprite):
         # initialize area for collision detection
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, paddle, brick_group):
+    def move(self, screen_size, paddle, brick_group) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
         points = 0
         # Update the position
@@ -149,6 +149,8 @@ class Ball(BreakoutSprite):
         # Update the rect/collision area position
         self.rect.x = self.x_position
         self.rect.y = self.y_position
+
+        return points
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball"""
