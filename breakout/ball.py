@@ -80,6 +80,7 @@ class Ball(BreakoutSprite):
 
     def move(self, screen_size, paddle, brick_group):
         """Handles movement and collision with walls, paddle, and bricks."""
+        points = 0
         # Update the position
         self.x_position += self.speed_x
         self.y_position += self.speed_y
@@ -139,7 +140,7 @@ class Ball(BreakoutSprite):
                 reversed_x = True
 
             # Remove the brick
-            brick.hit()
+            points += brick.hit()
 
         # Reset paddle collision flag
         if self.y_position > paddle.rect.bottom:

@@ -78,9 +78,10 @@ class Brick(BreakoutSprite):
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
 
-    def hit(self):
+    def hit(self) -> int:
         """Actions when bricks are hit by the ball"""
         self.disappear()  # remove the brick from the game
+        return self.points
 
     @classmethod
     def create_brick_layout(cls, rows, cols):
