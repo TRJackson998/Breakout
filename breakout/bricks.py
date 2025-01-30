@@ -107,11 +107,11 @@ class Brick(BreakoutSprite):
 
                 # Assign colors based on row
                 if row < red_rows:
-                    color = pygame.Color(255, 0, 0)  # Red
+                    color = pygame.Color("red")  # Red
                 elif row < red_rows + yellow_rows:
-                    color = pygame.Color(255, 255, 0)  # Yellow
+                    color = pygame.Color("yellow")  # Yellow
                 else:
-                    color = pygame.Color(0, 255, 0)  # Green
+                    color = pygame.Color("green")  # Green
 
                 brick = cls(brick_group, color=color, x_position=x, y_position=y)
                 brick_group.add(brick)
