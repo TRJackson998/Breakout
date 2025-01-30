@@ -28,6 +28,8 @@ Last Edited
 """
 
 import pygame
+
+from breakout import screen_size
 from breakout.sprite import BreakoutSprite
 from breakout import screen_size
 
