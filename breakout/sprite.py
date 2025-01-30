@@ -29,8 +29,10 @@ Last Edited
 
 from abc import ABC
 
-from pygame import Color
+from pygame import Color, Surface
 from pygame.sprite import Sprite
+
+from breakout import screen_size
 
 
 class BreakoutSprite(Sprite, ABC):
@@ -42,13 +44,16 @@ class BreakoutSprite(Sprite, ABC):
         speed: int = 0,
         x_position: int = 0,
         y_position: int = 0,
-        color: Color = Color(0, 0, 0)
+        color: Color = Color(0, 0, 0),
+        image: Surface
     ):
         super().__init__(*groups)
         self.speed = speed
         self.x_position = x_position
         self.y_position = y_position
         self.color = color
+        self.image = image
+        self.rect = None
 
     def move_up(self):
         """Move the sprite up"""
@@ -59,17 +64,22 @@ class BreakoutSprite(Sprite, ABC):
         pass
 
     def move_left(self):
-        """Move the sprite left"""
-        pass
+        """Move the paddle to the left"""
+        new_x = self.x_position - self.speed
+        self.x_position = max(0, min(screen_size.width - self.rect.width, new_x))
+        self.rect.x = self.x_position
 
     def move_right(self):
-        """Move the sprite right"""
-        pass
+        """Move the paddle to the right"""
+        new_x = self.x_position + self.speed
+        self.x_position = max(0, min(screen_size.width - self.rect.width, new_x))
+        self.rect.x = self.x_position
 
     def appear(self):
         """Make the sprite appear on the screen"""
-        pass
+        if self.image is not None:
+            self.image.fill(self.color)
 
     def disappear(self):
         """Make the sprite disappear from the screen"""
-        pass
+        self.kill()
