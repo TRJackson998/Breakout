@@ -37,14 +37,14 @@ class Ball(BreakoutSprite):
     """Ball class - Characteristics and behavior of the ball"""
 
     DEFAULT_RADIUS = 10
-    DEFAULT_SPEED = 2
+    DEFAULT_SPEED = 1.5
 
     def __init__(
         self,
         *groups,
         color=pygame.Color(255, 255, 255),
         x_position=250,
-        y_position=250,
+        y_position=400,
         radius=None,
         speed_x=None,
         speed_y=None,

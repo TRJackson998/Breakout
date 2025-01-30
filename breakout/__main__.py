@@ -94,7 +94,7 @@ def main():
     Screens.GAME.add_element(paddle_group)
 
     # Create the brick layout using the Brick class
-    brick_group = Brick.create_brick_layout(rows=9, cols=9)
+    brick_group = Brick.create_brick_layout(rows=6, cols=7)
     Screens.GAME.add_element(brick_group)
 
     running = True
