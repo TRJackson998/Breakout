@@ -144,3 +144,22 @@ class Screens:
     START = _Screen([])
     GAME = _Screen([])
     END = _Screen([])
+
+
+class CurrentScore:
+    _font = Font(None, max(screen_size.width // 20, 12))
+
+    def __init__(self):
+        self.current_score = 0
+
+    def increase_score(self, score: int):
+        self.current_score += score  # Increase current score
+
+    def draw(self, screen: pygame.surface.Surface):
+        # Display current score
+        current_score_text = CurrentScore._font.render(
+            f"Current Score: {self.current_score}", True, Color("white")
+        )
+        screen.blit(
+            current_score_text, (0, screen_size.height - screen_size.height // 15)
+        )
