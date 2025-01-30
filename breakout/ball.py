@@ -78,7 +78,7 @@ class Ball(BreakoutSprite):
         # initialize area for collision detection
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, paddle, brick_group):
+    def move(self, screen_size, paddle, brick_group, switch_screen, Screens):
         """Handles movement and collision with walls, paddle, and bricks."""
         # Update the position
         self.x_position += self.speed_x
@@ -94,6 +94,11 @@ class Ball(BreakoutSprite):
         # Handle collision with the ceiling
         if self.y_position <= 0:
             self.bounce_y()  # Reverse vertical movement
+
+        # Handle collision with the bottom of the screen (Game Over)
+        if self.y_position >= screen_size.height:
+            switch_screen(Screens.END)  # Change screen to END
+            return  # Stop further movement processing
 
         # Handle collisions with the paddle
         if (

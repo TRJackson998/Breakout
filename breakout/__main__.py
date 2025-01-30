@@ -120,7 +120,7 @@ def main():
             paddle.move_right()
 
         # Move the ball
-        ball.move(screen_size, paddle, brick_group)
+        ball.move(screen_size, paddle, brick_group, switch_screen, Screens)
 
         CURRENT_SCREEN.draw(window)
 
