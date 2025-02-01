@@ -149,7 +149,9 @@ class Game:
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.paddle.move_right()
 
-        self.ball.move(screen_size, self.paddle, self.bricks)
+        self.ball.move(
+            screen_size, self.paddle, self.bricks, self.switch_screen, Screens
+        )
 
     def run(self):
         """Run the main game loop"""

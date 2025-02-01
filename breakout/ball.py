@@ -49,6 +49,11 @@ class Ball(BreakoutSprite):
         speed_x=None,
         speed_y=None,
     ):
+
+        # Start with two lives
+        self.lives = 2
+        self.waiting_for_launch = True
+
         self.can_collide_with_paddle = True
 
         # Define the ball radius/size
@@ -78,8 +83,17 @@ class Ball(BreakoutSprite):
         # initialize area for collision detection
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, paddle, brick_group):
+    def move(self, screen_size, paddle, brick_group, switch_screen, Screens):
         """Handles movement and collision with walls, paddle, and bricks."""
+
+        # If waiting for launch, do nothing until the player presses the Up arrow (we can add W as well)
+        keys = pygame.key.get_pressed()
+        if self.waiting_for_launch:
+            if keys[pygame.K_UP]:
+                self.waiting_for_launch = False  # Allow for ballmovement
+            else:
+                return
+
         # Update the position
         self.x_position += self.speed_x
         self.y_position += self.speed_y
@@ -94,6 +108,15 @@ class Ball(BreakoutSprite):
         # Handle collision with the ceiling
         if self.y_position <= 0:
             self.bounce_y()  # Reverse vertical movement
+
+        # Handle collision with the bottom of the screen (Lose a life or End Game)
+        if self.y_position >= screen_size.height:
+            if self.lives > 1:
+                self.lives -= 1  # Decrease lives
+                self.reset_position()  # Reset ball position
+            else:
+                switch_screen(Screens.END)  # End Game
+                return  # Stop further movement processing
 
         # Handle collisions with the paddle
         if (
@@ -145,7 +168,7 @@ class Ball(BreakoutSprite):
         if self.y_position > paddle.rect.bottom:
             self.can_collide_with_paddle = True
 
-        # Update the rect/collision area position
+        # Update rect/collision area position
         self.rect.x = self.x_position
         self.rect.y = self.y_position
 
@@ -156,3 +179,13 @@ class Ball(BreakoutSprite):
     def bounce_y(self):
         """Reverse the vertical direction of the ball"""
         self.speed_y = -self.speed_y
+
+    def reset_position(self):
+        """Resets ball to starting position and waits for launch."""
+        self.x_position = 250  # Reset to the center of the screen
+        self.y_position = 400
+        self.speed_x = random.choice(
+            [-self.DEFAULT_SPEED, self.DEFAULT_SPEED]
+        )  # Random x-direction
+        self.speed_y = -self.DEFAULT_SPEED  # Always move upwards initially
+        self.waiting_for_launch = True  # Wait for user input before moving again
