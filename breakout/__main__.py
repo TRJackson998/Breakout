@@ -37,7 +37,8 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.screens import Button, CurrentScore, Scoreboard, Screens
+from breakout.score import CurrentScore, Scoreboard
+from breakout.screens import Button, Screens
 
 
 class Game:
