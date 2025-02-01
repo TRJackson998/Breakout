@@ -49,6 +49,7 @@ class Game:
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
         self.ball, self.paddle, self.bricks = None, None, None
+        self.paused = False
         self.setup_screens()
 
     def setup_screens(self):
@@ -79,6 +80,7 @@ class Game:
         Start a new game
         Create the paddle, ball and brick elements
         """
+        self.paused = False
         Screens.GAME.elements.clear()
         Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "top"))
         Screens.GAME.add_element(
@@ -98,8 +100,20 @@ class Game:
         self.bricks = brick_group
 
     def pause_game(self):
-        """Placeholder for pause functionality"""
-        print("Pause")
+        """Pause the game"""
+        self.paused = True
+        for element in Screens.GAME.elements:
+            if isinstance(element, Button) and "pause" in element.text.lower():
+                Screens.GAME.elements.remove(element)
+        Screens.GAME.add_element(Button("RESUME GAME", self.resume_game, "top"))
+
+    def resume_game(self):
+        """Resume the game"""
+        self.paused = False
+        for element in Screens.GAME.elements:
+            if isinstance(element, Button) and "resume" in element.text.lower():
+                Screens.GAME.elements.remove(element)
+        Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "top"))
 
     def quit_game(self):
         """Quit the game"""
@@ -133,7 +147,7 @@ class Game:
         """Run the main game loop"""
         while True:
             self.handle_events()
-            if self.current_screen == Screens.GAME:
+            if self.current_screen == Screens.GAME and not self.paused:
                 self.update_game()
             self.current_screen.draw(self.window)
             pygame.display.update()
