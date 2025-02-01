@@ -45,7 +45,6 @@ class Game:
 
     def __init__(self):
         self.current_screen = Screens.START
-        self.new_game_flag = False
         self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
@@ -73,7 +72,7 @@ class Game:
         """
         self.current_screen = screen
         if screen == Screens.GAME:
-            self.new_game_flag = True
+            self.start_new_game()
 
     def start_new_game(self):
         """
@@ -121,11 +120,7 @@ class Game:
                     pass
 
     def update_game(self):
-        """Start a new game if necessary, otherwise handle the gameplay"""
-        if self.new_game_flag:
-            self.new_game_flag = False
-            self.start_new_game()
-
+        """Handle the gameplay"""
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.paddle.move_left()
