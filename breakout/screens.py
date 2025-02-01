@@ -44,6 +44,9 @@ class _Screen:
 
     def __init__(self, elements: list):
         self.elements = elements
+        self.ball = None
+        self.paddle = None
+        self.bricks = None
 
     def add_element(self, element):
         """Give the Screen another element"""

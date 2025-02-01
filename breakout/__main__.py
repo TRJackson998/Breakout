@@ -47,6 +47,27 @@ def switch_screen(screen: Screens):
     global CURRENT_SCREEN
     CURRENT_SCREEN = screen
 
+    if screen == Screens.GAME:
+        Screens.GAME.elements.clear()
+
+        Screens.GAME.add_element(Button("PAUSE GAME", pause_game, "top"))
+        Screens.GAME.add_element(
+            Button("END GAME", lambda: switch_screen(Screens.END), "bottom")
+        )
+        # Create the ball
+        ball_group = pygame.sprite.Group()
+        Screens.GAME.ball = Ball(ball_group)
+        Screens.GAME.add_element(ball_group)
+
+        # Create the paddle
+        paddle_group = pygame.sprite.Group()
+        Screens.GAME.paddle = Paddle(paddle_group)
+        Screens.GAME.add_element(paddle_group)
+
+        # Create the brick layout using the Brick class
+        Screens.GAME.bricks = Brick.create_brick_layout(rows=6, cols=7)
+        Screens.GAME.add_element(Screens.GAME.bricks)
+
 
 def pause_game():
     """Placeholder for pause functionality"""
@@ -64,11 +85,6 @@ Screens.START.add_element(
 )
 Screens.START.add_element(Button("QUIT", quit_game, "bottom"))
 
-Screens.GAME.add_element(Button("PAUSE GAME", pause_game, "top"))
-Screens.GAME.add_element(
-    Button("END GAME", lambda: switch_screen(Screens.END), "bottom")
-)
-
 Screens.END.add_element(
     Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
 )
@@ -82,20 +98,6 @@ def main():
     pygame.display.set_caption("Breakout")
     clock = pygame.time.Clock()
     CURRENT_SCREEN = Screens.START
-
-    # Create the ball
-    ball_group = pygame.sprite.Group()
-    ball = Ball(ball_group)
-    Screens.GAME.add_element(ball_group)
-
-    # Create the paddle
-    paddle_group = pygame.sprite.Group()
-    paddle = Paddle(paddle_group)
-    Screens.GAME.add_element(paddle_group)
-
-    # Create the brick layout using the Brick class
-    brick_group = Brick.create_brick_layout(rows=6, cols=7)
-    Screens.GAME.add_element(brick_group)
 
     running = True
     while running:
@@ -112,15 +114,18 @@ def main():
                     # Groups of Sprites like bricks do not handle events
                     pass
 
-        # Handle paddle movement
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            paddle.move_left()
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            paddle.move_right()
+        if CURRENT_SCREEN == Screens.GAME:
+            # Handle paddle movement
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                Screens.GAME.paddle.move_left()
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                Screens.GAME.paddle.move_right()
 
-        # Move the ball
-        ball.move(screen_size, paddle, brick_group)
+            # Move the ball
+            Screens.GAME.ball.move(
+                screen_size, Screens.GAME.paddle, Screens.GAME.bricks
+            )
 
         CURRENT_SCREEN.draw(window)
 
