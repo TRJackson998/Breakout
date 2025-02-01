@@ -39,107 +39,111 @@ from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.screens import Button, Screens
 
-CURRENT_SCREEN = None
-NEW_GAME = False
 
+class Game:
+    """Class to handle and run the game"""
 
-def switch_screen(screen: Screens):
-    """Update the current screen global variable with the new screen passed in"""
-    global CURRENT_SCREEN, NEW_GAME
-    CURRENT_SCREEN = screen
+    def __init__(self):
+        self.current_screen = Screens.START
+        self.new_game_flag = False
+        self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
+        pygame.display.set_caption("Breakout")
+        self.clock = pygame.time.Clock()
+        self.ball, self.paddle, self.bricks = None, None, None
+        self.setup_screens()
 
-    if screen == Screens.GAME:
-        NEW_GAME = True
+    def setup_screens(self):
+        """Add static button elements to START and END screens"""
+        # Start Screen
+        Screens.START.add_element(
+            Button("START GAME", lambda: self.switch_screen(Screens.GAME), "top")
+        )
+        Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
 
+        # End Screen
+        Screens.END.add_element(
+            Button("START GAME", lambda: self.switch_screen(Screens.GAME), "top")
+        )
+        Screens.END.add_element(Button("QUIT", self.quit_game, "bottom"))
 
-def new_game() -> tuple[Ball, Paddle, pygame.sprite.Group]:
-    """Init all gameplay objects"""
-    Screens.GAME.elements.clear()
+    def switch_screen(self, screen: Screens):
+        """
+        Switch from current screen
+        If the new screen is the game screen, start a new game
+        """
+        self.current_screen = screen
+        if screen == Screens.GAME:
+            self.new_game_flag = True
 
-    Screens.GAME.add_element(Button("PAUSE GAME", pause_game, "top"))
-    Screens.GAME.add_element(
-        Button("END GAME", lambda: switch_screen(Screens.END), "bottom")
-    )
-    # Create the ball
-    ball_group = pygame.sprite.Group()
-    Screens.GAME.add_element(ball_group)
+    def start_new_game(self):
+        """
+        Start a new game
+        Create the paddle, ball and brick elements
+        """
+        Screens.GAME.elements.clear()
+        Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "top"))
+        Screens.GAME.add_element(
+            Button("END GAME", lambda: self.switch_screen(Screens.END), "bottom")
+        )
 
-    # Create the paddle
-    paddle_group = pygame.sprite.Group()
-    Screens.GAME.add_element(paddle_group)
+        ball_group = pygame.sprite.Group()
+        paddle_group = pygame.sprite.Group()
+        brick_group = Brick.create_brick_layout(rows=6, cols=7)
 
-    # Create the brick layout using the Brick class
-    brick_group = Brick.create_brick_layout(rows=6, cols=7)
-    Screens.GAME.add_element(brick_group)
+        Screens.GAME.add_element(ball_group)
+        Screens.GAME.add_element(paddle_group)
+        Screens.GAME.add_element(brick_group)
 
-    return (Ball(ball_group), Paddle(paddle_group), brick_group)
+        self.ball = Ball(ball_group)
+        self.paddle = Paddle(paddle_group)
+        self.bricks = brick_group
 
+    def pause_game(self):
+        """Placeholder for pause functionality"""
+        print("Pause")
 
-def pause_game():
-    """Placeholder for pause functionality"""
-    print("Pause")
+    def quit_game(self):
+        """Quit the game"""
+        pygame.quit()
+        sys.exit()
 
-
-def quit_game():
-    """Placeholder for quit functionality"""
-    pygame.quit()
-    sys.exit()
-
-
-Screens.START.add_element(
-    Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
-)
-Screens.START.add_element(Button("QUIT", quit_game, "bottom"))
-
-Screens.END.add_element(
-    Button("START GAME", lambda: switch_screen(Screens.GAME), "top")
-)
-Screens.END.add_element(Button("QUIT", quit_game, "bottom"))
-
-
-def main():
-    """The main function initializes the game, sets up the winbdow, and runs the game loop"""
-    global CURRENT_SCREEN, NEW_GAME
-    ball, paddle, bricks = None, None, None
-    window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
-    pygame.display.set_caption("Breakout")
-    clock = pygame.time.Clock()
-    CURRENT_SCREEN = Screens.START
-
-    running = True
-    while running:
+    def handle_events(self):
+        """Handle all events in the game loop"""
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
-
-            # Check if any of the elements on the screen need to handle an event
-            for element in CURRENT_SCREEN.elements:
+                self.quit_game()
+            for element in self.current_screen.elements:
                 try:
                     # Button elements on the screen run functions when clicked
                     element.handle_event(event)
                 except AttributeError:
                     # Groups of Sprites like bricks do not handle events
                     pass
-        if NEW_GAME:
-            NEW_GAME = False
-            ball, paddle, bricks = new_game()
 
-        if CURRENT_SCREEN == Screens.GAME:
-            # Handle paddle movement
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-                paddle.move_left()
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-                paddle.move_right()
+    def update_game(self):
+        """Start a new game if necessary, otherwise handle the gameplay"""
+        if self.new_game_flag:
+            self.new_game_flag = False
+            self.start_new_game()
 
-            # Move the ball
-            ball.move(screen_size, paddle, bricks)
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.paddle.move_left()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.paddle.move_right()
 
-        CURRENT_SCREEN.draw(window)
+        self.ball.move(screen_size, self.paddle, self.bricks)
 
-        pygame.display.update()
-        clock.tick(50)
+    def run(self):
+        """Run the main game loop"""
+        while True:
+            self.handle_events()
+            if self.current_screen == Screens.GAME:
+                self.update_game()
+            self.current_screen.draw(self.window)
+            pygame.display.update()
+            self.clock.tick(50)
 
 
 if __name__ == "__main__":
-    main()
+    Game().run()
