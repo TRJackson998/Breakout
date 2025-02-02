@@ -38,6 +38,7 @@ class Scoreboard:
     _font = SysFont("courier", max(screen_size.width // 20, 12))
 
     def __init__(self):
+        self.text_color = Color("white")
         self.top_scores = {
             "AAA": 0,
             "BBB": 0,
@@ -62,13 +63,13 @@ class Scoreboard:
         """Draws the scoreboard on the screen."""
         # Display top scores
         title_str = "Leaderboard"
-        title_text = Scoreboard._font.render(title_str, True, Color("white"))
+        title_text = Scoreboard._font.render(title_str, True, self.text_color)
         screen.blit(title_text, (screen_size.width // 3, 80))
 
         for i, (name, score) in enumerate(self.top_scores.items()):
             formatted_score = f"{score:,}"  # Format score with commas
             entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
-            score_text = Scoreboard._font.render(entry_text, True, Color("white"))
+            score_text = Scoreboard._font.render(entry_text, True, self.text_color)
             screen.blit(score_text, (screen_size.width // 4, 120 + i * 30))
 
 
