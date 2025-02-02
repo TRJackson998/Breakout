@@ -87,6 +87,7 @@ class Game:
         Create the paddle, ball and brick elements
         """
         self.paused = False
+        self.current_score = CurrentScore()
         Screens.GAME.elements.clear()
         Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "top"))
         Screens.GAME.add_element(
