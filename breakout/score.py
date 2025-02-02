@@ -52,13 +52,6 @@ class Scoreboard:
             "JJJ": 0,
         }
 
-    def save_score(self, score: int, name: str):
-        """Saves the current score to the leaderboard and resets it."""
-        self.top_scores[name] = score  # update this player's top score
-        self.top_scores = dict(
-            sorted(self.top_scores.items(), key=lambda x: x[1], reverse=True)[:10]
-        )  # Sort, only keep only the top 10 scores
-
     def draw(self, screen: pygame.surface.Surface):
         """Draws the scoreboard on the screen."""
         # Display top scores
@@ -71,6 +64,55 @@ class Scoreboard:
             entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
             score_text = Scoreboard._font.render(entry_text, True, self.text_color)
             screen.blit(score_text, (screen_size.width // 4, 120 + i * 30))
+
+
+class NameInput:
+    def __init__(self):
+        self.font_size = max(screen_size.width // 20, 12)
+        self.font = SysFont("courier", self.font_size)
+        self.active_color = Color("blue")
+        self.passive_color = Color("grey")
+        self.active = False
+        self.name = ""
+        self.width = max(screen_size.width // 20, self.font_size * 3)
+        self.height = max(screen_size.width // 20, self.font_size)
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.passive_color)
+        self.x_position = screen_size.width // 2 + self.width // 2
+        self.y_position = self.height // 2
+        self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+
+    def handle_event(self, event: pygame.event.Event):
+        """If this button is clicked, run the function associated with it"""
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            self.active = self.rect.collidepoint(event.pos)
+        if self.active and event.type == pygame.KEYDOWN:
+            # Check for backspace
+            if event.key == pygame.K_BACKSPACE:
+                # get text input from 0 to -1 i.e. end.
+                self.name = self.name[:-1]
+
+            # Unicode standard is used for string
+            # formation
+            else:
+                self.name += event.unicode
+
+    def draw(self, screen: pygame.surface.Surface):
+        self.name = self.name[:3]
+        if self.active:
+            pygame.draw.rect(screen, self.active_color, self.rect)
+            name_surface = self.font.render(self.name, True, self.passive_color)
+        else:
+            pygame.draw.rect(screen, self.passive_color, self.rect)
+            name_surface = self.font.render(self.name, True, self.active_color)
+        name_rect = name_surface.get_rect(center=self.rect.center)
+        screen.blit(name_surface, name_rect)
+
+        name_label = self.font.render("Name: ", True, Color("white"))
+        label_rect = name_label.get_rect(
+            center=(self.rect.x - 50, self.rect.y + (self.rect.height // 2))
+        )
+        screen.blit(name_label, label_rect)
 
 
 class CurrentScore:

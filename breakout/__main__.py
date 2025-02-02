@@ -37,7 +37,7 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.score import CurrentScore, Scoreboard
+from breakout.score import CurrentScore, NameInput, Scoreboard
 from breakout.screens import Button, Screens
 
 
@@ -53,6 +53,7 @@ class Game:
         self.paused = False
         self.scoreboard = Scoreboard()
         self.current_score = CurrentScore()
+        self.name_imput = NameInput()
         self.setup_screens()
 
     def setup_screens(self):
@@ -71,6 +72,8 @@ class Game:
         )
         Screens.END.add_element(Button("QUIT", self.quit_game, "bottom"))
         Screens.END.add_element(self.scoreboard)
+        Screens.END.add_element(self.name_imput)
+        Screens.END.add_element(Button("SUBMIT", self.save_score, "right"))
 
     def switch_screen(self, screen: Screens):
         """
@@ -135,6 +138,20 @@ class Game:
         """Quit the game"""
         pygame.quit()
         sys.exit()
+
+    def save_score(self):
+        """Saves the current score to the leaderboard and resets it."""
+        if not self.name_imput.name:
+            return
+        self.scoreboard.top_scores[self.name_imput.name] = (
+            self.current_score.current_score
+        )  # update this player's top score
+        self.scoreboard.top_scores = dict(
+            sorted(
+                self.scoreboard.top_scores.items(), key=lambda x: x[1], reverse=True
+            )[:10]
+        )  # Sort, only keep only the top 10 scores
+        self.name_imput.name = ""
 
     def handle_events(self):
         """Handle all events in the game loop"""
