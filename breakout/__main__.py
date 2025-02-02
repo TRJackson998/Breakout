@@ -37,7 +37,13 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.score import CurrentScore, NameInput, Scoreboard, LivesDisplay
+from breakout.score import (
+    CurrentScore,
+    NameInput,
+    Scoreboard,
+    LivesDisplay,
+    LaunchMessage,
+)
 from breakout.screens import Button, Screens
 
 
@@ -109,9 +115,11 @@ class Game:
         self.paddle = Paddle(paddle_group)
         self.bricks = brick_group
 
-        # Create and add the LivesDisplay element.
+        # Create and add the LivesDisplay & Launch element.
         self.lives_display = LivesDisplay(self.ball.lives)
         Screens.GAME.add_element(self.lives_display)
+        self.launch_message = LaunchMessage()
+        Screens.GAME.add_element(self.launch_message)
 
     def pause_game(self):
         """Pause the game"""
@@ -169,6 +177,8 @@ class Game:
                     and self.ball.waiting_for_launch
                 ):
                     self.ball.waiting_for_launch = False
+                    if self.launch_message in self.current_screen.elements:
+                        self.current_screen.elements.remove(self.launch_message)
             for element in self.current_screen.elements:
                 try:
                     # Button elements on the screen run functions when clicked
