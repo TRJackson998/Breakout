@@ -116,7 +116,7 @@ class NameInput:
 
 
 class CurrentScore:
-    _font = Font(None, max(screen_size.width // 20, 12))
+    _font = SysFont("courier", max(screen_size.width // 30, 12))
 
     def __init__(self):
         self.current_score = 0
@@ -132,3 +132,20 @@ class CurrentScore:
         screen.blit(
             current_score_text, (0, screen_size.height - screen_size.height // 15)
         )
+
+
+class LivesDisplay:
+    _font = SysFont("courier", max(screen_size.width // 30, 12))
+
+    def __init__(self, lives=2):
+        self.lives = lives
+
+    def update(self, lives):
+        self.lives = lives
+
+    def draw(self, screen: pygame.surface.Surface):
+        # Draw the lives text above the current score
+        lives_text = LivesDisplay._font.render(
+            f"Lives: {self.lives}", True, Color("white")
+        )
+        screen.blit(lives_text, (0, screen_size.height - screen_size.height // 15 - 30))

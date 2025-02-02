@@ -37,7 +37,7 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.score import CurrentScore, NameInput, Scoreboard
+from breakout.score import CurrentScore, NameInput, Scoreboard, LivesDisplay
 from breakout.screens import Button, Screens
 
 
@@ -109,6 +109,10 @@ class Game:
         self.paddle = Paddle(paddle_group)
         self.bricks = brick_group
 
+        # Create and add the LivesDisplay element.
+        self.lives_display = LivesDisplay(self.ball.lives)
+        Screens.GAME.add_element(self.lives_display)
+
     def pause_game(self):
         """Pause the game"""
         self.paused = True
@@ -176,7 +180,7 @@ class Game:
     def update_game(self):
         """Handle the gameplay"""
         keys = pygame.key.get_pressed()
-
+        # Allow paddle movement only if the ball has been launched
         if not self.ball.waiting_for_launch:
             if keys[pygame.K_LEFT] or keys[pygame.K_a]:
                 self.paddle.move_left()
@@ -187,6 +191,9 @@ class Game:
             screen_size, self.paddle, self.bricks, self.switch_screen, Screens
         )
         self.current_score.increase_score(points)
+
+        # Update the lives display with the current number of lives
+        self.lives_display.update(self.ball.lives)
 
         # Check if all the bricks are gone, and if so, reset the brick layout
         if len(self.bricks.sprites()) == 0:
