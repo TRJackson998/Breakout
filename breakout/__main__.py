@@ -38,7 +38,7 @@ from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.score import CurrentScore, NameInput, Scoreboard
-from breakout.screens import Button, Screens
+from breakout.screens import ArrowButton, Button, Screens
 
 
 class Game:
@@ -109,6 +109,15 @@ class Game:
         self.paddle = Paddle(paddle_group)
         self.bricks = brick_group
 
+        self.left_arrow = ArrowButton(
+            "left", (screen_size.width - 187, screen_size.height - 40)
+        )
+        Screens.GAME.add_element(self.left_arrow)
+        self.right_arrow = ArrowButton(
+            "right", (screen_size.width - 100, screen_size.height - 40)
+        )
+        Screens.GAME.add_element(self.right_arrow)
+
     def pause_game(self):
         """Pause the game"""
         self.paused = True
@@ -168,9 +177,9 @@ class Game:
     def update_game(self):
         """Handle the gameplay"""
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
             self.paddle.move_left()
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
             self.paddle.move_right()
 
         points = self.ball.move(

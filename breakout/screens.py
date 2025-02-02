@@ -136,6 +136,64 @@ class Button:
             self.on_click()
 
 
+class ArrowButton:
+    def __init__(self, direction: Literal["left", "right"], position: tuple[int, int]):
+        self.pressed = False
+        self.color: Color = Color("grey")
+        self.hover_color: Color = Color("white")
+        width = 40
+        height = 30
+        x, y = position  # Base position for the arrow
+        self.rect = pygame.Rect(x, y, width * 1.5, height * 1.5)  # Rough bounding box
+        if direction == "right":
+            self.arrow_points = [
+                (x, y - height // 4),  # Left base top
+                (x + width, y - height // 4),  # Right base top
+                (x + width, y - height // 2),  # Bottom corner of arrowhead
+                (x + width * 2, y),  # Arrowhead tip
+                (x + width, y + height // 2),  # Top corner of arrowhead
+                (x + width, y + height // 4),  # Right base bottom
+                (x, y + height // 4),  # Left base bottom
+            ]
+        elif direction == "left":
+            self.arrow_points = [
+                (x + width * 2, y - height // 4),
+                (x + width, y - height // 4),
+                (x + width, y - height // 2),
+                (x, y),
+                (x + width, y + height // 2),
+                (x + width, y + height // 4),
+                (x + width * 2, y + height // 4),
+            ]
+        self.direction = direction
+
+    def draw(self, screen: pygame.surface.Surface):
+        """
+        Screen elements need to be able to draw themselves
+        Write the button text using the font
+        Blit the rectangle on the screen
+        """
+        # Determine if mouse is hovering over this button
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            # mouse is hovering, draw button in hover color, text in color
+            pygame.draw.polygon(screen, self.hover_color, self.arrow_points)
+        else:
+            # mouse is not hovering, draw button in color, render text in hover color
+            pygame.draw.polygon(screen, self.color, self.arrow_points)
+
+    def handle_event(self, event: pygame.event.Event):
+        """If this button is clicked, run the function associated with it"""
+        if (
+            event.type == pygame.MOUSEBUTTONDOWN  # a mouse has been clicked
+            and event.button == 1  # the left mouse button has been clicked
+            and self.rect.collidepoint(event.pos)  # the event collided with this button
+        ):
+            self.pressed = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.pressed = False
+
+
 @dataclass
 class Screens:
     """
