@@ -37,7 +37,7 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.score import CurrentScore, NameInput, Scoreboard
+from breakout.score import CurrentScore, NameInput, Scoreboard, LivesDisplay
 from breakout.screens import Button, Screens
 
 
@@ -99,7 +99,7 @@ class Game:
 
         ball_group = pygame.sprite.Group()
         paddle_group = pygame.sprite.Group()
-        brick_group = Brick.create_brick_layout(rows=6, cols=7)
+        brick_group = Brick.create_brick_layout(rows=6, cols=8)
 
         Screens.GAME.add_element(ball_group)
         Screens.GAME.add_element(paddle_group)
@@ -108,6 +108,10 @@ class Game:
         self.ball = Ball(ball_group)
         self.paddle = Paddle(paddle_group)
         self.bricks = brick_group
+
+        # Create and add the LivesDisplay element.
+        self.lives_display = LivesDisplay(self.ball.lives)
+        Screens.GAME.add_element(self.lives_display)
 
     def pause_game(self):
         """Pause the game"""
@@ -157,6 +161,14 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit_game()
+            elif event.type == pygame.KEYDOWN:
+                # Launch the ball only when the up arrow is pressed
+                if (
+                    event.key == pygame.K_UP
+                    and self.ball is not None
+                    and self.ball.waiting_for_launch
+                ):
+                    self.ball.waiting_for_launch = False
             for element in self.current_screen.elements:
                 try:
                     # Button elements on the screen run functions when clicked
@@ -168,15 +180,32 @@ class Game:
     def update_game(self):
         """Handle the gameplay"""
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.paddle.move_left()
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.paddle.move_right()
+        # Allow paddle movement only if the ball has been launched
+        if not self.ball.waiting_for_launch:
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                self.paddle.move_left()
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                self.paddle.move_right()
 
         points = self.ball.move(
             screen_size, self.paddle, self.bricks, self.switch_screen, Screens
         )
         self.current_score.increase_score(points)
+
+        # Update the lives display with the current number of lives
+        self.lives_display.update(self.ball.lives)
+
+        # Check if all the bricks are gone, and if so, reset the brick layout
+        if len(self.bricks.sprites()) == 0:
+            self.next_level()
+
+    def next_level(self):
+        """Reset the brick layout to continue the game play."""
+        self.ball.reset_position(wait=False)
+        # Create a new brick layout.
+        self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+        # Add to screen
+        Screens.GAME.add_element(self.bricks)
 
     def run(self):
         """Run the main game loop"""

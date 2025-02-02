@@ -30,7 +30,7 @@ from typing import Literal
 
 import pygame
 from pygame.color import Color
-from pygame.font import Font
+from pygame.font import Font, SysFont
 from pygame.surface import Surface
 
 from breakout import screen_size
@@ -66,7 +66,7 @@ class Button:
     """
 
     # dynamically determine with screen size, never below 12pt font
-    _font = Font(None, max(screen_size.width // 20, 12))
+    _font = SysFont("courier", max(screen_size.width // 30, 14))
 
     def __init__(
         self,

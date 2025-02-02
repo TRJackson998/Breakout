@@ -37,23 +37,24 @@ class Ball(BreakoutSprite):
     """Ball class - Characteristics and behavior of the ball"""
 
     DEFAULT_RADIUS = 10
-    DEFAULT_SPEED = 1.5
+    DEFAULT_SPEED = 2.5
+    MAX_SPEED = 5.0  # Maximum horizontal speed allowed
 
     def __init__(
         self,
         *groups,
         color=pygame.Color(255, 255, 255),
         x_position=250,
-        y_position=400,
+        y_position=390,
         radius=None,
         speed_x=None,
         speed_y=None,
     ):
-
-        # Start with two lives
+        # Start with two lives and wait for the launch input
         self.lives = 2
         self.waiting_for_launch = True
 
+        # Flag to prevent multiple paddle collisions in one contact
         self.can_collide_with_paddle = True
 
         # Define the ball radius/size
@@ -80,33 +81,31 @@ class Ball(BreakoutSprite):
         )
         self.speed_y = speed_y if speed_y is not None else -self.DEFAULT_SPEED
 
-        # initialize area for collision detection
+        # Initialize the collision detection rectangle
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
     def move(self, screen_size, paddle, brick_group, switch_screen, Screens) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
         points = 0
 
-        # If waiting for launch, do nothing until the player presses the Up arrow (we can add W as well)
         keys = pygame.key.get_pressed()
-        if self.waiting_for_launch:
-            if keys[pygame.K_UP]:
-                self.waiting_for_launch = False  # Allow for ballmovement
-            else:
-                return points
 
-        # Update the position
+        # If waiting for launch, do nothing.
+        if self.waiting_for_launch:
+            return points
+
+        # Update the ball position
         self.x_position += self.speed_x
         self.y_position += self.speed_y
 
-        # Handle collisions with the side walls
+        # Handle the bounce off the side walls
         if (
             self.x_position <= 0
             or self.x_position >= screen_size.width - self.rect.width
         ):
             self.bounce_x()  # Reverse horizontal movement
 
-        # Handle collision with the ceiling
+        # Handle the bounce off the ceiling
         if self.y_position <= 0:
             self.bounce_y()  # Reverse vertical movement
 
@@ -115,28 +114,41 @@ class Ball(BreakoutSprite):
             if self.lives > 1:
                 self.lives -= 1  # Decrease lives
                 self.reset_position()  # Reset ball position
+                paddle.reset_position()
             else:
                 switch_screen(Screens.END)  # End Game
                 return points  # Stop further movement processing
 
         # Handle collisions with the paddle
         if (
-            paddle.rect.y < self.y_position + self.rect.height
-            and paddle.rect.x < self.x_position + self.rect.width
-            and self.x_position > paddle.rect.x - self.rect.width
+            self.speed_y > 0
+            and self.rect.colliderect(paddle.rect)
+            and self.can_collide_with_paddle
         ):
             self.bounce_y()  # Reverse vertical direction
-            self.y_position = (
-                paddle.rect.top - self.rect.height
-            )  # Adjust position to avoid sticking
+            # Position the ball right above the paddle to prevent overlapping
+            self.y_position = paddle.rect.top - self.rect.height
 
             # Adjust horizontal speed based on where the ball hits the paddle
             paddle_center = paddle.rect.centerx
             ball_center = self.rect.centerx
             offset = ball_center - paddle_center
+            max_offset = paddle.rect.width / 2  # Maximum possible offset from center
+            # Calculate new horizontal speed
+            new_speed_x = self.DEFAULT_SPEED * (offset / max_offset)
+            # Cap the horizontal speed to prevent it from going too fast
+            if new_speed_x > self.MAX_SPEED:
+                new_speed_x = self.MAX_SPEED
+            elif new_speed_x < -self.MAX_SPEED:
+                new_speed_x = -self.MAX_SPEED
+            self.speed_x = new_speed_x
 
-            # Normalize the offset to adjust speed
-            self.speed_x += offset // 10
+            # Disable paddle collisions until the ball is away from the paddle
+            self.can_collide_with_paddle = False
+
+        # Re-enable paddle collisions once the ball is above the paddle
+        if self.rect.bottom < paddle.rect.top:
+            self.can_collide_with_paddle = True
 
         # Handle collisions with bricks
         hit_bricks = pygame.sprite.spritecollide(self, brick_group, False)
@@ -154,7 +166,7 @@ class Ball(BreakoutSprite):
                 abs(self.rect.left - brick.rect.right),
             )
 
-            # Reverse direction based on the smallest overlap
+            # Bounce based on the smaller overlap distance
             if vertical_overlap < horizontal_overlap and not reversed_y:
                 self.bounce_y()
                 reversed_y = True
@@ -165,10 +177,6 @@ class Ball(BreakoutSprite):
             # Remove the brick
             points += brick.hit()
 
-        # Reset paddle collision flag
-        if self.y_position > paddle.rect.bottom:
-            self.can_collide_with_paddle = True
-
         # Update rect/collision area position
         self.rect.x = self.x_position
         self.rect.y = self.y_position
@@ -176,19 +184,18 @@ class Ball(BreakoutSprite):
         return points
 
     def bounce_x(self):
-        """Reverse the horizontal direction of the ball"""
+        """Reverse the horizontal direction of the ball."""
         self.speed_x = -self.speed_x
 
     def bounce_y(self):
-        """Reverse the vertical direction of the ball"""
+        """Reverse the vertical direction of the ball."""
         self.speed_y = -self.speed_y
 
-    def reset_position(self):
+    def reset_position(self, wait=True):
         """Resets ball to starting position and waits for launch."""
         self.x_position = 250  # Reset to the center of the screen
-        self.y_position = 400
-        self.speed_x = random.choice(
-            [-self.DEFAULT_SPEED, self.DEFAULT_SPEED]
-        )  # Random x-direction
-        self.speed_y = -self.DEFAULT_SPEED  # Always move upwards initially
-        self.waiting_for_launch = True  # Wait for user input before moving again
+        self.y_position = 380
+        self.speed_x = random.choice([-self.DEFAULT_SPEED, self.DEFAULT_SPEED])
+        self.speed_y = -self.DEFAULT_SPEED  # Always start moving upward
+        self.waiting_for_launch = wait
+        self.rect.topleft = (self.x_position, self.y_position)
