@@ -99,7 +99,7 @@ class Game:
 
         ball_group = pygame.sprite.Group()
         paddle_group = pygame.sprite.Group()
-        brick_group = Brick.create_brick_layout(rows=6, cols=7)
+        brick_group = Brick.create_brick_layout(rows=6, cols=8)
 
         Screens.GAME.add_element(ball_group)
         Screens.GAME.add_element(paddle_group)
@@ -177,6 +177,18 @@ class Game:
             screen_size, self.paddle, self.bricks, self.switch_screen, Screens
         )
         self.current_score.increase_score(points)
+
+        # Check if all the bricks are gone, and if so, reset the brick layout
+        if len(self.bricks.sprites()) == 0:
+            self.next_level()
+
+    def next_level(self):
+        """Reset the brick layout to continue the game play."""
+        self.ball.reset_position(wait=False)
+        # Create a new brick layout.
+        self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+        # Add to screen
+        Screens.GAME.add_element(self.bricks)
 
     def run(self):
         """Run the main game loop"""

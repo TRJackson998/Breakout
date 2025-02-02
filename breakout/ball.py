@@ -192,10 +192,11 @@ class Ball(BreakoutSprite):
         """Reverse the vertical direction of the ball."""
         self.speed_y = -self.speed_y
 
-    def reset_position(self):
+    def reset_position(self, wait=True):
         """Resets ball to starting position and waits for launch."""
         self.x_position = 250  # Reset to the center of the screen
         self.y_position = 380
         self.speed_x = random.choice([-self.DEFAULT_SPEED, self.DEFAULT_SPEED])
         self.speed_y = -self.DEFAULT_SPEED  # Always start moving upward
-        self.waiting_for_launch = True
+        self.waiting_for_launch = wait
+        self.rect.topleft = (self.x_position, self.y_position)
