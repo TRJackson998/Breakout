@@ -84,8 +84,9 @@ class Ball(BreakoutSprite):
         # Initialize the collision detection rectangle
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, paddle, brick_group, switch_screen, Screens):
+    def move(self, screen_size, paddle, brick_group, switch_screen, Screens) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
+        points = 0
 
         # If waiting for launch, do nothing until the player presses the Up arrow (we can add W as well)
         keys = pygame.key.get_pressed()
@@ -93,7 +94,7 @@ class Ball(BreakoutSprite):
             if keys[pygame.K_UP]:
                 self.waiting_for_launch = False  # Allow for ballmovement
             else:
-                return
+                return points
 
         # Update the ball position
         self.x_position += self.speed_x
@@ -117,7 +118,7 @@ class Ball(BreakoutSprite):
                 self.reset_position()  # Reset ball position
             else:
                 switch_screen(Screens.END)  # End Game
-                return  # Stop further movement processing
+                return points  # Stop further movement processing
 
         # Handle collisions with the paddle
         if (
@@ -174,12 +175,14 @@ class Ball(BreakoutSprite):
                 self.bounce_x()
                 reversed_x = True
 
-            # Handle the brick hit (remove the brick)
-            brick.hit()
+            # Remove the brick
+            points += brick.hit()
 
         # Update rect/collision area position
         self.rect.x = self.x_position
         self.rect.y = self.y_position
+
+        return points
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""

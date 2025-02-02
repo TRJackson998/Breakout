@@ -28,8 +28,9 @@ Last Edited
 """
 
 import pygame
-from breakout.sprite import BreakoutSprite
+
 from breakout import screen_size
+from breakout.sprite import BreakoutSprite
 
 
 class Brick(BreakoutSprite):
@@ -67,12 +68,20 @@ class Brick(BreakoutSprite):
             image=image,
         )
 
+        if self.color == pygame.Color("red"):
+            self.points = 3
+        elif self.color == pygame.Color("green"):
+            self.points = 2
+        else:
+            self.points = 1
+
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
 
-    def hit(self):
+    def hit(self) -> int:
         """Actions when bricks are hit by the ball"""
         self.disappear()  # remove the brick from the game
+        return self.points
 
     @classmethod
     def create_brick_layout(cls, rows, cols):
@@ -106,11 +115,11 @@ class Brick(BreakoutSprite):
 
                 # Assign colors based on row
                 if row < red_rows:
-                    color = pygame.Color(255, 0, 0)  # Red
+                    color = pygame.Color("red")  # Red
                 elif row < red_rows + yellow_rows:
-                    color = pygame.Color(255, 255, 0)  # Yellow
+                    color = pygame.Color("yellow")  # Yellow
                 else:
-                    color = pygame.Color(0, 255, 0)  # Green
+                    color = pygame.Color("green")  # Green
 
                 brick = cls(brick_group, color=color, x_position=x, y_position=y)
                 brick_group.add(brick)

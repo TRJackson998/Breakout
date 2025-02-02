@@ -37,6 +37,7 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
+from breakout.score import CurrentScore, NameInput, Scoreboard
 from breakout.screens import Button, Screens
 
 
@@ -50,11 +51,15 @@ class Game:
         self.clock = pygame.time.Clock()
         self.ball, self.paddle, self.bricks = None, None, None
         self.paused = False
+        self.scoreboard = Scoreboard()
+        self.current_score = CurrentScore()
+        self.name_imput = NameInput()
         self.setup_screens()
 
     def setup_screens(self):
         """Add static button elements to START and END screens"""
         # Start Screen
+
         Screens.START.add_element(
             Button("START GAME", lambda: self.switch_screen(Screens.GAME), "top")
         )
@@ -65,6 +70,9 @@ class Game:
             Button("START GAME", lambda: self.switch_screen(Screens.GAME), "top")
         )
         Screens.END.add_element(Button("QUIT", self.quit_game, "bottom"))
+        Screens.END.add_element(self.scoreboard)
+        Screens.END.add_element(self.name_imput)
+        Screens.END.add_element(Button("SUBMIT", self.save_score, "right"))
 
     def switch_screen(self, screen: Screens):
         """
@@ -81,11 +89,13 @@ class Game:
         Create the paddle, ball and brick elements
         """
         self.paused = False
+        self.current_score = CurrentScore()
         Screens.GAME.elements.clear()
         Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "top"))
         Screens.GAME.add_element(
             Button("END GAME", lambda: self.switch_screen(Screens.END), "bottom")
         )
+        Screens.GAME.add_element(self.current_score)
 
         ball_group = pygame.sprite.Group()
         paddle_group = pygame.sprite.Group()
@@ -128,6 +138,20 @@ class Game:
         pygame.quit()
         sys.exit()
 
+    def save_score(self):
+        """Saves the current score to the leaderboard and resets it."""
+        if not self.name_imput.name:
+            return
+        self.scoreboard.top_scores[self.current_score.current_score] = (
+            self.name_imput.name.upper()
+        )  # update this player's top score
+        self.scoreboard.top_scores = dict(
+            sorted(
+                self.scoreboard.top_scores.items(), key=lambda x: x[0], reverse=True
+            )[:10]
+        )  # Sort, only keep only the top 10 scores
+        self.name_imput.name = ""
+
     def handle_events(self):
         """Handle all events in the game loop"""
         for event in pygame.event.get():
@@ -149,9 +173,10 @@ class Game:
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.paddle.move_right()
 
-        self.ball.move(
+        points = self.ball.move(
             screen_size, self.paddle, self.bricks, self.switch_screen, Screens
         )
+        self.current_score.increase_score(points)
 
     def run(self):
         """Run the main game loop"""
