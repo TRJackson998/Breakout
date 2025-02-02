@@ -143,12 +143,12 @@ class Game:
         """Saves the current score to the leaderboard and resets it."""
         if not self.name_imput.name:
             return
-        self.scoreboard.top_scores[self.name_imput.name] = (
-            self.current_score.current_score
+        self.scoreboard.top_scores[self.current_score.current_score] = (
+            self.name_imput.name.upper()
         )  # update this player's top score
         self.scoreboard.top_scores = dict(
             sorted(
-                self.scoreboard.top_scores.items(), key=lambda x: x[1], reverse=True
+                self.scoreboard.top_scores.items(), key=lambda x: x[0], reverse=True
             )[:10]
         )  # Sort, only keep only the top 10 scores
         self.name_imput.name = ""

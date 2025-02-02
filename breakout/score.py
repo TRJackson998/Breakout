@@ -39,18 +39,7 @@ class Scoreboard:
 
     def __init__(self):
         self.text_color = Color("white")
-        self.top_scores = {
-            "AAA": 0,
-            "BBB": 0,
-            "CCC": 0,
-            "DDD": 0,
-            "EEE": 0,
-            "FFF": 0,
-            "GGG": 0,
-            "HHH": 0,
-            "III": 0,
-            "JJJ": 0,
-        }
+        self.top_scores = {-1: "AAA"}
 
     def draw(self, screen: pygame.surface.Surface):
         """Draws the scoreboard on the screen."""
@@ -59,11 +48,22 @@ class Scoreboard:
         title_text = Scoreboard._font.render(title_str, True, self.text_color)
         screen.blit(title_text, (screen_size.width // 3, 80))
 
-        for i, (name, score) in enumerate(self.top_scores.items()):
+        for i, (score, name) in enumerate(self.top_scores.items()):
             formatted_score = f"{score:,}"  # Format score with commas
             entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
             score_text = Scoreboard._font.render(entry_text, True, self.text_color)
             screen.blit(score_text, (screen_size.width // 4, 120 + i * 30))
+
+        for i in range(10 - len(self.top_scores)):
+            score = -1
+            name = "AAA"
+            formatted_score = f"{score:,}"  # Format score with commas
+            entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
+            score_text = Scoreboard._font.render(entry_text, True, self.text_color)
+            screen.blit(
+                score_text,
+                (screen_size.width // 4, 120 + (i + len(self.top_scores)) * 30),
+            )
 
 
 class NameInput:
