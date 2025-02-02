@@ -72,7 +72,7 @@ class Button:
         self,
         text: str,
         on_click,
-        position: Literal["top", "bottom"],
+        position: Literal["top", "bottom", "right"],
         color: Color = Color("blue"),
         hover_color: Color = Color("gray"),
     ):
@@ -94,9 +94,12 @@ class Button:
         if position == "top":
             # two button's worth up from the bottom of the screen
             y = screen_size.height - ((height + pad) * 2)
-        else:
+        elif position == "bottom":
             # one button's worth up from the bottom of the screen
             y = screen_size.height - height - pad
+        else:
+            x = screen_size.width // 2
+            y = screen_size.width // 40 + height // 2
 
         # make the rectangle
         self.rect = pygame.Rect(x, y, width, height)
