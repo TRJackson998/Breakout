@@ -64,7 +64,6 @@ class Game:
             Button("START GAME", lambda: self.switch_screen(Screens.GAME), "top")
         )
         Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
-        Screens.START.add_element(self.scoreboard)
 
         # End Screen
         Screens.END.add_element(
