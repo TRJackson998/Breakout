@@ -62,3 +62,11 @@ class Paddle(BreakoutSprite):
 
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
+
+        # Store the initial position for later resets
+        self.initial_position = (self.x_position, self.y_position)
+
+    def reset_position(self):
+        """Reset the paddle to its initial position."""
+        self.x_position, self.y_position = self.initial_position
+        self.rect.topleft = self.initial_position

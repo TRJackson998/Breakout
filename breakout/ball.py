@@ -88,13 +88,11 @@ class Ball(BreakoutSprite):
         """Handles movement and collision with walls, paddle, and bricks."""
         points = 0
 
-        # If waiting for launch, do nothing until the player presses the Up arrow (we can add W as well)
         keys = pygame.key.get_pressed()
+
+        # If waiting for launch, do nothing.
         if self.waiting_for_launch:
-            if keys[pygame.K_UP]:
-                self.waiting_for_launch = False  # Allow for ballmovement
-            else:
-                return points
+            return points
 
         # Update the ball position
         self.x_position += self.speed_x
@@ -116,6 +114,7 @@ class Ball(BreakoutSprite):
             if self.lives > 1:
                 self.lives -= 1  # Decrease lives
                 self.reset_position()  # Reset ball position
+                paddle.reset_position()
             else:
                 switch_screen(Screens.END)  # End Game
                 return points  # Stop further movement processing

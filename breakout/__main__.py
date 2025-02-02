@@ -157,6 +157,14 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit_game()
+            elif event.type == pygame.KEYDOWN:
+                # Launch the ball only when the up arrow is pressed
+                if (
+                    event.key == pygame.K_UP
+                    and self.ball is not None
+                    and self.ball.waiting_for_launch
+                ):
+                    self.ball.waiting_for_launch = False
             for element in self.current_screen.elements:
                 try:
                     # Button elements on the screen run functions when clicked
@@ -168,10 +176,12 @@ class Game:
     def update_game(self):
         """Handle the gameplay"""
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.paddle.move_left()
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.paddle.move_right()
+
+        if not self.ball.waiting_for_launch:
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                self.paddle.move_left()
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                self.paddle.move_right()
 
         points = self.ball.move(
             screen_size, self.paddle, self.bricks, self.switch_screen, Screens
