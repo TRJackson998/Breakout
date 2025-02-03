@@ -42,6 +42,10 @@ from breakout.sprite import BreakoutSprite
 
 
 class PowerUp(BreakoutSprite):
+    """Handle power up execution"""
+
     def __init__(self, *groups, radius=0):
-        super().__init__(*groups)
+        super().__init__(
+            *groups,
+        )
         self.radius = radius

@@ -46,6 +46,8 @@ from breakout.score import (
 )
 from breakout.screens import Button, Screens
 
+# pylint: disable=no-member
+
 
 class Game:
     """Class to handle and run the game"""
@@ -61,6 +63,8 @@ class Game:
         self.current_score = CurrentScore()
         self.name_imput = NameInput()
         self.setup_screens()
+        self.lives_display = None
+        self.launch_message = None
 
     def setup_screens(self):
         """Add static button elements to START and END screens"""

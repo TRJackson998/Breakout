@@ -32,6 +32,8 @@ import pygame
 
 from breakout.sprite import BreakoutSprite
 
+# pylint: disable=no-member
+
 
 class Ball(BreakoutSprite):
     """Ball class - Characteristics and behavior of the ball"""
@@ -87,8 +89,6 @@ class Ball(BreakoutSprite):
     def move(self, screen_size, paddle, brick_group, switch_screen, Screens) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
         points = 0
-
-        keys = pygame.key.get_pressed()
 
         # If waiting for launch, do nothing.
         if self.waiting_for_launch:

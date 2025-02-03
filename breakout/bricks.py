@@ -32,6 +32,8 @@ import pygame
 from breakout import screen_size
 from breakout.sprite import BreakoutSprite
 
+# pylint: disable=no-member
+
 
 class Brick(BreakoutSprite):
     """Brick class - Characteristics for a single brick in the game."""
@@ -89,7 +91,6 @@ class Brick(BreakoutSprite):
         brick_group = pygame.sprite.Group()
 
         screen_width = screen_size.width
-        screen_height = screen_size.height
 
         # Spacing and margins
         x_offset = 10  # Horizontal spacing between bricks
@@ -105,8 +106,9 @@ class Brick(BreakoutSprite):
 
         # Determine the number of rows for each color
         red_rows = max(1, rows // 4)  # Red occupies the first quarter
-        yellow_rows = max(1, rows // 3)  # Yellow occupies the next third
-        green_rows = rows - (red_rows + yellow_rows)  # Remaining rows are green
+        yellow_rows = max(
+            1, rows // 3
+        )  # Yellow occupies the next third with the remaining being green
 
         for row in range(rows):
             for col in range(cols):

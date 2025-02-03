@@ -55,14 +55,6 @@ class BreakoutSprite(Sprite, ABC):
         self.image = image
         self.rect = None
 
-    def move_up(self):
-        """Move the sprite up"""
-        pass
-
-    def move_down(self):
-        """Move the sprite down"""
-        pass
-
     def move_left(self):
         """Move the paddle to the left"""
         new_x = self.x_position - self.speed
