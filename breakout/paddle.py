@@ -1,7 +1,9 @@
 """
 Paddle
 ========
-Implement the Paddle object and related interactions/physics
+Implements the player's paddle, allowing movement based on user input. 
+Handles collisions with the ball and resets position when needed.
+
 Subclass of BreakoutSprite
 
 Class
@@ -17,13 +19,6 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Last Edited
------------
-1.20.25
 """
 
 import pygame
@@ -62,3 +57,11 @@ class Paddle(BreakoutSprite):
 
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
+
+        # Store the initial position for later resets
+        self.initial_position = (self.x_position, self.y_position)
+
+    def reset_position(self):
+        """Reset the paddle to its initial position."""
+        self.x_position, self.y_position = self.initial_position
+        self.rect.topleft = self.initial_position

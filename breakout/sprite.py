@@ -18,13 +18,6 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Last Edited
------------
-1.20.25
 """
 
 from abc import ABC
@@ -54,14 +47,6 @@ class BreakoutSprite(Sprite, ABC):
         self.color = color
         self.image = image
         self.rect = None
-
-    def move_up(self):
-        """Move the sprite up"""
-        pass
-
-    def move_down(self):
-        """Move the sprite down"""
-        pass
 
     def move_left(self):
         """Move the paddle to the left"""
