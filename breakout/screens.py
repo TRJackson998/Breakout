@@ -16,13 +16,6 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Created
--------
-1.25.25
 """
 
 from dataclasses import dataclass

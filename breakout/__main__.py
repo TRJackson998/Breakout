@@ -19,13 +19,6 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Created
--------
-1.20.25
 """
 
 import sys
