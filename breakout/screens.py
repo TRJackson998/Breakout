@@ -1,7 +1,8 @@
 """
 Screens
 =======
-Classes related to building the various screens of our game
+Defines and manages the different game screens, including the 
+start, gameplay, and end screens. Handles button interactions and visual updates.
 
 Class
 -----

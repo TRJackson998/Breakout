@@ -1,9 +1,8 @@
 """
 Brick
 =====
-Implement the Brick object and related interactions/physics
-Subclass of BreakoutSprite
-Should be added to a group of sprites to represent the overall level, use spritecollide
+Represents individual bricks in the game, managing their appearance, structure, 
+and removal upon collision with the ball. Assigns point values for scoring.
 
 Class
 -----

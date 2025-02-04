@@ -1,8 +1,8 @@
 """
 Score
 ========
-Implement the leaderboard
-Implement score tracking display during gameplay
+Tracks and displays the player's score, manages the leaderboard, and 
+handles name input for high scores. Updates the screen with real-time scoring information.
 
 Class
 -----

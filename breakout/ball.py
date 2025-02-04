@@ -1,7 +1,8 @@
 """
 Ball
 ====
-Implement the Ball object and related interactions/physics
+Defines the ball's movement, physics, and collision interactions with the paddle, bricks, and walls. 
+Tracks remaining lives and resets position when necessary.
 Subclass of BreakoutSprite
 
 Class

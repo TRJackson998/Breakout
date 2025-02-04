@@ -2,8 +2,6 @@
 Powerups
 ========
 Implement the Powerups object and related interactions/physics
-Power Ups are circles that move from the top of the screen down
-If the paddle collides with a power up, the player receives that power
 Subclass of BreakoutSprite
 
 Powers

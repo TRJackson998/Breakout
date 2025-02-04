@@ -1,10 +1,8 @@
 """
 Breakout
 ========
-The main driver script for the overall Breakout game
-Run game loop
-Control window/screen state
-3 screens - start, gameplay, game over
+Manages the core game loop, screen transitions, and overall game logic. 
+Handles user input, game state changes, and object initialization for gameplay.
 
 Class
 -----
