@@ -1,7 +1,9 @@
 """
 Paddle
 ========
-Implement the Paddle object and related interactions/physics
+Implements the player's paddle, allowing movement based on user input. 
+Handles collisions with the ball and resets position when needed.
+
 Subclass of BreakoutSprite
 
 Class
@@ -17,13 +19,6 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Last Edited
------------
-1.20.25
 """
 
 import pygame

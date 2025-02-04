@@ -1,7 +1,8 @@
 """
 Ball
 ====
-Implement the Ball object and related interactions/physics
+Defines the ball's movement, physics, and collision interactions with the paddle, bricks, and walls. 
+Tracks remaining lives and resets position when necessary.
 Subclass of BreakoutSprite
 
 Class
@@ -17,13 +18,6 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Last Edited
------------
-1.20.25
 """
 
 import random
@@ -31,6 +25,8 @@ import random
 import pygame
 
 from breakout.sprite import BreakoutSprite
+
+# pylint: disable=no-member
 
 
 class Ball(BreakoutSprite):
@@ -87,8 +83,6 @@ class Ball(BreakoutSprite):
     def move(self, screen_size, paddle, brick_group, switch_screen, Screens) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
         points = 0
-
-        keys = pygame.key.get_pressed()
 
         # If waiting for launch, do nothing.
         if self.waiting_for_launch:

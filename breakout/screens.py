@@ -1,7 +1,8 @@
 """
 Screens
 =======
-Classes related to building the various screens of our game
+Defines and manages the different game screens, including the 
+start, gameplay, and end screens. Handles button interactions and visual updates.
 
 Class
 -----
@@ -16,24 +17,17 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Created
--------
-1.25.25
 """
 
 from dataclasses import dataclass
 from typing import Literal
 
 import pygame
-from pygame.color import Color
-from pygame.font import Font, SysFont
-from pygame.surface import Surface
+from pygame.font import SysFont
 
 from breakout import screen_size
+
+# pylint: disable=no-member
 
 
 class _Screen:
@@ -49,9 +43,9 @@ class _Screen:
         """Give the Screen another element"""
         self.elements.append(element)
 
-    def draw(self, pygame_window: Surface):
+    def draw(self, pygame_window: pygame.Surface):
         """Draw the Screen"""
-        pygame_window.fill(Color("black"))  # clear screen
+        pygame_window.fill(pygame.Color("black"))  # clear screen
         for element in self.elements:
             element.draw(pygame_window)
 
@@ -73,8 +67,8 @@ class Button:
         text: str,
         on_click,
         position: Literal["top", "bottom", "right"],
-        color: Color = Color("blue"),
-        hover_color: Color = Color("gray"),
+        color: pygame.Color = pygame.Color("blue"),
+        hover_color: pygame.Color = pygame.Color("gray"),
     ):
         self.text = text
         self.on_click = on_click
@@ -104,7 +98,7 @@ class Button:
         # make the rectangle
         self.rect = pygame.Rect(x, y, width, height)
 
-    def draw(self, screen: pygame.surface.Surface):
+    def draw(self, screen: pygame.Surface):
         """
         Screen elements need to be able to draw themselves
         Write the button text using the font

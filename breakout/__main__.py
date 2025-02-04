@@ -1,10 +1,8 @@
 """
 Breakout
 ========
-The main driver script for the overall Breakout game
-Run game loop
-Control window/screen state
-3 screens - start, gameplay, game over
+Manages the core game loop, screen transitions, and overall game logic. 
+Handles user input, game state changes, and object initialization for gameplay.
 
 Class
 -----
@@ -19,13 +17,6 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Created
--------
-1.20.25
 """
 
 import sys
@@ -46,6 +37,8 @@ from breakout.score import (
 )
 from breakout.screens import Button, Screens
 
+# pylint: disable=no-member
+
 
 class Game:
     """Class to handle and run the game"""
@@ -61,6 +54,8 @@ class Game:
         self.current_score = CurrentScore()
         self.name_imput = NameInput()
         self.setup_screens()
+        self.lives_display = None
+        self.launch_message = None
 
     def setup_screens(self):
         """Add static button elements to START and END screens"""
