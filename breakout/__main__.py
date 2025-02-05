@@ -48,7 +48,14 @@ class Game:
         self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
-        self.ball, self.paddle, self.bricks = None, None, None
+        (
+            self.ball,
+            self.paddle,
+            self.bricks,
+            self.right_arrow,
+            self.left_arrow,
+            self.up_arrow,
+        ) = (None, None, None, None, None, None)
         self.paused = False
         self.scoreboard = Scoreboard()
         self.current_score = CurrentScore()
