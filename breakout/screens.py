@@ -163,6 +163,8 @@ class ArrowButton:
                 (x + width * 2, y + height // 4),
             ]
         elif direction == "up":
+            height = 40
+            width = 30
             self.arrow_points = [
                 (x - width // 4, y + height * 2),  # Bottom left of base
                 (x - width // 4, y + height),  # Top left of base
