@@ -141,7 +141,7 @@ class ArrowButton:
         width = 40
         height = 30
         x, y = position  # Base position for the arrow
-        self.rect = pygame.Rect(x, y, width * 1.5, height * 1.5)  # Rough bounding box
+
         if direction == "right":
             self.arrow_points = [
                 (x, y - height // 4),  # Left base top
@@ -174,6 +174,14 @@ class ArrowButton:
                 (x + width // 4, y + height),  # Top right of base
                 (x + width // 4, y + height * 2),  # Bottom right of base
             ]
+
+        center_x = sum(point[0] for point in self.arrow_points) // 7
+        center_y = sum(point[1] for point in self.arrow_points) // 7
+        top = center_x - width // 1.5
+        left = center_y - height // 1.5
+        self.rect = pygame.Rect(
+            top, left, width * 1.5, height * 1.5
+        )  # Rough bounding box
 
         self.direction = direction
 
