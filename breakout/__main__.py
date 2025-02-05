@@ -187,6 +187,7 @@ class Game:
                     self.ball.waiting_for_launch = False
                     if self.launch_message in self.current_screen.elements:
                         self.current_screen.elements.remove(self.launch_message)
+                        self.current_screen.elements.remove(self.up_arrow)
             for element in self.current_screen.elements:
                 try:
                     # Button elements on the screen run functions when clicked
@@ -198,6 +199,11 @@ class Game:
     def update_game(self):
         """Handle the gameplay"""
         keys = pygame.key.get_pressed()
+        if self.up_arrow.pressed:
+            self.ball.waiting_for_launch = False
+            if self.launch_message in self.current_screen.elements:
+                self.current_screen.elements.remove(self.launch_message)
+                self.current_screen.elements.remove(self.up_arrow)
         # Allow paddle movement only if the ball has been launched
         if not self.ball.waiting_for_launch:
             if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
