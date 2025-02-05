@@ -124,6 +124,10 @@ class Game:
             "right", (screen_size.width - 100, screen_size.height - 40)
         )
         Screens.GAME.add_element(self.right_arrow)
+        self.up_arrow = ArrowButton(
+            "up", (screen_size.width - 104, screen_size.height - 135)
+        )
+        Screens.GAME.add_element(self.up_arrow)
 
     def pause_game(self):
         """Pause the game"""

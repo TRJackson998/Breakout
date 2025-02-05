@@ -132,7 +132,9 @@ class Button:
 
 
 class ArrowButton:
-    def __init__(self, direction: Literal["left", "right"], position: tuple[int, int]):
+    def __init__(
+        self, direction: Literal["left", "right", "up"], position: tuple[int, int]
+    ):
         self.pressed = False
         self.color: Color = Color("grey")
         self.hover_color: Color = Color("white")
@@ -160,6 +162,17 @@ class ArrowButton:
                 (x + width, y + height // 4),
                 (x + width * 2, y + height // 4),
             ]
+        elif direction == "up":
+            self.arrow_points = [
+                (x - width // 4, y + height * 2),  # Bottom left of base
+                (x - width // 4, y + height),  # Top left of base
+                (x - width // 2, y + height),  # Left corner of arrowhead
+                (x, y),  # Arrowhead tip
+                (x + width // 2, y + height),  # Right corner of arrowhead
+                (x + width // 4, y + height),  # Top right of base
+                (x + width // 4, y + height * 2),  # Bottom right of base
+            ]
+
         self.direction = direction
 
     def draw(self, screen: pygame.surface.Surface):
