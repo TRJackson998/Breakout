@@ -36,7 +36,7 @@ class Paddle(BreakoutSprite):
     def __init__(
         self,
         *groups,
-        color=pygame.Color(255, 255, 255),
+        color=pygame.Color("white"),
         x_position=screen_size.width // 2.5,
         y_position=screen_size.height // 1.25,
         speed=5
