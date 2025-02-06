@@ -44,10 +44,18 @@ class Game:
     """Class to handle and run the game"""
 
     def __init__(self):
-        self.current_screen = Screens.START
+        # First, set the display mode so that a video mode is established.
         self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
+
+        # Now that a display mode is set, load and convert your background image.
+        start_bg = pygame.image.load(
+            r"C:\Users\Tommy\OneDrive\Desktop\StartScreen2.jpg"
+        ).convert()
+        # Update the START screen with the background image.
+        Screens.START = Screens.START.__class__([], background_image=start_bg)
+        self.current_screen = Screens.START
         (
             self.ball,
             self.paddle,

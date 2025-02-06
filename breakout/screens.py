@@ -23,7 +23,6 @@ from dataclasses import dataclass
 from typing import Literal
 
 import pygame
-from pygame.color import Color
 from pygame.font import SysFont
 
 from breakout import screen_size
@@ -37,8 +36,9 @@ class _Screen:
     Theoretically should only be instantiated in this script
     """
 
-    def __init__(self, elements: list):
+    def __init__(self, elements: list, background_image: pygame.Surface = None):
         self.elements = elements
+        self.background_image = background_image
 
     def add_element(self, element):
         """Give the Screen another element"""
@@ -46,7 +46,15 @@ class _Screen:
 
     def draw(self, pygame_window: pygame.Surface):
         """Draw the Screen"""
-        pygame_window.fill(pygame.Color("black"))  # clear screen
+        if self.background_image:
+            # Scale background to current window size for resizable windows
+            scaled_bg = pygame.transform.scale(
+                self.background_image, pygame_window.get_size()
+            )
+            pygame_window.blit(scaled_bg, (0, 0))
+        else:
+            pygame_window.fill(pygame.Color("black"))
+
         for element in self.elements:
             element.draw(pygame_window)
 
@@ -136,8 +144,8 @@ class ArrowButton:
         self, direction: Literal["left", "right", "up"], position: tuple[int, int]
     ):
         self.pressed = False
-        self.color: Color = Color("grey")
-        self.hover_color: Color = Color("white")
+        self.color: pygame.Color = pygame.Color("grey")
+        self.hover_color: pygame.Color = pygame.Color("white")
         width = 40
         height = 30
         x, y = position  # Base position for the arrow
