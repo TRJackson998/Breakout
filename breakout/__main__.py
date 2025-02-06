@@ -195,13 +195,7 @@ class Game:
                     if self.launch_message in self.current_screen.elements:
                         self.current_screen.elements.remove(self.launch_message)
                         self.current_screen.elements.remove(self.up_arrow)
-            for element in self.current_screen.elements:
-                try:
-                    # Button elements on the screen run functions when clicked
-                    element.handle_event(event)
-                except AttributeError:
-                    # Groups of Sprites like bricks do not handle events
-                    pass
+            self.current_screen.handle_event(event)
 
     def update_game(self):
         """Handle the gameplay"""

@@ -50,6 +50,16 @@ class ScreenManager:
         for element in self.elements:
             element.draw(pygame_window)
 
+    def handle_event(self, event: pygame.event.Event):
+        """Send the event to all elements that might need to respond."""
+        for element in self.elements:
+            try:
+                # Button elements on the screen run functions when clicked
+                element.handle_event(event)
+            except AttributeError:
+                # Groups of Sprites like bricks do not handle events
+                pass
+
 
 class Button:
     """
