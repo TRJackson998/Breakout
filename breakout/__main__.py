@@ -63,18 +63,18 @@ class Game:
         # Start Screen
 
         Screens.START.add_element(
-            Button("START GAME", lambda: self.switch_screen(Screens.GAME), "top")
+            Button("START GAME", lambda: self.switch_screen(Screens.GAME), "middle")
         )
         Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
 
         # End Screen
         Screens.END.add_element(
-            Button("START GAME", lambda: self.switch_screen(Screens.GAME), "top")
+            Button("START GAME", lambda: self.switch_screen(Screens.GAME), "middle")
         )
         Screens.END.add_element(Button("QUIT", self.quit_game, "bottom"))
         Screens.END.add_element(self.scoreboard)
         Screens.END.add_element(self.name_imput)
-        Screens.END.add_element(Button("SUBMIT", self.save_score, "right"))
+        Screens.END.add_element(Button("SUBMIT", self.save_score, "top"))
 
     def switch_screen(self, screen: Screens):
         """
@@ -93,7 +93,7 @@ class Game:
         self.paused = False
         self.current_score = CurrentScore()
         Screens.GAME.elements.clear()
-        Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "top"))
+        Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "middle"))
         Screens.GAME.add_element(
             Button("END GAME", lambda: self.switch_screen(Screens.END), "bottom")
         )

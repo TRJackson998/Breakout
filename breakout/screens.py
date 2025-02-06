@@ -65,8 +65,8 @@ class Button:
     A class to create Button objects
 
     Buttons have text, run an 'on_click' function, and change color when a mouse hovers over them
-    Position is used to determine where to place the button. There will be two buttons
-    on each screen, so buttons can be in two positions: top or bottom.
+    Position is used to determine where to place the button. There are 2-3 buttons per screen,
+    with fixed positioning - top middle and bottom. Most screens have 'middle' and 'bottom' buttons.
     """
 
     # dynamically determine with screen size, never below 12pt font
@@ -76,7 +76,7 @@ class Button:
         self,
         text: str,
         on_click,
-        position: Literal["top", "bottom", "right"],
+        position: Literal["top", "middle", "bottom"],
         color: pygame.Color = pygame.Color("blue"),
         hover_color: pygame.Color = pygame.Color("gray"),
     ):
@@ -94,16 +94,17 @@ class Button:
         # dynamically place in middle of the screen
         x = (screen_size.width // 2) - (width // 2)
 
-        # if it's the top or bottom button
-        if position == "top":
+        if position == "middle":
             # two button's worth up from the bottom of the screen
             y = screen_size.height - ((height + pad) * 2)
         elif position == "bottom":
             # one button's worth up from the bottom of the screen
             y = screen_size.height - height - pad
-        else:
+        elif position == "top":
             x = screen_size.width // 2
             y = screen_size.width // 40 + height // 2
+        else:
+            raise ValueError("Not a valid button position")
 
         # make the rectangle
         self.rect = pygame.Rect(x, y, width, height)
