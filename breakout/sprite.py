@@ -48,18 +48,6 @@ class BreakoutSprite(Sprite, ABC):
         self.image = image
         self.rect = None
 
-    def move_left(self):
-        """Move the paddle to the left"""
-        new_x = self.x_position - self.speed
-        self.x_position = max(0, min(screen_size.width - self.rect.width, new_x))
-        self.rect.x = self.x_position
-
-    def move_right(self):
-        """Move the paddle to the right"""
-        new_x = self.x_position + self.speed
-        self.x_position = max(0, min(screen_size.width - self.rect.width, new_x))
-        self.rect.x = self.x_position
-
     def appear(self):
         """Make the sprite appear on the screen"""
         if self.image is not None:

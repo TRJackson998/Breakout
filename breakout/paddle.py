@@ -65,3 +65,15 @@ class Paddle(BreakoutSprite):
         """Reset the paddle to its initial position."""
         self.x_position, self.y_position = self.initial_position
         self.rect.topleft = self.initial_position
+
+    def move_left(self):
+        """Move the paddle to the left"""
+        new_x = self.x_position - self.speed
+        self.x_position = max(0, min(screen_size.width - self.rect.width, new_x))
+        self.rect.x = self.x_position
+
+    def move_right(self):
+        """Move the paddle to the right"""
+        new_x = self.x_position + self.speed
+        self.x_position = max(0, min(screen_size.width - self.rect.width, new_x))
+        self.rect.x = self.x_position
