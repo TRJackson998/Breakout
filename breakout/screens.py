@@ -16,7 +16,6 @@ Daniel Coreas
 Aimi Hanson
 Terrence Jackson
 Thomas Nugent
-
 """
 
 from dataclasses import dataclass
@@ -139,6 +138,10 @@ class Button:
         ):
             # run the function associated with this button
             self.on_click()
+
+    def update_button(self, text: str, on_click):
+        self.text = text
+        self.on_click = on_click
 
 
 class ArrowButton:

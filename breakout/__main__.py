@@ -141,24 +141,22 @@ class Game:
         self.paused = True
 
         # Find and remove the Pause button
-        for element in Screens.GAME.elements:
+        for idx, element in enumerate(Screens.GAME.elements):
             if isinstance(element, Button) and "pause" in element.text.lower():
-                Screens.GAME.elements.remove(element)
-
-        # Add a resume button
-        Screens.GAME.add_element(Button("RESUME GAME", self.resume_game, "top"))
+                Screens.GAME.elements[idx].update_button(
+                    "RESUME GAME", self.resume_game
+                )
+                break
 
     def resume_game(self):
         """Resume the game"""
         self.paused = False
 
         # Find and remove the Resume button
-        for element in Screens.GAME.elements:
+        for idx, element in enumerate(Screens.GAME.elements):
             if isinstance(element, Button) and "resume" in element.text.lower():
-                Screens.GAME.elements.remove(element)
-
-        # Add a pause button
-        Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "top"))
+                Screens.GAME.elements[idx].update_button("PAUSE GAME", self.pause_game)
+                break
 
     def quit_game(self):
         """Quit the game"""
