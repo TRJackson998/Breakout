@@ -3,7 +3,6 @@ Ball
 ====
 Defines the ball's movement, physics, and collision interactions with the paddle, bricks, and walls. 
 Tracks remaining lives and resets position when necessary.
-Subclass of BreakoutSprite
 
 Class
 -----
@@ -23,13 +22,12 @@ Thomas Nugent
 import random
 
 import pygame
-
-from breakout.sprite import BreakoutSprite
+from pygame.sprite import Sprite
 
 # pylint: disable=no-member
 
 
-class Ball(BreakoutSprite):
+class Ball(Sprite):
     """Ball class - Characteristics and behavior of the ball"""
 
     DEFAULT_RADIUS = 10
@@ -46,6 +44,12 @@ class Ball(BreakoutSprite):
         speed_x=None,
         speed_y=None,
     ):
+        super().__init__(*groups)
+        self.x_position = x_position
+        self.y_position = y_position
+        self.color = color
+        self.speed = self.DEFAULT_SPEED
+
         # Start with two lives and wait for the launch input
         self.lives = 2
         self.waiting_for_launch = True
@@ -57,17 +61,8 @@ class Ball(BreakoutSprite):
         self.radius = radius if radius is not None else self.DEFAULT_RADIUS
 
         # Create a surface for the ball and fill
-        image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
-        pygame.draw.circle(image, color, (self.radius, self.radius), self.radius)
-
-        super().__init__(
-            *groups,
-            x_position=x_position,
-            y_position=y_position,
-            color=color,
-            image=image,
-            speed=self.DEFAULT_SPEED,
-        )
+        self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, color, (self.radius, self.radius), self.radius)
 
         # Initialize movement speed
         self.speed_x = (
