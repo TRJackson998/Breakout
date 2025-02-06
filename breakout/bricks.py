@@ -20,14 +20,14 @@ Thomas Nugent
 """
 
 import pygame
+from pygame.sprite import Sprite
 
 from breakout import screen_size
-from breakout.sprite import BreakoutSprite
 
 # pylint: disable=no-member
 
 
-class Brick(BreakoutSprite):
+class Brick(Sprite):
     """Brick class - Characteristics for a single brick in the game."""
 
     WIDTH = 51
@@ -41,27 +41,26 @@ class Brick(BreakoutSprite):
         y_position=0,
         border_radius=5
     ):
+        super().__init__(
+            *groups,
+        )
+        self.x_position = x_position
+        self.y_position = y_position
+        self.color = color
 
         # Create the surface/rect for the brick
-        image = pygame.Surface(
-            (self.WIDTH, self.HEIGHT), pygame.SRCALPHA
-        )  # Create the image surface
+        self.image = pygame.Surface((self.WIDTH, self.HEIGHT), pygame.SRCALPHA)
+        # Initialize the rectangle for positioning
+        self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
+        # Fill the rectangle onto the image
         pygame.draw.rect(
-            image,  # Surface to draw on
+            self.image,  # Surface to draw on
             color,  # Color of the rectangle
             (0, 0, self.WIDTH, self.HEIGHT),  # Rectangle dimensions
             border_radius=border_radius,  # Rounded corners
         )
 
-        # Pass all required arguments to the superclass
-        super().__init__(
-            *groups,
-            x_position=x_position,
-            y_position=y_position,
-            color=color,
-            image=image,
-        )
-
+        # Set point value
         if self.color == pygame.Color("red"):
             self.points = 3
         elif self.color == pygame.Color("green"):
@@ -69,12 +68,9 @@ class Brick(BreakoutSprite):
         else:
             self.points = 1
 
-        # Initialize the rectangle for positioning
-        self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
-
     def hit(self) -> int:
         """Actions when bricks are hit by the ball"""
-        self.disappear()  # remove the brick from the game
+        self.kill()  # remove the brick from the game
         return self.points
 
     @classmethod

@@ -29,10 +29,10 @@ Thomas Nugent
 
 """
 
-from breakout.sprite import BreakoutSprite
+from pygame.sprite import Sprite
 
 
-class PowerUp(BreakoutSprite):
+class PowerUp(Sprite):
     """Handle power up execution"""
 
     def __init__(self, *groups, radius=0):
