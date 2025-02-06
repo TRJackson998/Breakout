@@ -37,7 +37,7 @@ class Ball(Sprite):
     def __init__(
         self,
         *groups,
-        color=pygame.Color(255, 255, 255),
+        color=pygame.Color("white"),
         x_position=250,
         y_position=390,
         radius=None,
