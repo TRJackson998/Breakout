@@ -31,7 +31,7 @@ from breakout import screen_size
 # pylint: disable=no-member
 
 
-class _Screen:
+class ScreenManager:
     """
     Class to contain various elements of a screen and draw them
     Theoretically should only be instantiated in this script
@@ -220,6 +220,6 @@ class Screens:
     Init the screens here, fill in elements later to avoid circular logic
     """
 
-    START = _Screen([])
-    GAME = _Screen([])
-    END = _Screen([])
+    START = ScreenManager([])
+    GAME = ScreenManager([])
+    END = ScreenManager([])
