@@ -28,14 +28,8 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.score import (
-    CurrentScore,
-    LaunchMessage,
-    LivesDisplay,
-    NameInput,
-    Scoreboard,
-)
-from breakout.screens import ArrowButton, Button, Screens
+from breakout.score import CurrentScore, LivesDisplay, NameInput, Scoreboard
+from breakout.screens import ArrowButton, Button, LaunchMessage, Screens
 
 # pylint: disable=no-member
 
