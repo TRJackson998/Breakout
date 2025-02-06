@@ -206,12 +206,14 @@ class Game:
     def update_game(self):
         """Handle the gameplay"""
         keys = pygame.key.get_pressed()
+
+        # Check for GUI arrow press for launching the ball.
         if self.up_arrow.pressed:
             self.ball.waiting_for_launch = False
             if self.launch_message in self.current_screen.elements:
                 self.current_screen.elements.remove(self.launch_message)
                 self.current_screen.elements.remove(self.up_arrow)
-        # Allow paddle movement only if the ball has been launched
+        # Allow paddle movement only if the ball has been launched.
         if not self.ball.waiting_for_launch:
             if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
                 self.paddle.move_left()
@@ -226,7 +228,17 @@ class Game:
         # Update the lives display with the current number of lives
         self.lives_display.update(self.ball.lives)
 
-        # Check if all the bricks are gone, and if so, reset the brick layout
+        # if the ball is waiting for launch,
+        # ensure that the launch message and the up arrow are on screen.
+        if self.ball.waiting_for_launch:
+            if self.launch_message not in self.current_screen.elements:
+                self.current_screen.add_element(self.launch_message)
+            if self.up_arrow not in self.current_screen.elements:
+                self.current_screen.add_element(self.up_arrow)
+            # Reset the arrow's pressed flag so it doesn't immediately re-launch the ball.
+            self.up_arrow.pressed = False
+
+        # Check if all the bricks are gone. If so, move to next level.
         if len(self.bricks.sprites()) == 0:
             self.next_level()
 
