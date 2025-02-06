@@ -140,11 +140,14 @@ class Button:
             self.on_click()
 
     def update_button(self, text: str, on_click):
+        "Change button display and functionality"
         self.text = text
         self.on_click = on_click
 
 
 class ArrowButton:
+    """A special button type in the shape of an arrow"""
+
     def __init__(
         self, direction: Literal["left", "right", "up"], position: tuple[int, int]
     ):
