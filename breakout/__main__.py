@@ -30,12 +30,12 @@ from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.score import (
     CurrentScore,
+    LaunchMessage,
+    LivesDisplay,
     NameInput,
     Scoreboard,
-    LivesDisplay,
-    LaunchMessage,
 )
-from breakout.screens import Button, Screens
+from breakout.screens import ArrowButton, Button, Screens
 
 # pylint: disable=no-member
 
@@ -48,7 +48,14 @@ class Game:
         self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
-        self.ball, self.paddle, self.bricks = None, None, None
+        (
+            self.ball,
+            self.paddle,
+            self.bricks,
+            self.right_arrow,
+            self.left_arrow,
+            self.up_arrow,
+        ) = (None, None, None, None, None, None)
         self.paused = False
         self.scoreboard = Scoreboard()
         self.current_score = CurrentScore()
@@ -116,6 +123,19 @@ class Game:
         self.launch_message = LaunchMessage()
         Screens.GAME.add_element(self.launch_message)
 
+        self.left_arrow = ArrowButton(
+            "left", (screen_size.width - 187, screen_size.height - 40)
+        )
+        Screens.GAME.add_element(self.left_arrow)
+        self.right_arrow = ArrowButton(
+            "right", (screen_size.width - 100, screen_size.height - 40)
+        )
+        Screens.GAME.add_element(self.right_arrow)
+        self.up_arrow = ArrowButton(
+            "up", (screen_size.width - 104, screen_size.height - 135)
+        )
+        Screens.GAME.add_element(self.up_arrow)
+
     def pause_game(self):
         """Pause the game"""
         self.paused = True
@@ -174,6 +194,7 @@ class Game:
                     self.ball.waiting_for_launch = False
                     if self.launch_message in self.current_screen.elements:
                         self.current_screen.elements.remove(self.launch_message)
+                        self.current_screen.elements.remove(self.up_arrow)
             for element in self.current_screen.elements:
                 try:
                     # Button elements on the screen run functions when clicked
@@ -185,11 +206,18 @@ class Game:
     def update_game(self):
         """Handle the gameplay"""
         keys = pygame.key.get_pressed()
-        # Allow paddle movement only if the ball has been launched
+
+        # Check for GUI arrow press for launching the ball.
+        if self.up_arrow.pressed:
+            self.ball.waiting_for_launch = False
+            if self.launch_message in self.current_screen.elements:
+                self.current_screen.elements.remove(self.launch_message)
+                self.current_screen.elements.remove(self.up_arrow)
+        # Allow paddle movement only if the ball has been launched.
         if not self.ball.waiting_for_launch:
-            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
                 self.paddle.move_left()
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
                 self.paddle.move_right()
 
         points = self.ball.move(
@@ -200,7 +228,17 @@ class Game:
         # Update the lives display with the current number of lives
         self.lives_display.update(self.ball.lives)
 
-        # Check if all the bricks are gone, and if so, reset the brick layout
+        # if the ball is waiting for launch,
+        # ensure that the launch message and the up arrow are on screen.
+        if self.ball.waiting_for_launch:
+            if self.launch_message not in self.current_screen.elements:
+                self.current_screen.add_element(self.launch_message)
+            if self.up_arrow not in self.current_screen.elements:
+                self.current_screen.add_element(self.up_arrow)
+            # Reset the arrow's pressed flag so it doesn't immediately re-launch the ball.
+            self.up_arrow.pressed = False
+
+        # Check if all the bricks are gone. If so, move to next level.
         if len(self.bricks.sprites()) == 0:
             self.next_level()
 
