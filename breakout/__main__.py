@@ -260,6 +260,17 @@ class GameState:
         self.paused = False
         self.game_over = False
 
+        self.color_choices = [
+            pygame.Color("red"),
+            pygame.Color("orange"),
+            pygame.Color("yellow"),
+            pygame.Color("green"),
+            pygame.Color("blue"),
+            pygame.Color("purple"),
+            pygame.Color("pink"),
+            pygame.Color("white"),
+        ]
+
     def update(self):
         """Update the game based on the current state"""
         if (
@@ -288,7 +299,9 @@ class GameState:
             PowerUp(
                 self.powerup_group,
                 power=lambda: Ball(
-                    self.ball_group, x_position=self.paddle.rect.center[0]
+                    self.ball_group,
+                    x_position=self.paddle.rect.center[0],
+                    color=random.choice(self.color_choices),
                 ),
             )
             self.next_powerup_time = current_time + random.randint(
