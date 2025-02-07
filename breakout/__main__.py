@@ -283,6 +283,7 @@ class GameState:
         if (
             self.current_screen == Screens.GAME
             and current_time >= self.next_powerup_time
+            and self.launched
         ):
             PowerUp(
                 self.powerup_group,
