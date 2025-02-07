@@ -101,6 +101,7 @@ class Ball(Sprite):
             if screen_state.lives > 1:
                 screen_state.lives -= 1  # Decrease lives
                 self.reset_position()  # Reset ball position
+                screen_state.launched = False
                 screen_state.paddle.reset_position()
             else:
                 screen_state.game_over = True  # End Game
@@ -180,11 +181,10 @@ class Ball(Sprite):
         """Reverse the vertical direction of the ball."""
         self.speed_y = -self.speed_y
 
-    def reset_position(self, wait=True):
+    def reset_position(self):
         """Resets ball to starting position and waits for launch."""
         self.x_position = 250  # Reset to the center of the screen
         self.y_position = 380
         self.speed_x = random.choice([-self.DEFAULT_SPEED, self.DEFAULT_SPEED])
         self.speed_y = -self.DEFAULT_SPEED  # Always start moving upward
-        self.waiting_for_launch = wait
         self.rect.topleft = (self.x_position, self.y_position)
