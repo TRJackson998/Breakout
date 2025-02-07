@@ -27,7 +27,7 @@ from pathlib import Path
 import pygame
 
 from breakout import screen_size
-from breakout.ball import Ball
+from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.powerups import PowerUp
@@ -295,14 +295,11 @@ class GameState:
             self.current_screen == Screens.GAME
             and current_time >= self.next_powerup_time
             and self.launched
+            and len(self.powerup_group.sprites()) == 0
         ):
             PowerUp(
                 self.powerup_group,
-                power=lambda: Ball(
-                    self.ball_group,
-                    x_position=self.paddle.rect.center[0],
-                    color=random.choice(self.color_choices),
-                ),
+                power=self.add_ball,
             )
             self.next_powerup_time = current_time + random.randint(
                 self.min_wait_time, self.max_wait_time
@@ -331,6 +328,16 @@ class GameState:
     def game_over_state(self):
         """Mark game as over."""
         self.game_over = True
+
+    def add_ball(self):
+        power_up = self.powerup_group.sprites()[0]
+        power_up_position: pygame.Rect = power_up.rect
+        Ball(
+            self.ball_group,
+            x_position=power_up_position.center[0],
+            color=random.choice(self.color_choices),
+            speed_y=BallConfig.DEFAULT_SPEED,
+        )
 
 
 if __name__ == "__main__":

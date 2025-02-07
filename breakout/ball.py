@@ -50,6 +50,7 @@ class Ball(Sprite):
         *groups,
         x_position=BallConfig.INITIAL_X,
         y_position=BallConfig.INITIAL_Y,
+        speed_y=-BallConfig.DEFAULT_SPEED,
         radius=BallConfig.radius,
         color=BallConfig.COLOR,
     ):
@@ -78,7 +79,7 @@ class Ball(Sprite):
         self.speed_x = random.choice(
             [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
         )
-        self.speed_y = -BallConfig.DEFAULT_SPEED
+        self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
     def move(self, screen_size, screen_state):

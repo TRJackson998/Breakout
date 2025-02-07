@@ -106,8 +106,8 @@ class PowerUp(Sprite):
             and self.rect.colliderect(paddle.rect)
             and self.can_collide_with_paddle
         ):
-            self.kill()
             self.collect()
+            self.kill()
 
         if self.rect.bottom < paddle.rect.top:
             self.can_collide_with_paddle = True
