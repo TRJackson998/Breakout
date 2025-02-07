@@ -81,7 +81,7 @@ class Ball(Sprite):
         self.speed_y = -BallConfig.DEFAULT_SPEED
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, screen_state) -> int:
+    def move(self, screen_size, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         # Update position
         self.update_position()
@@ -100,6 +100,7 @@ class Ball(Sprite):
                 screen_state.launched = False
                 screen_state.paddle.reset_position()
             else:
+                screen_state.lives -= 1
                 screen_state.game_over = True  # End Game
 
         return screen_state

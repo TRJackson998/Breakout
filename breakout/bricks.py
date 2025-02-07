@@ -63,7 +63,7 @@ class Brick(Sprite):
         # Set point value
         if self.color == pygame.Color("red"):
             self.points = 3
-        elif self.color == pygame.Color("green"):
+        elif self.color == pygame.Color("yellow"):
             self.points = 2
         else:
             self.points = 1
