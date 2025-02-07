@@ -38,16 +38,22 @@ class Game:
     """Class to handle and run the game"""
 
     def __init__(self):
-        self.state = GameState()
         self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
+
+        start_bg = pygame.image.load(r"breakout\textures\StartScreen2.jpg").convert()
+        # Assign the background image to the start screen.
+        Screens.START.background_image = start_bg
+
         self.left_arrow = ArrowButton("left")
         self.right_arrow = ArrowButton("right")
         self.up_arrow = ArrowButton("up")
         self.scoreboard = Scoreboard()
         self.name_imput = NameInput()
+
         self.setup_screens()
+        self.state = GameState()
 
     def setup_screens(self):
         """Add static button elements to START and END screens"""

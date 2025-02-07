@@ -36,16 +36,24 @@ class ScreenManager:
     Theoretically should only be instantiated in this script
     """
 
-    def __init__(self, elements: list):
+    def __init__(self, elements: list, background_image: pygame.Surface = None):
         self.elements = elements
+        self.background_image = background_image
 
     def add_element(self, element):
         """Give the Screen another element"""
         self.elements.append(element)
 
     def draw(self, pygame_window: pygame.Surface):
-        """Draw the Screen"""
-        pygame_window.fill(pygame.Color("black"))  # clear screen
+        """Draw the Screen."""
+        if self.background_image:
+            bg = pygame.transform.scale(self.background_image, pygame_window.get_size())
+            pygame_window.blit(bg, (0, 0))
+        else:
+            pygame_window.fill(
+                pygame.Color("black")
+            )  # clear screen if no background image
+
         for element in self.elements:
             element.draw(pygame_window)
 
