@@ -21,6 +21,7 @@ Thomas Nugent
 
 import sys
 from dataclasses import astuple
+from pathlib import Path
 
 import pygame
 
@@ -38,16 +39,30 @@ class Game:
     """Class to handle and run the game"""
 
     def __init__(self):
-        self.state = GameState()
         self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
+
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = Path(sys._MEIPASS)
+        except Exception:
+            base_path = Path(__file__).joinpath("..")
+        print(base_path)
+        start_bg = pygame.image.load(
+            base_path.joinpath("textures", "StartScreen2.jpg")
+        ).convert()
+        # Assign the background image to the start screen.
+        Screens.START.background_image = start_bg
+
         self.left_arrow = ArrowButton("left")
         self.right_arrow = ArrowButton("right")
         self.up_arrow = ArrowButton("up")
         self.scoreboard = Scoreboard()
         self.name_imput = NameInput()
+
         self.setup_screens()
+        self.state = GameState()
 
     def setup_screens(self):
         """Add static button elements to START and END screens"""
