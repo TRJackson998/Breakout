@@ -156,7 +156,10 @@ class Game:
                 self.quit_game()
             elif event.type == pygame.KEYDOWN:
                 # Launch the ball only when the up arrow is pressed
-                if event.key == pygame.K_UP:
+                if (
+                    self.up_arrow in self.state.current_screen.elements
+                    and event.key == pygame.K_UP
+                ):
                     self.state.launch_ball()
                     self.state.current_screen.elements.remove(self.up_arrow)
 
@@ -254,7 +257,6 @@ class GameState:
             return
 
         self.launched = True
-        self.ball.waiting_for_launch = False
         if self.launch_message in self.current_screen.elements:
             self.current_screen.elements.remove(self.launch_message)
 
