@@ -20,7 +20,6 @@ Thomas Nugent
 """
 
 import pygame
-
 from pygame.font import SysFont
 
 from breakout import screen_size
@@ -114,21 +113,21 @@ class NameInput:
         screen.blit(name_label, label_rect)
 
 
-class CurrentScore:
+class ScoreDisplay:
     """Tracks and displays the current score."""
 
     _font = SysFont("courier", max(screen_size.width // 30, 12))
 
-    def __init__(self):
-        self.current_score = 0
+    def __init__(self, score: int = 0):
+        self.current_score = score
 
-    def increase_score(self, score: int):
-        """Increase the current score by the given value."""
-        self.current_score += score
+    def update(self, score: int):
+        """Update the score display value"""
+        self.current_score = score
 
     def draw(self, screen: pygame.Surface):
         """Draw the current score on the screen."""
-        current_score_text = CurrentScore._font.render(
+        current_score_text = ScoreDisplay._font.render(
             f"Current Score: {self.current_score}", True, pygame.Color("white")
         )
         screen.blit(
@@ -155,51 +154,3 @@ class LivesDisplay:
             f"Lives: {self.lives}", True, pygame.Color("white")
         )
         screen.blit(lives_text, (0, screen_size.height - screen_size.height // 15 - 30))
-
-
-class LaunchMessage:
-    """Displays a launch message with blinking effect."""
-
-    _font = SysFont("courier", max(screen_size.width // 20, 14))
-
-    def __init__(
-        self,
-        text="Press ↑ to Launch!",
-        pos=None,
-        text_color=pygame.Color("white"),
-        background_color=pygame.Color("blue"),
-        blink_interval=1000,
-        padding=10,
-    ):
-        self.text = text
-        self.text_color = text_color
-        self.background_color = background_color
-        self.padding = padding
-        if pos is None:
-            self.pos = (screen_size.width // 2, screen_size.height // 2)
-        else:
-            self.pos = pos
-        self.blink_interval = blink_interval
-        self.last_toggle = pygame.time.get_ticks()
-        self.visible = True
-
-    def draw(self, screen: pygame.Surface):
-        """Draw the launch message on the screen."""
-        # Toggle visibility based on time elapsed for blinking effect.
-        now = pygame.time.get_ticks()
-        if now - self.last_toggle > self.blink_interval:
-            self.visible = not self.visible
-            self.last_toggle = now
-
-        if self.visible:
-            # Render the text.
-            rendered_text = LaunchMessage._font.render(self.text, True, self.text_color)
-            text_rect = rendered_text.get_rect(center=self.pos)
-
-            bg_rect = text_rect.inflate(self.padding * 2, self.padding * 2)
-
-            # Draw the background rectangle.
-            pygame.draw.rect(screen, self.background_color, bg_rect)
-
-            # Blit the text on top of the rectangle.
-            screen.blit(rendered_text, text_rect)
