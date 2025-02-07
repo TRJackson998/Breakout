@@ -89,7 +89,8 @@ class Ball(Sprite):
 
         # Handle collisions
         self.handle_wall_collisions(screen_size)
-        self.handle_paddle_collision(screen_state.paddle)
+        for paddle in screen_state.paddle_group.sprites():
+            self.handle_paddle_collision(paddle)
         points = self.handle_brick_collisions(screen_state.bricks)
         screen_state.score += points
 

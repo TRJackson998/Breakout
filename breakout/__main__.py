@@ -204,9 +204,11 @@ class Game:
         # Allow paddle and ball movement only if the ball has been launched.
         if self.state.launched:
             if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
-                self.state.paddle.move_left()
+                for paddle in self.state.paddle_group.sprites():
+                    paddle.move_left()
             if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
-                self.state.paddle.move_right()
+                for paddle in self.state.paddle_group.sprites():
+                    paddle.move_right()
 
             for ball in self.state.ball_group.sprites():
                 self.state = ball.move(screen_size, self.state)

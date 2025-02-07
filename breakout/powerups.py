@@ -85,7 +85,8 @@ class PowerUp(Sprite):
         """Handles movement and collision with walls, paddle, and bricks."""
         # Update position
         self.update_position()
-        self.handle_paddle_collision(screen_state.paddle)
+        for paddle in screen_state.paddle_group.sprites():
+            self.handle_paddle_collision(paddle)
         if self.y_position >= screen_size.height:
             self.kill()
 
