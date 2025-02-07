@@ -251,6 +251,7 @@ class GameState:
         self.score_display = ScoreDisplay(self.score)
         self.lives_display = LivesDisplay(self.lives)
         self.launch_message = LaunchMessage()
+        self.pause_message = LaunchMessage("Paused!", blink_interval=500)
         self.current_screen: ScreenManager = screen
 
         # Power-up spawn timing
@@ -325,10 +326,14 @@ class GameState:
     def pause_game(self):
         """Pause the game."""
         self.paused = True
+        if self.pause_message not in self.current_screen.elements:
+            self.current_screen.add_element(self.pause_message)
 
     def resume_game(self):
         """Resume the game."""
         self.paused = False
+        if self.pause_message in self.current_screen.elements:
+            self.current_screen.elements.remove(self.pause_message)
 
     def game_over_state(self):
         """Mark game as over."""
