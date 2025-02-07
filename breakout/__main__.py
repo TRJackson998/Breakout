@@ -19,6 +19,7 @@ Thomas Nugent
 
 """
 
+import random
 import sys
 from dataclasses import astuple
 from pathlib import Path
@@ -29,6 +30,7 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
+from breakout.powerups import PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
 
@@ -113,6 +115,7 @@ class Game:
         Screens.GAME.add_element(self.state.score_display)
         Screens.GAME.add_element(self.state.ball_group)
         Screens.GAME.add_element(self.state.paddle_group)
+        Screens.GAME.add_element(self.state.powerup_group)
         Screens.GAME.add_element(self.state.bricks)
         Screens.GAME.add_element(self.state.lives_display)
         Screens.GAME.add_element(self.state.launch_message)
@@ -200,7 +203,11 @@ class Game:
             if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
                 self.state.paddle.move_right()
 
-            self.state = self.state.ball.move(screen_size, self.state)
+            for ball in self.state.ball_group.sprites():
+                self.state = ball.move(screen_size, self.state)
+
+            for powerup in self.state.powerup_group.sprites():
+                powerup.move(self.state)
 
         # if the ball is waiting for launch, ensure the up arrow is on screen.
         if (
@@ -232,6 +239,7 @@ class GameState:
         self.lives = 3  # Default starting lives
         self.bricks = Brick.create_brick_layout(rows=6, cols=8)
         self.ball_group = pygame.sprite.Group()
+        self.powerup_group = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
         self.ball = Ball(self.ball_group)
         self.paddle = Paddle(self.paddle_group)
@@ -239,6 +247,13 @@ class GameState:
         self.lives_display = LivesDisplay(self.lives)
         self.launch_message = LaunchMessage()
         self.current_screen: ScreenManager = screen
+
+        # Power-up spawn timing
+        self.min_wait_time = 15 * 1000  # 15 seconds in milliseconds
+        self.max_wait_time = 90 * 1000  # 90 seconds in milliseconds
+        self.next_powerup_time = pygame.time.get_ticks() + random.randint(
+            self.min_wait_time, self.max_wait_time
+        )
 
         # State flags
         self.launched = False
@@ -262,6 +277,17 @@ class GameState:
             self.launch_ball()
             self.bricks = Brick.create_brick_layout(rows=6, cols=8)
             Screens.GAME.add_element(self.bricks)
+
+        # add a powerup at random intervals
+        current_time = pygame.time.get_ticks()
+        if (
+            self.current_screen == Screens.GAME
+            and current_time >= self.next_powerup_time
+        ):
+            PowerUp(self.powerup_group, power=lambda: Ball(self.ball_group))
+            self.next_powerup_time = current_time + random.randint(
+                self.min_wait_time, self.max_wait_time
+            )
 
         self.score_display.update(self.score)
         self.lives_display.update(self.lives)
