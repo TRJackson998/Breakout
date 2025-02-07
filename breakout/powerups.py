@@ -2,8 +2,6 @@
 Powerups
 ========
 Implement the Powerups object and related interactions/physics
-Power Ups are circles that move from the top of the screen down
-If the paddle collides with a power up, the player receives that power
 Subclass of BreakoutSprite
 
 Powers
@@ -29,19 +27,16 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Last Edited
------------
-1.20.25
 """
 
-from breakout.sprite import BreakoutSprite
+from pygame.sprite import Sprite
 
 
-class PowerUp(BreakoutSprite):
+class PowerUp(Sprite):
+    """Handle power up execution"""
+
     def __init__(self, *groups, radius=0):
-        super().__init__(*groups)
+        super().__init__(
+            *groups,
+        )
         self.radius = radius

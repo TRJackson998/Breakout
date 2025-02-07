@@ -1,7 +1,8 @@
 """
 Screens
 =======
-Classes related to building the various screens of our game
+Defines and manages the different game screens, including the 
+start, gameplay, and end screens. Handles button interactions and visual updates.
 
 Class
 -----
@@ -15,14 +16,6 @@ Daniel Coreas
 Aimi Hanson
 Terrence Jackson
 Thomas Nugent
-
-Developer
----------
-Terrence
-
-Created
--------
-1.25.25
 """
 
 from dataclasses import dataclass
@@ -30,13 +23,14 @@ from typing import Literal
 
 import pygame
 from pygame.color import Color
-from pygame.font import Font, SysFont
-from pygame.surface import Surface
+from pygame.font import SysFont
 
 from breakout import screen_size
 
+# pylint: disable=no-member
 
-class _Screen:
+
+class ScreenManager:
     """
     Class to contain various elements of a screen and draw them
     Theoretically should only be instantiated in this script
@@ -49,11 +43,21 @@ class _Screen:
         """Give the Screen another element"""
         self.elements.append(element)
 
-    def draw(self, pygame_window: Surface):
+    def draw(self, pygame_window: pygame.Surface):
         """Draw the Screen"""
-        pygame_window.fill(Color("black"))  # clear screen
+        pygame_window.fill(pygame.Color("black"))  # clear screen
         for element in self.elements:
             element.draw(pygame_window)
+
+    def handle_event(self, event: pygame.event.Event):
+        """Send the event to all elements that might need to respond."""
+        for element in self.elements:
+            try:
+                # Button elements on the screen run functions when clicked
+                element.handle_event(event)
+            except AttributeError:
+                # Groups of Sprites like bricks do not handle events
+                pass
 
 
 class Button:
@@ -61,8 +65,8 @@ class Button:
     A class to create Button objects
 
     Buttons have text, run an 'on_click' function, and change color when a mouse hovers over them
-    Position is used to determine where to place the button. There will be two buttons
-    on each screen, so buttons can be in two positions: top or bottom.
+    Position is used to determine where to place the button. There are 2-3 buttons per screen,
+    with fixed positioning - top middle and bottom. Most screens have 'middle' and 'bottom' buttons.
     """
 
     # dynamically determine with screen size, never below 12pt font
@@ -72,9 +76,9 @@ class Button:
         self,
         text: str,
         on_click,
-        position: Literal["top", "bottom", "right"],
-        color: Color = Color("blue"),
-        hover_color: Color = Color("gray"),
+        position: Literal["top", "middle", "bottom"],
+        color: pygame.Color = pygame.Color("blue"),
+        hover_color: pygame.Color = pygame.Color("gray"),
     ):
         self.text = text
         self.on_click = on_click
@@ -90,21 +94,22 @@ class Button:
         # dynamically place in middle of the screen
         x = (screen_size.width // 2) - (width // 2)
 
-        # if it's the top or bottom button
-        if position == "top":
+        if position == "middle":
             # two button's worth up from the bottom of the screen
             y = screen_size.height - ((height + pad) * 2)
         elif position == "bottom":
             # one button's worth up from the bottom of the screen
             y = screen_size.height - height - pad
-        else:
+        elif position == "top":
             x = screen_size.width // 2
             y = screen_size.width // 40 + height // 2
+        else:
+            raise ValueError("Not a valid button position")
 
         # make the rectangle
         self.rect = pygame.Rect(x, y, width, height)
 
-    def draw(self, screen: pygame.surface.Surface):
+    def draw(self, screen: pygame.Surface):
         """
         Screen elements need to be able to draw themselves
         Write the button text using the font
@@ -135,6 +140,142 @@ class Button:
             # run the function associated with this button
             self.on_click()
 
+    def update_button(self, text: str, on_click):
+        "Change button display and functionality"
+        self.text = text
+        self.on_click = on_click
+
+
+class ArrowButton:
+    """A special button type in the shape of an arrow"""
+
+    def __init__(self, direction: Literal["left", "right", "up"]):
+        self.pressed = False
+        self.color: Color = Color("grey")
+        self.hover_color: Color = Color("white")
+        width = 40
+        height = 30
+
+        if direction == "right":
+            x, y = (screen_size.width - 100, screen_size.height - 40)
+            self.arrow_points = [
+                (x, y - height // 4),  # Left base top
+                (x + width, y - height // 4),  # Right base top
+                (x + width, y - height // 2),  # Bottom corner of arrowhead
+                (x + width * 2, y),  # Arrowhead tip
+                (x + width, y + height // 2),  # Top corner of arrowhead
+                (x + width, y + height // 4),  # Right base bottom
+                (x, y + height // 4),  # Left base bottom
+            ]
+        elif direction == "left":
+            x, y = (screen_size.width - 187, screen_size.height - 40)
+            self.arrow_points = [
+                (x + width * 2, y - height // 4),
+                (x + width, y - height // 4),
+                (x + width, y - height // 2),
+                (x, y),
+                (x + width, y + height // 2),
+                (x + width, y + height // 4),
+                (x + width * 2, y + height // 4),
+            ]
+        elif direction == "up":
+            x, y = (screen_size.width - 104, screen_size.height - 135)
+            height = 40
+            width = 30
+            self.arrow_points = [
+                (x - width // 4, y + height * 2),  # Bottom left of base
+                (x - width // 4, y + height),  # Top left of base
+                (x - width // 2, y + height),  # Left corner of arrowhead
+                (x, y),  # Arrowhead tip
+                (x + width // 2, y + height),  # Right corner of arrowhead
+                (x + width // 4, y + height),  # Top right of base
+                (x + width // 4, y + height * 2),  # Bottom right of base
+            ]
+
+        center_x = sum(point[0] for point in self.arrow_points) // 7
+        center_y = sum(point[1] for point in self.arrow_points) // 7
+        top = center_x - width // 1.5
+        left = center_y - height // 1.5
+        self.rect = pygame.Rect(
+            top, left, width * 1.5, height * 1.5
+        )  # Rough bounding box
+
+        self.direction = direction
+
+    def draw(self, screen: pygame.surface.Surface):
+        """
+        Screen elements need to be able to draw themselves
+        Write the button text using the font
+        Blit the rectangle on the screen
+        """
+        # Determine if mouse is hovering over this button
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            # mouse is hovering, draw button in hover color, text in color
+            pygame.draw.polygon(screen, self.hover_color, self.arrow_points)
+        else:
+            # mouse is not hovering, draw button in color, render text in hover color
+            pygame.draw.polygon(screen, self.color, self.arrow_points)
+
+    def handle_event(self, event: pygame.event.Event):
+        """If this button is clicked, run the function associated with it"""
+        if (
+            event.type == pygame.MOUSEBUTTONDOWN  # a mouse has been clicked
+            and event.button == 1  # the left mouse button has been clicked
+            and self.rect.collidepoint(event.pos)  # the event collided with this button
+        ):
+            self.pressed = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.pressed = False
+
+
+class LaunchMessage:
+    """Displays a launch message with blinking effect."""
+
+    _font = SysFont("courier", max(screen_size.width // 20, 14))
+
+    def __init__(
+        self,
+        text="Press ↑ to Launch!",
+        pos=None,
+        text_color=pygame.Color("white"),
+        background_color=pygame.Color("blue"),
+        blink_interval=1000,
+        padding=10,
+    ):
+        self.text = text
+        self.text_color = text_color
+        self.background_color = background_color
+        self.padding = padding
+        if pos is None:
+            self.pos = (screen_size.width // 2, screen_size.height // 2)
+        else:
+            self.pos = pos
+        self.blink_interval = blink_interval
+        self.last_toggle = pygame.time.get_ticks()
+        self.visible = True
+
+    def draw(self, screen: pygame.Surface):
+        """Draw the launch message on the screen."""
+        # Toggle visibility based on time elapsed for blinking effect.
+        now = pygame.time.get_ticks()
+        if now - self.last_toggle > self.blink_interval:
+            self.visible = not self.visible
+            self.last_toggle = now
+
+        if self.visible:
+            # Render the text.
+            rendered_text = LaunchMessage._font.render(self.text, True, self.text_color)
+            text_rect = rendered_text.get_rect(center=self.pos)
+
+            bg_rect = text_rect.inflate(self.padding * 2, self.padding * 2)
+
+            # Draw the background rectangle.
+            pygame.draw.rect(screen, self.background_color, bg_rect)
+
+            # Blit the text on top of the rectangle.
+            screen.blit(rendered_text, text_rect)
+
 
 @dataclass
 class Screens:
@@ -144,6 +285,6 @@ class Screens:
     Init the screens here, fill in elements later to avoid circular logic
     """
 
-    START = _Screen([])
-    GAME = _Screen([])
-    END = _Screen([])
+    START = ScreenManager([])
+    GAME = ScreenManager([])
+    END = ScreenManager([])

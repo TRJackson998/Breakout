@@ -1,8 +1,8 @@
 """
 Ball
 ====
-Implement the Ball object and related interactions/physics
-Subclass of BreakoutSprite
+Defines the ball's movement, physics, and collision interactions with the paddle, bricks, and walls. 
+Tracks remaining lives and resets position when necessary.
 
 Class
 -----
@@ -17,18 +17,13 @@ Aimi Hanson
 Terrence Jackson
 Thomas Nugent
 
-Developer
----------
-Terrence
-
-Last Edited
------------
-1.20.25
 """
 
 import random
 import pygame
 from pygame.sprite import Sprite
+
+from breakout.paddle import Paddle
 
 # pylint: disable=no-member
 
@@ -46,13 +41,19 @@ class BallConfig:
 class Ball(Sprite):
     """Ball class - Characteristics and behavior of the ball."""
 
-    def __init__(self, *groups, color=pygame.Color(255, 255, 255)):
+    def __init__(self, *groups, color=pygame.Color("white")):
         """
         Initialize the ball.
         Args:
             groups: Sprite groups to add the ball to.
             color: The color of the ball.
         """
+        super().__init__(*groups)
+        self.x_position = x_position
+        self.y_position = y_position
+        self.color = color
+        self.speed = self.DEFAULT_SPEED
+
         # Initialize lives and state
         self.lives = 2
         self.waiting_for_launch = True
@@ -93,7 +94,7 @@ class Ball(Sprite):
         self.speed_y = speed_y or -BallConfig.DEFAULT_SPEED
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, paddle, brick_group, switch_screen, Screens) -> int:
+    def move(self, screen_size, screen_state) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
         if self.waiting_for_launch:
             return 0
@@ -133,10 +134,21 @@ class Ball(Sprite):
         ):
             self.bounce_x()
         if self.y_position <= 0:
-            self.bounce_y()
+            self.bounce_y()  # Reverse vertical movement
 
-    def handle_paddle_collision(self, paddle):
-        """Handle collision with the paddle."""
+        # Handle collision with the bottom of the screen (Lose a life or End Game)
+        if self.y_position >= screen_size.height:
+            if screen_state.lives > 1:
+                screen_state.lives -= 1  # Decrease lives
+                self.reset_position()  # Reset ball position
+                screen_state.launched = False
+                screen_state.paddle.reset_position()
+            else:
+                screen_state.game_over = True  # End Game
+                return screen_state  # Stop further movement processing
+
+        paddle: Paddle = screen_state.paddle
+        # Handle collisions with the paddle
         if (
             self.speed_y > 0
             and self.rect.colliderect(paddle.rect)
@@ -166,7 +178,7 @@ class Ball(Sprite):
     def handle_brick_collisions(self, brick_group: pygame.sprite.Group) -> int:
         """Handle collisions with bricks and return points scored."""
         points = 0
-        hit_bricks = pygame.sprite.spritecollide(self, brick_group, False)
+        hit_bricks = pygame.sprite.spritecollide(self, screen_state.bricks, False)
         reversed_x = False
         reversed_y = False
 
@@ -189,7 +201,12 @@ class Ball(Sprite):
 
             points += brick.hit()
 
-        return points
+        # Update rect/collision area position
+        self.rect.x = self.x_position
+        self.rect.y = self.y_position
+
+        screen_state.score += points
+        return screen_state
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""
@@ -199,7 +216,7 @@ class Ball(Sprite):
         """Reverse the vertical direction of the ball."""
         self.speed_y = -self.speed_y
 
-    def reset_position(self, wait=True):
+    def reset_position(self):
         """Resets ball to starting position and waits for launch."""
         self.configure_ball(
             x_position=BallConfig.INITIAL_X,
