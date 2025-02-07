@@ -47,7 +47,7 @@ class Scoreboard:
             formatted_score = f"{score:,}"  # Format score with commas
             entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
             score_text = Scoreboard._font.render(entry_text, True, self.text_color)
-            screen.blit(score_text, (screen_size.width // 4, 120 + i * 30))
+            screen.blit(score_text, (screen_size.width // 5, 110 + i * 30))
 
         for i in range(10 - len(self.top_scores)):
             score = -1
@@ -57,7 +57,7 @@ class Scoreboard:
             score_text = Scoreboard._font.render(entry_text, True, self.text_color)
             screen.blit(
                 score_text,
-                (screen_size.width // 4, 120 + (i + len(self.top_scores)) * 30),
+                (screen_size.width // 5, 110 + (i + len(self.top_scores)) * 30),
             )
 
 
