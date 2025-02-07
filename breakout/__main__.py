@@ -180,6 +180,11 @@ class Game:
                 ):
                     self.state.launch_ball()
                     self.state.current_screen.elements.remove(self.up_arrow)
+                if event.key == pygame.K_SPACE:
+                    if self.state.paused:
+                        self.resume_game()
+                    else:
+                        self.pause_game()
 
             self.state.current_screen.handle_event(event)
 
