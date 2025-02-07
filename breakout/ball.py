@@ -94,14 +94,20 @@ class Ball(Sprite):
 
         # Handle bottom screen collision (losing a life or ending the game)
         if self.y_position >= screen_size.height:
-            if screen_state.lives > 1:
-                screen_state.lives -= 1
-                self.reset_position()
-                screen_state.launched = False
-                screen_state.paddle.reset_position()
+            group = self.groups()[0]
+            if len(group.sprites()) > 1:
+                # There's more balls, losing this one doesn't lose a life
+                self.kill()
             else:
-                screen_state.lives -= 1
-                screen_state.game_over = True  # End Game
+                # this is the only ball on the screen
+                if screen_state.lives > 1:
+                    screen_state.lives -= 1
+                    self.reset_position()
+                    screen_state.launched = False
+                    screen_state.paddle.reset_position()
+                else:
+                    screen_state.lives -= 1
+                    screen_state.game_over = True  # End Game
 
         return screen_state
 
