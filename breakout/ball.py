@@ -100,6 +100,7 @@ class Ball(Sprite):
                 screen_state.launched = False
                 screen_state.paddle.reset_position()
             else:
+                screen_state.lives -= 1
                 screen_state.game_over = True  # End Game
 
         return screen_state

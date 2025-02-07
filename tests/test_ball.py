@@ -5,6 +5,7 @@ from breakout.ball import Ball
 from breakout.paddle import Paddle
 from breakout.bricks import Brick
 from breakout import screen_size
+from breakout.__main__ import GameState
 
 
 def test_ball_initialization():
@@ -40,6 +41,20 @@ def test_ball_wall_collision():
     ), f"Expected ball to bounce left, but we got speed_x={ball.speed_x}"
 
 
+def test_ball_ceiling_collision():
+    """Test ball bounces off the ceiling correctly."""
+    ball = Ball()
+
+    # Simulate hitting the ceiling
+    ball.y_position = 0  # Place ball at the ceiling
+    ball.speed_y = -2.5  # Ball moving upward
+    ball.handle_wall_collisions(screen_size)
+
+    assert (
+        ball.speed_y > 0
+    ), f"Expected ball to bounce downward, but got speed_y={ball.speed_y}"
+
+
 def test_ball_paddle_collision():
     """Test ball bounces correctly when hitting the paddle."""
     paddle = Paddle()
@@ -65,3 +80,28 @@ def test_ball_brick_collision():
     assert (
         len(brick_group) == 0
     ), f"Expected brick to be removed, but {len(brick_group)} bricks remain"
+
+
+def test_ball_life_lost():
+    """Test that the player loses a life when the ball falls below the screen."""
+    state = GameState()
+    ball = state.ball
+
+    assert state.lives == 3, f"Expected initial lives to be 3, but got {state.lives}"
+
+    # Simulate ball falling below the screen (Lose 1 life)
+    ball.y_position = screen_size.height + 10
+    state = ball.move(screen_size, state)
+    assert state.lives == 2, f"Expected lives to decrease to 2, but got {state.lives}"
+
+    # Simulate another life lost
+    ball.y_position = screen_size.height + 10
+    state = ball.move(screen_size, state)
+    assert state.lives == 1, f"Expected lives to decrease to 1, but got {state.lives}"
+
+    # Lose final life
+    ball.y_position = screen_size.height + 10
+    state = ball.move(screen_size, state)
+
+    assert state.lives == 0, f"Expected lives to be 0, but got {state.lives}"
+    assert state.game_over is True, "Expected game_over to be True when lives reach 0"
