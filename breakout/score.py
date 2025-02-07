@@ -113,21 +113,21 @@ class NameInput:
         screen.blit(name_label, label_rect)
 
 
-class CurrentScore:
+class ScoreDisplay:
     """Tracks and displays the current score."""
 
     _font = SysFont("courier", max(screen_size.width // 30, 12))
 
-    def __init__(self):
-        self.current_score = 0
+    def __init__(self, score: int = 0):
+        self.current_score = score
 
-    def increase_score(self, score: int):
-        """Increase the current score by the given value."""
-        self.current_score += score
+    def update(self, score: int):
+        """Update the score display value"""
+        self.current_score = score
 
     def draw(self, screen: pygame.Surface):
         """Draw the current score on the screen."""
-        current_score_text = CurrentScore._font.render(
+        current_score_text = ScoreDisplay._font.render(
             f"Current Score: {self.current_score}", True, pygame.Color("white")
         )
         screen.blit(

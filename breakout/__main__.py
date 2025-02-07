@@ -28,7 +28,7 @@ from breakout import screen_size
 from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.score import CurrentScore, LivesDisplay, NameInput, Scoreboard
+from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
 
 # pylint: disable=no-member
@@ -95,7 +95,7 @@ class Game:
         Screens.GAME.add_element(self.up_arrow)
 
         # Game state objects
-        Screens.GAME.add_element(self.state.score)
+        Screens.GAME.add_element(self.state.score_display)
         Screens.GAME.add_element(self.state.ball_group)
         Screens.GAME.add_element(self.state.paddle_group)
         Screens.GAME.add_element(self.state.bricks)
@@ -139,7 +139,7 @@ class Game:
         """Saves the current score to the leaderboard and resets it."""
         if not self.name_imput.name:
             return
-        self.scoreboard.top_scores[self.state.score.current_score] = (
+        self.scoreboard.top_scores[self.state.score] = (
             self.name_imput.name.upper()
         )  # update this player's top score
         self.scoreboard.top_scores = dict(
@@ -208,13 +208,14 @@ class GameState:
 
     def __init__(self, screen: ScreenManager = Screens.START):
         """Reset the game state for a new game."""
-        self.score = CurrentScore()
+        self.score = 0  # Default starting score
         self.lives = 3  # Default starting lives
         self.bricks = Brick.create_brick_layout(rows=6, cols=8)
         self.ball_group = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
         self.ball = Ball(self.ball_group)
         self.paddle = Paddle(self.paddle_group)
+        self.score_display = ScoreDisplay(self.score)
         self.lives_display = LivesDisplay(self.lives)
         self.launch_message = LaunchMessage()
         self.current_screen: ScreenManager = screen
@@ -241,6 +242,9 @@ class GameState:
             self.bricks = Brick.create_brick_layout(rows=6, cols=8)
             Screens.GAME.add_element(self.bricks)
 
+        self.score_display.update(self.score)
+        self.lives_display.update(self.lives)
+
     def launch_ball(self):
         """Trigger ball launch."""
         if self.launched:
@@ -250,11 +254,6 @@ class GameState:
         self.ball.waiting_for_launch = False
         if self.launch_message in self.current_screen.elements:
             self.current_screen.elements.remove(self.launch_message)
-
-    def lose_life(self):
-        """Lose a life and update the display"""
-        self.lives -= 1
-        self.lives_display.update(self.lives)
 
     def pause_game(self):
         """Pause the game."""

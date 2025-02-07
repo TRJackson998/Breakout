@@ -99,7 +99,7 @@ class Ball(Sprite):
         # Handle collision with the bottom of the screen (Lose a life or End Game)
         if self.y_position >= screen_size.height:
             if screen_state.lives > 1:
-                screen_state.lose_life()  # Decrease lives
+                screen_state.lives -= 1  # Decrease lives
                 self.reset_position()  # Reset ball position
                 screen_state.paddle.reset_position()
             else:
@@ -169,7 +169,7 @@ class Ball(Sprite):
         self.rect.x = self.x_position
         self.rect.y = self.y_position
 
-        screen_state.score.increase_score(points)
+        screen_state.score += points
         return screen_state
 
     def bounce_x(self):
