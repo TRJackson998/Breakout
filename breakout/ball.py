@@ -24,6 +24,8 @@ import random
 import pygame
 from pygame.sprite import Sprite
 
+from breakout.paddle import Paddle
+
 # pylint: disable=no-member
 
 
@@ -75,13 +77,9 @@ class Ball(Sprite):
         # Initialize the collision detection rectangle
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, paddle, brick_group, switch_screen, Screens) -> int:
+    def move(self, screen_size, screen_state) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
         points = 0
-
-        # If waiting for launch, do nothing.
-        if self.waiting_for_launch:
-            return points
 
         # Update the ball position
         self.x_position += self.speed_x
@@ -100,14 +98,15 @@ class Ball(Sprite):
 
         # Handle collision with the bottom of the screen (Lose a life or End Game)
         if self.y_position >= screen_size.height:
-            if self.lives > 1:
-                self.lives -= 1  # Decrease lives
+            if screen_state.lives > 1:
+                screen_state.lose_life()  # Decrease lives
                 self.reset_position()  # Reset ball position
-                paddle.reset_position()
+                screen_state.paddle.reset_position()
             else:
-                switch_screen(Screens.END)  # End Game
-                return points  # Stop further movement processing
+                screen_state.game_over = True  # End Game
+                return screen_state  # Stop further movement processing
 
+        paddle: Paddle = screen_state.paddle
         # Handle collisions with the paddle
         if (
             self.speed_y > 0
@@ -140,7 +139,7 @@ class Ball(Sprite):
             self.can_collide_with_paddle = True
 
         # Handle collisions with bricks
-        hit_bricks = pygame.sprite.spritecollide(self, brick_group, False)
+        hit_bricks = pygame.sprite.spritecollide(self, screen_state.bricks, False)
         reversed_x = False
         reversed_y = False
 
@@ -170,7 +169,8 @@ class Ball(Sprite):
         self.rect.x = self.x_position
         self.rect.y = self.y_position
 
-        return points
+        screen_state.score.increase_score(points)
+        return screen_state
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""

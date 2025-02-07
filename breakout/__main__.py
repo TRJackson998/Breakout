@@ -29,7 +29,7 @@ from breakout.ball import Ball
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.score import CurrentScore, LivesDisplay, NameInput, Scoreboard
-from breakout.screens import ArrowButton, Button, LaunchMessage, Screens
+from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
 
 # pylint: disable=no-member
 
@@ -38,25 +38,16 @@ class Game:
     """Class to handle and run the game"""
 
     def __init__(self):
-        self.current_screen = Screens.START
+        self.state = GameState()
         self.window = pygame.display.set_mode(astuple(screen_size), pygame.RESIZABLE)
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
-        (
-            self.ball,
-            self.paddle,
-            self.bricks,
-            self.right_arrow,
-            self.left_arrow,
-            self.up_arrow,
-        ) = (None, None, None, None, None, None)
-        self.paused = False
+        self.left_arrow = ArrowButton("left")
+        self.right_arrow = ArrowButton("right")
+        self.up_arrow = ArrowButton("up")
         self.scoreboard = Scoreboard()
-        self.current_score = CurrentScore()
         self.name_imput = NameInput()
         self.setup_screens()
-        self.lives_display = None
-        self.launch_message = None
 
     def setup_screens(self):
         """Add static button elements to START and END screens"""
@@ -81,7 +72,7 @@ class Game:
         Switch from current screen
         If the new screen is the game screen, start a new game
         """
-        self.current_screen = screen
+        self.state.current_screen = screen
         if screen == Screens.GAME:
             self.start_new_game()
 
@@ -90,45 +81,35 @@ class Game:
         Start a new game
         Create the paddle, ball and brick elements
         """
-        self.paused = False
-        self.current_score = CurrentScore()
+        self.state = GameState(Screens.GAME)  # fresh game state
+        self.up_arrow = ArrowButton("up")  # fresh up arrow
         Screens.GAME.elements.clear()
+
+        # Buttons
         Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "middle"))
         Screens.GAME.add_element(
             Button("END GAME", lambda: self.switch_screen(Screens.END), "bottom")
         )
-        Screens.GAME.add_element(self.current_score)
-
-        ball_group = pygame.sprite.Group()
-        paddle_group = pygame.sprite.Group()
-        brick_group = Brick.create_brick_layout(rows=6, cols=8)
-
-        Screens.GAME.add_element(ball_group)
-        Screens.GAME.add_element(paddle_group)
-        Screens.GAME.add_element(brick_group)
-
-        self.ball = Ball(ball_group)
-        self.paddle = Paddle(paddle_group)
-        self.bricks = brick_group
-
-        # Create and add the LivesDisplay & Launch element.
-        self.lives_display = LivesDisplay(self.ball.lives)
-        Screens.GAME.add_element(self.lives_display)
-        self.launch_message = LaunchMessage()
-        Screens.GAME.add_element(self.launch_message)
-
-        self.left_arrow = ArrowButton("left")
         Screens.GAME.add_element(self.left_arrow)
-        self.right_arrow = ArrowButton("right")
         Screens.GAME.add_element(self.right_arrow)
-        self.up_arrow = ArrowButton("up")
         Screens.GAME.add_element(self.up_arrow)
+
+        # Game state objects
+        Screens.GAME.add_element(self.state.score)
+        Screens.GAME.add_element(self.state.ball_group)
+        Screens.GAME.add_element(self.state.paddle_group)
+        Screens.GAME.add_element(self.state.bricks)
+        Screens.GAME.add_element(self.state.lives_display)
+        Screens.GAME.add_element(self.state.launch_message)
 
     def pause_game(self):
         """Pause the game"""
-        self.paused = True
+        if self.state.paused:
+            return
 
-        # Find and remove the Pause button
+        self.state.pause_game()
+
+        # Change from pause to resume button
         for idx, element in enumerate(Screens.GAME.elements):
             if isinstance(element, Button) and "pause" in element.text.lower():
                 Screens.GAME.elements[idx].update_button(
@@ -138,7 +119,10 @@ class Game:
 
     def resume_game(self):
         """Resume the game"""
-        self.paused = False
+        if not self.state.paused:
+            return
+
+        self.state.resume_game()
 
         # Find and remove the Resume button
         for idx, element in enumerate(Screens.GAME.elements):
@@ -155,7 +139,7 @@ class Game:
         """Saves the current score to the leaderboard and resets it."""
         if not self.name_imput.name:
             return
-        self.scoreboard.top_scores[self.current_score.current_score] = (
+        self.scoreboard.top_scores[self.state.score.current_score] = (
             self.name_imput.name.upper()
         )  # update this player's top score
         self.scoreboard.top_scores = dict(
@@ -172,73 +156,117 @@ class Game:
                 self.quit_game()
             elif event.type == pygame.KEYDOWN:
                 # Launch the ball only when the up arrow is pressed
-                if (
-                    event.key == pygame.K_UP
-                    and self.ball is not None
-                    and self.ball.waiting_for_launch
-                ):
-                    self.ball.waiting_for_launch = False
-                    if self.launch_message in self.current_screen.elements:
-                        self.current_screen.elements.remove(self.launch_message)
-                        self.current_screen.elements.remove(self.up_arrow)
-            self.current_screen.handle_event(event)
+                if event.key == pygame.K_UP:
+                    self.state.launch_ball()
+                    self.state.current_screen.elements.remove(self.up_arrow)
+
+            self.state.current_screen.handle_event(event)
 
     def update_game(self):
         """Handle the gameplay"""
+        if self.state.paused or self.state.game_over:
+            return
+
         keys = pygame.key.get_pressed()
 
         # Check for GUI arrow press for launching the ball.
         if self.up_arrow.pressed:
-            self.ball.waiting_for_launch = False
-            if self.launch_message in self.current_screen.elements:
-                self.current_screen.elements.remove(self.launch_message)
-                self.current_screen.elements.remove(self.up_arrow)
+            self.state.launch_ball()
+            if self.up_arrow in self.state.current_screen.elements:
+                self.state.current_screen.elements.remove(self.up_arrow)
+
         # Allow paddle movement only if the ball has been launched.
-        if not self.ball.waiting_for_launch:
+        if self.state.launched:
             if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
-                self.paddle.move_left()
+                self.state.paddle.move_left()
             if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
-                self.paddle.move_right()
+                self.state.paddle.move_right()
 
-        points = self.ball.move(
-            screen_size, self.paddle, self.bricks, self.switch_screen, Screens
-        )
-        self.current_score.increase_score(points)
-
-        # Update the lives display with the current number of lives
-        self.lives_display.update(self.ball.lives)
+            self.state = self.state.ball.move(screen_size, self.state)
 
         # if the ball is waiting for launch,
         # ensure that the launch message and the up arrow are on screen.
-        if self.ball.waiting_for_launch:
-            if self.launch_message not in self.current_screen.elements:
-                self.current_screen.add_element(self.launch_message)
-            if self.up_arrow not in self.current_screen.elements:
-                self.current_screen.add_element(self.up_arrow)
-            # Reset the arrow's pressed flag so it doesn't immediately re-launch the ball.
-            self.up_arrow.pressed = False
-
-        # Check if all the bricks are gone. If so, move to next level.
-        if len(self.bricks.sprites()) == 0:
-            self.next_level()
-
-    def next_level(self):
-        """Reset the brick layout to continue the game play."""
-        self.ball.reset_position(wait=False)
-        # Create a new brick layout.
-        self.bricks = Brick.create_brick_layout(rows=6, cols=8)
-        # Add to screen
-        Screens.GAME.add_element(self.bricks)
+        if not self.state.launched and self.state.current_screen == Screens.GAME:
+            if self.up_arrow not in self.state.current_screen.elements:
+                self.up_arrow = ArrowButton("up")
+                self.state.current_screen.add_element(self.up_arrow)
 
     def run(self):
         """Run the main game loop"""
         while True:
             self.handle_events()
-            if self.current_screen == Screens.GAME and not self.paused:
-                self.update_game()
-            self.current_screen.draw(self.window)
+            self.update_game()
+            self.state.update()
+
+            self.state.current_screen.draw(self.window)
             pygame.display.update()
             self.clock.tick(50)
+
+
+class GameState:
+    """Manages the game's current state and flags for transitions."""
+
+    def __init__(self, screen: ScreenManager = Screens.START):
+        """Reset the game state for a new game."""
+        self.score = CurrentScore()
+        self.lives = 3  # Default starting lives
+        self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+        self.ball_group = pygame.sprite.Group()
+        self.paddle_group = pygame.sprite.Group()
+        self.ball = Ball(self.ball_group)
+        self.paddle = Paddle(self.paddle_group)
+        self.lives_display = LivesDisplay(self.lives)
+        self.launch_message = LaunchMessage()
+        self.current_screen: ScreenManager = screen
+
+        # State flags
+        self.launched = False
+        self.paused = False
+        self.game_over = False
+
+    def update(self):
+        """Update the game based on the current state"""
+        if (
+            not self.launched
+            and self.launch_message not in self.current_screen.elements
+            and self.current_screen == Screens.GAME
+        ):
+            self.current_screen.add_element(self.launch_message)
+
+        if self.game_over:
+            self.current_screen = Screens.END
+
+        if len(self.bricks.sprites()) == 0:
+            self.ball.reset_position(wait=False)
+            self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+            Screens.GAME.add_element(self.bricks)
+
+    def launch_ball(self):
+        """Trigger ball launch."""
+        if self.launched:
+            return
+
+        self.launched = True
+        self.ball.waiting_for_launch = False
+        if self.launch_message in self.current_screen.elements:
+            self.current_screen.elements.remove(self.launch_message)
+
+    def lose_life(self):
+        """Lose a life and update the display"""
+        self.lives -= 1
+        self.lives_display.update(self.lives)
+
+    def pause_game(self):
+        """Pause the game."""
+        self.paused = True
+
+    def resume_game(self):
+        """Resume the game."""
+        self.paused = False
+
+    def game_over_state(self):
+        """Mark game as over."""
+        self.game_over = True
 
 
 if __name__ == "__main__":
