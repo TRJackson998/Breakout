@@ -49,7 +49,7 @@ class Game:
         except Exception:
             base_path = Path(__file__).joinpath("..")
         start_bg = pygame.image.load(
-            base_path.joinpath("textures", "StartScreen2.jpg")
+            base_path.joinpath("textures", "StartScreen.jpg")
         ).convert()
         game_bg = pygame.image.load(
             base_path.joinpath("textures", "GameScreen.jpg")
