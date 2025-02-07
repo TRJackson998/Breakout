@@ -75,15 +75,24 @@ def test_ball_brick_collision():
     """Test ball interaction with bricks."""
     brick_group = sprite.Group()
     # Stage a red brick at specified location
-    brick = Brick(brick_group, color=Color("red"), x_position=100, y_position=100)
+    brick1 = Brick(brick_group, color=Color("red"), x_position=100, y_position=100)
+    brick2 = Brick(brick_group, color=Color("yellow"), x_position=50, y_position=50)
     ball = Ball()
 
     # Position the ball to collide with the red brick w/horizontal overlap
     ball.rect.bottom = 105
     ball.rect.right = 101
     points = ball.handle_brick_collisions(brick_group)
-
     assert points == 3, f"Expected 3 points, got {points}"  # Red brick gives 3 points
+
+    # Position the ball to collide with the yellow brick w/vertical overlap
+    ball.rect.bottom = 51
+    ball.rect.right = 55
+    points = ball.handle_brick_collisions(brick_group)
+    assert (
+        points == 2
+    ), f"Expected 2 points, got {points}"  # Yellow brick gives 2 points
+
     assert (
         len(brick_group) == 0
     ), f"Expected brick to be removed, but {len(brick_group)} bricks remain"
