@@ -192,3 +192,5 @@ class Ball(Sprite):
         self.speed_y = -BallConfig.DEFAULT_SPEED
         self.x_position = BallConfig.INITIAL_X
         self.y_position = BallConfig.INITIAL_Y
+        self.rect.x = self.x_position
+        self.rect.y = self.y_position

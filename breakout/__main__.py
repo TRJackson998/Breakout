@@ -254,7 +254,6 @@ class GameState:
             return
 
         self.launched = True
-        self.ball.waiting_for_launch = False
         if self.launch_message in self.current_screen.elements:
             self.current_screen.elements.remove(self.launch_message)
 
