@@ -5,5 +5,5 @@
 @REM `--specpath .\build` Folder to store the generated spec file
 @REM `--noconsole` Windows and Mac OS X: do not provide a console window for standard i/o. On Mac OS this also triggers building a Mac OS .app bundle.
 @REM `--distpath .` Where to put the bundled app
-call poetry run pyinstaller .\breakout\__main__.py --noconfirm -F --name breakout --specpath .\build --noconsole --distpath .
+call poetry run pyinstaller .\breakout\__main__.py --noconfirm -F --name breakout --specpath .\build --noconsole --distpath . --add-data ".\..\breakout\textures\*:textures"
 pause

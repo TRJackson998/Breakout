@@ -21,6 +21,7 @@ Thomas Nugent
 
 import sys
 from dataclasses import astuple
+from pathlib import Path
 
 import pygame
 
@@ -42,7 +43,15 @@ class Game:
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
 
-        start_bg = pygame.image.load(r"breakout\textures\StartScreen2.jpg").convert()
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = Path(sys._MEIPASS)
+        except Exception:
+            base_path = Path(__file__).joinpath("..")
+        print(base_path)
+        start_bg = pygame.image.load(
+            base_path.joinpath("textures", "StartScreen2.jpg")
+        ).convert()
         # Assign the background image to the start screen.
         Screens.START.background_image = start_bg
 
