@@ -149,17 +149,15 @@ class Button:
 class ArrowButton:
     """A special button type in the shape of an arrow"""
 
-    def __init__(
-        self, direction: Literal["left", "right", "up"], position: tuple[int, int]
-    ):
+    def __init__(self, direction: Literal["left", "right", "up"]):
         self.pressed = False
         self.color: Color = Color("grey")
         self.hover_color: Color = Color("white")
         width = 40
         height = 30
-        x, y = position  # Base position for the arrow
 
         if direction == "right":
+            x, y = (screen_size.width - 100, screen_size.height - 40)
             self.arrow_points = [
                 (x, y - height // 4),  # Left base top
                 (x + width, y - height // 4),  # Right base top
@@ -170,6 +168,7 @@ class ArrowButton:
                 (x, y + height // 4),  # Left base bottom
             ]
         elif direction == "left":
+            x, y = (screen_size.width - 187, screen_size.height - 40)
             self.arrow_points = [
                 (x + width * 2, y - height // 4),
                 (x + width, y - height // 4),
@@ -180,6 +179,7 @@ class ArrowButton:
                 (x + width * 2, y + height // 4),
             ]
         elif direction == "up":
+            x, y = (screen_size.width - 104, screen_size.height - 135)
             height = 40
             width = 30
             self.arrow_points = [

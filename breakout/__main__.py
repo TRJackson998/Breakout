@@ -117,17 +117,11 @@ class Game:
         self.launch_message = LaunchMessage()
         Screens.GAME.add_element(self.launch_message)
 
-        self.left_arrow = ArrowButton(
-            "left", (screen_size.width - 187, screen_size.height - 40)
-        )
+        self.left_arrow = ArrowButton("left")
         Screens.GAME.add_element(self.left_arrow)
-        self.right_arrow = ArrowButton(
-            "right", (screen_size.width - 100, screen_size.height - 40)
-        )
+        self.right_arrow = ArrowButton("right")
         Screens.GAME.add_element(self.right_arrow)
-        self.up_arrow = ArrowButton(
-            "up", (screen_size.width - 104, screen_size.height - 135)
-        )
+        self.up_arrow = ArrowButton("up")
         Screens.GAME.add_element(self.up_arrow)
 
     def pause_game(self):
