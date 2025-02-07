@@ -20,6 +20,8 @@ Thomas Nugent
 """
 
 import random
+from dataclasses import dataclass
+
 import pygame
 from pygame.sprite import Sprite
 
@@ -28,20 +30,29 @@ from breakout.paddle import Paddle
 # pylint: disable=no-member
 
 
+@dataclass
 class BallConfig:
     """Configuration for Ball constants."""
 
-    RADIUS = 10
+    radius = 10
     DEFAULT_SPEED = 2.5
     MAX_SPEED = 5.0
     INITIAL_X = 250
     INITIAL_Y = 380
+    COLOR = pygame.Color("white")
 
 
 class Ball(Sprite):
     """Ball class - Characteristics and behavior of the ball."""
 
-    def __init__(self, *groups, color=pygame.Color("white")):
+    def __init__(
+        self,
+        *groups,
+        x_position=BallConfig.INITIAL_X,
+        y_position=BallConfig.INITIAL_Y,
+        radius=BallConfig.radius,
+        color=BallConfig.COLOR,
+    ):
         """
         Initialize the ball.
         Args:
@@ -51,73 +62,47 @@ class Ball(Sprite):
         super().__init__(*groups)
         self.x_position = x_position
         self.y_position = y_position
+        self.radius = radius
         self.color = color
-        self.speed = self.DEFAULT_SPEED
 
         # Initialize lives and state
-        self.lives = 2
-        self.waiting_for_launch = True
         self.can_collide_with_paddle = True
 
         # Create the surface for the ball and draw a circle
-        self.radius = BallConfig.RADIUS
-        image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
-        pygame.draw.circle(image, color, (self.radius, self.radius), self.radius)
-
-        super().__init__(
-            *groups,
-            x_position=BallConfig.INITIAL_X,
-            y_position=BallConfig.INITIAL_Y,
-            color=color,
-            image=image,
-            speed=BallConfig.DEFAULT_SPEED,
+        self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
+        pygame.draw.circle(
+            self.image, self.color, (self.radius, self.radius), self.radius
         )
 
         # Configure ball properties
-        self.configure_ball()
-
-    def configure_ball(
-        self,
-        x_position=BallConfig.INITIAL_X,
-        y_position=BallConfig.INITIAL_Y,
-        radius=None,
-        speed_x=None,
-        speed_y=None,
-    ):
-        """Configure the initial state of the ball."""
-        self.radius = radius or BallConfig.RADIUS
-        self.x_position = x_position
-        self.y_position = y_position
-        self.speed_x = speed_x or random.choice(
+        self.speed_x = random.choice(
             [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
         )
-        self.speed_y = speed_y or -BallConfig.DEFAULT_SPEED
+        self.speed_y = -BallConfig.DEFAULT_SPEED
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
     def move(self, screen_size, screen_state) -> int:
         """Handles movement and collision with walls, paddle, and bricks."""
-        if self.waiting_for_launch:
-            return 0
-
         # Update position
         self.update_position()
 
         # Handle collisions
         self.handle_wall_collisions(screen_size)
-        self.handle_paddle_collision(paddle)
-        points = self.handle_brick_collisions(brick_group)
+        self.handle_paddle_collision(screen_state.paddle)
+        points = self.handle_brick_collisions(screen_state.bricks)
+        screen_state.score += points
 
         # Handle bottom screen collision (losing a life or ending the game)
         if self.y_position >= screen_size.height:
-            if self.lives > 1:
-                self.lives -= 1
+            if screen_state.lives > 1:
+                screen_state.lives -= 1
                 self.reset_position()
-                paddle.reset_position()
+                screen_state.launched = False
+                screen_state.paddle.reset_position()
             else:
-                switch_screen(Screens.END)
-                return 0
+                screen_state.game_over = True  # End Game
 
-        return points
+        return screen_state
 
     def update_position(self):
         """Update the ball's position based on its speed."""
@@ -136,19 +121,8 @@ class Ball(Sprite):
         if self.y_position <= 0:
             self.bounce_y()  # Reverse vertical movement
 
-        # Handle collision with the bottom of the screen (Lose a life or End Game)
-        if self.y_position >= screen_size.height:
-            if screen_state.lives > 1:
-                screen_state.lives -= 1  # Decrease lives
-                self.reset_position()  # Reset ball position
-                screen_state.launched = False
-                screen_state.paddle.reset_position()
-            else:
-                screen_state.game_over = True  # End Game
-                return screen_state  # Stop further movement processing
-
-        paddle: Paddle = screen_state.paddle
-        # Handle collisions with the paddle
+    def handle_paddle_collision(self, paddle: Paddle):
+        """Handle collisions with the paddle"""
         if (
             self.speed_y > 0
             and self.rect.colliderect(paddle.rect)
@@ -175,10 +149,10 @@ class Ball(Sprite):
         if self.rect.bottom < paddle.rect.top:
             self.can_collide_with_paddle = True
 
-    def handle_brick_collisions(self, brick_group: pygame.sprite.Group) -> int:
+    def handle_brick_collisions(self, bricks: pygame.sprite.Group) -> int:
         """Handle collisions with bricks and return points scored."""
         points = 0
-        hit_bricks = pygame.sprite.spritecollide(self, screen_state.bricks, False)
+        hit_bricks = pygame.sprite.spritecollide(self, bricks, False)
         reversed_x = False
         reversed_y = False
 
@@ -200,13 +174,7 @@ class Ball(Sprite):
                 reversed_x = True
 
             points += brick.hit()
-
-        # Update rect/collision area position
-        self.rect.x = self.x_position
-        self.rect.y = self.y_position
-
-        screen_state.score += points
-        return screen_state
+        return points
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""
@@ -218,12 +186,9 @@ class Ball(Sprite):
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
-        self.configure_ball(
-            x_position=BallConfig.INITIAL_X,
-            y_position=BallConfig.INITIAL_Y,
-            speed_x=random.choice(
-                [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
-            ),
-            speed_y=-BallConfig.DEFAULT_SPEED,
+        self.speed_x = random.choice(
+            [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
         )
-        self.waiting_for_launch = wait
+        self.speed_y = -BallConfig.DEFAULT_SPEED
+        self.x_position = BallConfig.INITIAL_X
+        self.y_position = BallConfig.INITIAL_Y
