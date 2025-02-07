@@ -284,7 +284,12 @@ class GameState:
             self.current_screen == Screens.GAME
             and current_time >= self.next_powerup_time
         ):
-            PowerUp(self.powerup_group, power=lambda: Ball(self.ball_group))
+            PowerUp(
+                self.powerup_group,
+                power=lambda: Ball(
+                    self.ball_group, x_position=self.paddle.rect.center[0]
+                ),
+            )
             self.next_powerup_time = current_time + random.randint(
                 self.min_wait_time, self.max_wait_time
             )
