@@ -1,11 +1,12 @@
 """Test ball object and its movements/actions."""
 
 from pygame import Color, sprite
-from breakout.ball import Ball
-from breakout.paddle import Paddle
-from breakout.bricks import Brick
+
 from breakout import screen_size
 from breakout.__main__ import GameState
+from breakout.ball import Ball
+from breakout.bricks import Brick
+from breakout.paddle import Paddle
 
 
 def test_ball_initialization():
