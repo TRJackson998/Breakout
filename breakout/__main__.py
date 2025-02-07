@@ -250,7 +250,7 @@ class GameState:
 
         # Power-up spawn timing
         self.min_wait_time = 15 * 1000  # 15 seconds in milliseconds
-        self.max_wait_time = 90 * 1000  # 90 seconds in milliseconds
+        self.max_wait_time = 30 * 1000  # 30 seconds in milliseconds
         self.next_powerup_time = pygame.time.get_ticks() + random.randint(
             self.min_wait_time, self.max_wait_time
         )
