@@ -78,8 +78,9 @@ def test_ball_brick_collision():
     brick = Brick(brick_group, color=Color("red"), x_position=100, y_position=100)
     ball = Ball()
 
-    # Position the ball to collide with the brick
-    ball.rect.topleft = (100, 100)  # Align ball with the brick
+    # Position the ball to collide with the red brick w/horizontal overlap
+    ball.rect.bottom = 105
+    ball.rect.right = 101
     points = ball.handle_brick_collisions(brick_group)
 
     assert points == 3, f"Expected 3 points, got {points}"  # Red brick gives 3 points
