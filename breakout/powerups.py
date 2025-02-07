@@ -33,6 +33,7 @@ import random
 from dataclasses import dataclass
 
 import pygame
+from pygame.font import SysFont
 from pygame.sprite import Sprite
 
 from breakout import screen_size
@@ -58,6 +59,7 @@ class PowerUp(Sprite):
         self, *groups, power, radius=PowerupConfig.radius, color=PowerupConfig.color
     ):
         super().__init__(*groups)
+        _font = SysFont("courier", max(screen_size.width // 30, 14))
         self.x_position = random.randint(0, screen_size.width)
         self.y_position = 15
         self.speed_x = 0
@@ -72,7 +74,12 @@ class PowerUp(Sprite):
         pygame.draw.circle(
             self.image, self.color, (self.radius, self.radius), self.radius
         )
+        self.text_surface = _font.render("+", True, pygame.Color("white"))
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+        text_rect = self.text_surface.get_rect(
+            center=(self.radius, self.radius)
+        )  # Center text
+        self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
@@ -86,6 +93,11 @@ class PowerUp(Sprite):
         """Update the powerup's position based on its speed."""
         self.y_position += self.speed_y
         self.rect.y = self.y_position
+
+        text_rect = self.text_surface.get_rect(
+            center=(self.radius, self.radius)
+        )  # Center text
+        self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
