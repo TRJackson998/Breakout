@@ -304,7 +304,8 @@ class GameState:
             self.current_screen = Screens.END
 
         if len(self.bricks.sprites()) == 0:
-            self.ball.reset_position()
+            for ball in self.ball_group.sprites():
+                ball.reset_position()
             self.launch_ball()
             self.bricks = Brick.create_brick_layout(rows=6, cols=8)
             Screens.GAME.add_element(self.bricks)
