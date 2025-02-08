@@ -50,12 +50,19 @@ class Game:
             base_path = Path(sys._MEIPASS)
         except Exception:
             base_path = Path(__file__).joinpath("..")
-        print(base_path)
         start_bg = pygame.image.load(
-            base_path.joinpath("textures", "StartScreen2.jpg")
+            base_path.joinpath("textures", "StartScreen.jpg")
+        ).convert()
+        game_bg = pygame.image.load(
+            base_path.joinpath("textures", "GameScreen.jpg")
+        ).convert()
+        end_bg = pygame.image.load(
+            base_path.joinpath("textures", "EndScreen.jpg")
         ).convert()
         # Assign the background image to the start screen.
         Screens.START.background_image = start_bg
+        Screens.GAME.background_image = game_bg
+        Screens.END.background_image = end_bg
 
         self.left_arrow = ArrowButton("left")
         self.right_arrow = ArrowButton("right")
