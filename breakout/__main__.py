@@ -278,6 +278,19 @@ class GameState:
             pygame.Color("pink"),
             pygame.Color("white"),
         ]
+        self.powerup_choices = [
+            lambda: PowerUp(
+                self.powerup_group,
+                power=lambda: Paddle(
+                    self.paddle_group, color=random.choice(self.color_choices)
+                ),
+                shape="rectangle",
+            ),
+            lambda: PowerUp(
+                self.powerup_group,
+                power=self.add_ball,
+            ),
+        ]
 
     def update(self):
         """Update the game based on the current state"""
@@ -305,13 +318,8 @@ class GameState:
             and self.launched
             and len(self.powerup_group.sprites()) == 0
         ):
-            PowerUp(
-                self.powerup_group,
-                power=lambda: Paddle(
-                    self.paddle_group, color=random.choice(self.color_choices)
-                ),
-                shape="rectangle",
-            )
+            random_powerup = random.choice(self.powerup_choices)
+            random_powerup()
 
             self.next_powerup_time = current_time + random.randint(
                 self.min_wait_time, self.max_wait_time
