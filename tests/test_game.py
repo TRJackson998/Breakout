@@ -136,7 +136,6 @@ def test_powerup_spawn_timing():
     ), "Expected power-up to spawn, but none were added."
 
 
-# --- Helper Classes for Testing ---
 # Helper Classes for Testing
 
 
