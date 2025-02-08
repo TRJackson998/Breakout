@@ -1,4 +1,9 @@
+"""Test game/GUI events"""
+
+import pytest
 import pygame
+from breakout.screens import ScreenManager, Button, ArrowButton, LaunchMessage
+from breakout import screen_size
 from breakout.__main__ import Game, GameState
 from breakout.screens import Screens
 
@@ -129,3 +134,29 @@ def test_powerup_spawn_timing():
     assert (
         len(game_state.powerup_group.sprites()) > 0
     ), "Expected power-up to spawn, but none were added."
+
+
+# --- Helper Classes for Testing ---
+
+
+class DummyElement:
+    """A dummy element to test ScreenManager methods."""
+
+    def __init__(self):
+        self.draw_called = False
+        self.event_handled = False
+
+    def draw(self, surface):
+        self.draw_called = True
+
+    def handle_event(self, event):
+        self.event_handled = True
+
+
+def test_screen_manager_draw_with_element():
+    """Test that ScreenManager.draw calls the element's draw method."""
+    surface = pygame.Surface((screen_size.width, screen_size.height))
+    dummy = DummyElement()
+    manager = ScreenManager([dummy])
+    manager.draw(surface)
+    assert dummy.draw_called, "Expected DummyElement.draw() to be called"
