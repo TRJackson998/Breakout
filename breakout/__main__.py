@@ -19,16 +19,18 @@ Thomas Nugent
 
 """
 
+import random
 import sys
 from dataclasses import astuple
 from pathlib import Path
 
 import pygame
 
-from breakout import screen_size
-from breakout.ball import Ball
+from breakout import color_choices, screen_size
+from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
+from breakout.powerups import PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
 
@@ -113,6 +115,7 @@ class Game:
         Screens.GAME.add_element(self.state.score_display)
         Screens.GAME.add_element(self.state.ball_group)
         Screens.GAME.add_element(self.state.paddle_group)
+        Screens.GAME.add_element(self.state.powerup_group)
         Screens.GAME.add_element(self.state.bricks)
         Screens.GAME.add_element(self.state.lives_display)
         Screens.GAME.add_element(self.state.launch_message)
@@ -177,6 +180,11 @@ class Game:
                 ):
                     self.state.launch_ball()
                     self.state.current_screen.elements.remove(self.up_arrow)
+                if event.key == pygame.K_SPACE:
+                    if self.state.paused:
+                        self.resume_game()
+                    else:
+                        self.pause_game()
 
             self.state.current_screen.handle_event(event)
 
@@ -195,12 +203,22 @@ class Game:
 
         # Allow paddle and ball movement only if the ball has been launched.
         if self.state.launched:
-            if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
-                self.state.paddle.move_left()
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
-                self.state.paddle.move_right()
+            if (
+                keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed
+            ) and self.state.can_go_left:
+                for paddle in self.state.paddle_group.sprites():
+                    paddle.move_left()
+            if (
+                keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed
+            ) and self.state.can_go_right:
+                for paddle in self.state.paddle_group.sprites():
+                    paddle.move_right()
 
-            self.state = self.state.ball.move(screen_size, self.state)
+            for ball in self.state.ball_group.sprites():
+                self.state = ball.move(screen_size, self.state)
+
+            for powerup in self.state.powerup_group.sprites():
+                powerup.move(self.state)
 
         # if the ball is waiting for launch, ensure the up arrow is on screen.
         if (
@@ -232,18 +250,46 @@ class GameState:
         self.lives = 3  # Default starting lives
         self.bricks = Brick.create_brick_layout(rows=6, cols=8)
         self.ball_group = pygame.sprite.Group()
+        self.powerup_group = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
         self.ball = Ball(self.ball_group)
         self.paddle = Paddle(self.paddle_group)
         self.score_display = ScoreDisplay(self.score)
         self.lives_display = LivesDisplay(self.lives)
         self.launch_message = LaunchMessage()
+        self.pause_message = LaunchMessage("Paused!", blink_interval=500)
         self.current_screen: ScreenManager = screen
+
+        # Power-up spawn timing
+        self.min_wait_time = 15 * 1000  # 15 seconds in milliseconds
+        self.max_wait_time = 30 * 1000  # 30 seconds in milliseconds
+        self.next_powerup_time = pygame.time.get_ticks() + random.randint(
+            self.min_wait_time, self.max_wait_time
+        )
 
         # State flags
         self.launched = False
         self.paused = False
         self.game_over = False
+        self.can_go_left = True
+        self.can_go_right = True
+
+        self.powerup_choices = [
+            lambda: PowerUp(
+                self.powerup_group,
+                power=lambda: Paddle(
+                    self.paddle_group,
+                    color=random.choice(color_choices),
+                    timeout=pygame.time.get_ticks()
+                    + random.randint(self.min_wait_time, self.max_wait_time),
+                ),
+                shape="rectangle",
+            ),
+            lambda: PowerUp(
+                self.powerup_group,
+                power=self.add_ball,
+            ),
+        ]
 
     def update(self):
         """Update the game based on the current state"""
@@ -258,10 +304,38 @@ class GameState:
             self.current_screen = Screens.END
 
         if len(self.bricks.sprites()) == 0:
-            self.ball.reset_position()
+            for ball in self.ball_group.sprites():
+                ball.reset_position()
             self.launch_ball()
             self.bricks = Brick.create_brick_layout(rows=6, cols=8)
             Screens.GAME.add_element(self.bricks)
+
+        # add a powerup at random intervals
+        current_time = pygame.time.get_ticks()
+        if (
+            self.current_screen == Screens.GAME
+            and current_time >= self.next_powerup_time
+            and self.launched
+            and len(self.powerup_group.sprites()) == 0
+        ):
+            random_powerup = random.choice(self.powerup_choices)
+            random_powerup()
+
+            self.next_powerup_time = current_time + random.randint(
+                self.min_wait_time, self.max_wait_time
+            )
+
+        self.can_go_left = True
+        self.can_go_right = True
+        for paddle in self.paddle_group.sprites():
+            if paddle.x_position == 0:
+                self.can_go_left = False
+            if paddle.x_position == screen_size.width - paddle.rect.width:
+                self.can_go_right = False
+            if not paddle.timeout:
+                continue
+            if self.current_screen == Screens.GAME and current_time >= paddle.timeout:
+                paddle.kill()
 
         self.score_display.update(self.score)
         self.lives_display.update(self.lives)
@@ -278,14 +352,32 @@ class GameState:
     def pause_game(self):
         """Pause the game."""
         self.paused = True
+        if self.pause_message not in self.current_screen.elements:
+            self.current_screen.add_element(self.pause_message)
 
     def resume_game(self):
         """Resume the game."""
         self.paused = False
+        if self.pause_message in self.current_screen.elements:
+            self.current_screen.elements.remove(self.pause_message)
 
     def game_over_state(self):
         """Mark game as over."""
         self.game_over = True
+
+    def add_ball(self):
+        try:
+            power_up = self.powerup_group.sprites()[0]
+        except IndexError:
+            # pull from where the paddle is if you can't find the powerup
+            power_up = self.paddle_group.sprites()[0]
+        power_up_position: pygame.Rect = power_up.rect
+        Ball(
+            self.ball_group,
+            x_position=power_up_position.center[0],
+            color=random.choice(color_choices),
+            speed_y=BallConfig.DEFAULT_SPEED,
+        )
 
 
 if __name__ == "__main__":

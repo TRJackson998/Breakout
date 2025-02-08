@@ -34,4 +34,22 @@ class Size:
 pygame.init()
 screen_size = Size(500, 500)
 
-__all__ = ["ball", "bricks", "paddle", "powerups", "score", "sprite", "screen_size"]
+color_choices = [
+    pygame.Color("red"),
+    pygame.Color("orange"),
+    pygame.Color("yellow"),
+    pygame.Color("green"),
+    pygame.Color("blue"),
+    pygame.Color("purple"),
+    pygame.Color("pink"),
+]
+
+__all__ = [
+    "ball",
+    "bricks",
+    "paddle",
+    "powerups",
+    "score",
+    "color_choices",
+    "screen_size",
+]

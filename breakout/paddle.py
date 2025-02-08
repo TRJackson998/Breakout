@@ -37,7 +37,8 @@ class Paddle(Sprite):
         color=pygame.Color("white"),
         x_position=screen_size.width // 2.5,
         y_position=screen_size.height // 1.25,
-        speed=5
+        speed=5,
+        timeout=None
     ):
         super().__init__(
             *groups,
@@ -46,6 +47,7 @@ class Paddle(Sprite):
         self.y_position = y_position
         self.color = color
         self.speed = speed
+        self.timeout = timeout
 
         # Create the paddle surface
         self.image = pygame.Surface((self.WIDTH, self.HEIGHT))

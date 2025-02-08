@@ -50,6 +50,7 @@ class Ball(Sprite):
         *groups,
         x_position=BallConfig.INITIAL_X,
         y_position=BallConfig.INITIAL_Y,
+        speed_y=-BallConfig.DEFAULT_SPEED,
         radius=BallConfig.radius,
         color=BallConfig.COLOR,
     ):
@@ -78,7 +79,7 @@ class Ball(Sprite):
         self.speed_x = random.choice(
             [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
         )
-        self.speed_y = -BallConfig.DEFAULT_SPEED
+        self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
     def move(self, screen_size, screen_state):
@@ -88,20 +89,27 @@ class Ball(Sprite):
 
         # Handle collisions
         self.handle_wall_collisions(screen_size)
-        self.handle_paddle_collision(screen_state.paddle)
+        for paddle in screen_state.paddle_group.sprites():
+            self.handle_paddle_collision(paddle)
         points = self.handle_brick_collisions(screen_state.bricks)
         screen_state.score += points
 
         # Handle bottom screen collision (losing a life or ending the game)
         if self.y_position >= screen_size.height:
-            if screen_state.lives > 1:
-                screen_state.lives -= 1
-                self.reset_position()
-                screen_state.launched = False
-                screen_state.paddle.reset_position()
+            group = self.groups()[0]
+            if len(group.sprites()) > 1:
+                # There's more balls, losing this one doesn't lose a life
+                self.kill()
             else:
-                screen_state.lives -= 1
-                screen_state.game_over = True  # End Game
+                # this is the only ball on the screen
+                if screen_state.lives > 1:
+                    screen_state.lives -= 1
+                    self.reset_position()
+                    screen_state.launched = False
+                    screen_state.paddle.reset_position()
+                else:
+                    screen_state.lives -= 1
+                    screen_state.game_over = True  # End Game
 
         return screen_state
 
