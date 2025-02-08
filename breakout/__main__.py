@@ -365,7 +365,11 @@ class GameState:
         self.game_over = True
 
     def add_ball(self):
-        power_up = self.powerup_group.sprites()[0]
+        try:
+            power_up = self.powerup_group.sprites()[0]
+        except IndexError:
+            # pull from where the paddle is if you can't find the powerup
+            power_up = self.paddle_group.sprites()[0]
         power_up_position: pygame.Rect = power_up.rect
         Ball(
             self.ball_group,
