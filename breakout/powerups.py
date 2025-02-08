@@ -65,7 +65,9 @@ class PowerUp(Sprite):
     ):
         super().__init__(*groups)
         _font = SysFont("courier", max(screen_size.width // 30, 14))
-        self.x_position = random.randint(0, screen_size.width)
+        self.x_position = random.randint(
+            PowerupConfig.size * 5, screen_size.width - PowerupConfig.size * 5
+        )
         self.y_position = 15
         self.speed_x = 0
         self.speed_y = PowerupConfig.default_speed
