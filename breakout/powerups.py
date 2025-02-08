@@ -49,7 +49,16 @@ class PowerupConfig:
 
     size = 10
     default_speed = 2.5
-    color = pygame.Color("red")
+    color_choices = [
+        pygame.Color("red"),
+        pygame.Color("orange"),
+        pygame.Color("yellow"),
+        pygame.Color("green"),
+        pygame.Color("blue"),
+        pygame.Color("purple"),
+        pygame.Color("pink"),
+    ]
+    blink_interval = 100
 
 
 class PowerUp(Sprite):
@@ -61,10 +70,10 @@ class PowerUp(Sprite):
         power,
         shape: Literal["circle", "rectangle"] = "circle",
         size=PowerupConfig.size,
-        color=PowerupConfig.color
+        color=random.choice([i for i in range(len(PowerupConfig.color_choices))])
     ):
         super().__init__(*groups)
-        _font = SysFont("courier", max(screen_size.width // 30, 14))
+        self.font = SysFont("courier", max(screen_size.width // 30, 14))
         self.x_position = random.randint(
             PowerupConfig.size * 5, screen_size.width - PowerupConfig.size * 5
         )
@@ -75,18 +84,24 @@ class PowerUp(Sprite):
         self.color = color
         self.collect = power
         self.can_collide_with_paddle = True
+        self.shape = shape
+        self.blink_interval = PowerupConfig.blink_interval
+        self.last_toggle = pygame.time.get_ticks()
 
-        if shape == "circle":
+        if self.shape == "circle":
             # Create the surface for the ball and draw a circle
             self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
             pygame.draw.circle(
-                self.image, self.color, (self.size, self.size), self.size
+                self.image,
+                PowerupConfig.color_choices[self.color],
+                (self.size, self.size),
+                self.size,
             )
-        elif shape == "rectangle":
+        elif self.shape == "rectangle":
             # Create the surface for the ball and draw a circle
             self.image = pygame.Surface((self.size * 4, self.size * 2))
             self.image.fill(color)
-        self.text_surface = _font.render("+", True, pygame.Color("white"))
+        self.text_surface = self.font.render("+", True, pygame.Color("black"))
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
         text_rect = self.text_surface.get_rect(
             center=(self.size, self.size)
@@ -95,6 +110,11 @@ class PowerUp(Sprite):
 
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
+        now = pygame.time.get_ticks()
+        if now - self.last_toggle > self.blink_interval:
+            self.last_toggle = now
+            self.change_color()
+
         # Update position
         self.update_position()
         for paddle in screen_state.paddle_group.sprites():
@@ -124,3 +144,27 @@ class PowerUp(Sprite):
 
         if self.rect.bottom < paddle.rect.top:
             self.can_collide_with_paddle = True
+
+    def change_color(self):
+        self.color += 1
+        if self.color == len(PowerupConfig.color_choices):
+            self.color = 0
+        if self.shape == "circle":
+            # Create the surface for the ball and draw a circle
+            self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(
+                self.image,
+                PowerupConfig.color_choices[self.color],
+                (self.size, self.size),
+                self.size,
+            )
+        elif self.shape == "rectangle":
+            # Create the surface for the ball and draw a circle
+            self.image = pygame.Surface((self.size * 4, self.size * 2))
+            self.image.fill(PowerupConfig.color_choices[self.color])
+        self.text_surface = self.font.render("+", True, pygame.Color("black"))
+        self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+        text_rect = self.text_surface.get_rect(
+            center=(self.size, self.size)
+        )  # Center text
+        self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
