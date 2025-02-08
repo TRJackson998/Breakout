@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pygame
 
-from breakout import screen_size
+from breakout import color_choices, screen_size
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
@@ -274,22 +274,12 @@ class GameState:
         self.can_go_left = True
         self.can_go_right = True
 
-        self.color_choices = [
-            pygame.Color("red"),
-            pygame.Color("orange"),
-            pygame.Color("yellow"),
-            pygame.Color("green"),
-            pygame.Color("blue"),
-            pygame.Color("purple"),
-            pygame.Color("pink"),
-            pygame.Color("white"),
-        ]
         self.powerup_choices = [
             lambda: PowerUp(
                 self.powerup_group,
                 power=lambda: Paddle(
                     self.paddle_group,
-                    color=random.choice(self.color_choices),
+                    color=random.choice(color_choices),
                     timeout=pygame.time.get_ticks()
                     + random.randint(self.min_wait_time, self.max_wait_time),
                 ),
@@ -380,7 +370,7 @@ class GameState:
         Ball(
             self.ball_group,
             x_position=power_up_position.center[0],
-            color=random.choice(self.color_choices),
+            color=random.choice(color_choices),
             speed_y=BallConfig.DEFAULT_SPEED,
         )
 

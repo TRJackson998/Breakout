@@ -37,7 +37,7 @@ import pygame
 from pygame.font import SysFont
 from pygame.sprite import Sprite
 
-from breakout import screen_size
+from breakout import color_choices, screen_size
 from breakout.paddle import Paddle
 
 # pylint: disable=no-member
@@ -49,15 +49,6 @@ class PowerupConfig:
 
     size = 10
     default_speed = 2.5
-    color_choices = [
-        pygame.Color("red"),
-        pygame.Color("orange"),
-        pygame.Color("yellow"),
-        pygame.Color("green"),
-        pygame.Color("blue"),
-        pygame.Color("purple"),
-        pygame.Color("pink"),
-    ]
     blink_interval = 100
 
 
@@ -70,7 +61,7 @@ class PowerUp(Sprite):
         power,
         shape: Literal["circle", "rectangle"] = "circle",
         size=PowerupConfig.size,
-        color=random.choice([i for i in range(len(PowerupConfig.color_choices))])
+        color=random.choice([i for i in range(len(color_choices))])
     ):
         super().__init__(*groups)
         self.font = SysFont("courier", max(screen_size.width // 30, 14))
@@ -93,7 +84,7 @@ class PowerUp(Sprite):
             self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
             pygame.draw.circle(
                 self.image,
-                PowerupConfig.color_choices[self.color],
+                color_choices[self.color],
                 (self.size, self.size),
                 self.size,
             )
@@ -147,21 +138,21 @@ class PowerUp(Sprite):
 
     def change_color(self):
         self.color += 1
-        if self.color == len(PowerupConfig.color_choices):
+        if self.color == len(color_choices):
             self.color = 0
         if self.shape == "circle":
             # Create the surface for the ball and draw a circle
             self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
             pygame.draw.circle(
                 self.image,
-                PowerupConfig.color_choices[self.color],
+                color_choices[self.color],
                 (self.size, self.size),
                 self.size,
             )
         elif self.shape == "rectangle":
             # Create the surface for the ball and draw a circle
             self.image = pygame.Surface((self.size * 4, self.size * 2))
-            self.image.fill(PowerupConfig.color_choices[self.color])
+            self.image.fill(color_choices[self.color])
         self.text_surface = self.font.render("+", True, pygame.Color("black"))
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
         text_rect = self.text_surface.get_rect(
