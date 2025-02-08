@@ -137,6 +137,7 @@ def test_powerup_spawn_timing():
 
 
 # --- Helper Classes for Testing ---
+# Helper Classes for Testing
 
 
 class DummyElement:
@@ -160,3 +161,39 @@ def test_screen_manager_draw_with_element():
     manager = ScreenManager([dummy])
     manager.draw(surface)
     assert dummy.draw_called, "Expected DummyElement.draw() to be called"
+
+
+def test_arrow_button_click():
+    """Ensure an ArrowButton registers a press and then resets after release."""
+    ab = ArrowButton("left")
+    # Build a fake mouse down event at the arrow's location.
+    event_down = pygame.event.Event(
+        pygame.MOUSEBUTTONDOWN, {"pos": ab.rect.center, "button": 1}
+    )
+    ab.handle_event(event_down)
+    # The button should now be marked as pressed.
+    assert ab.pressed, "ArrowButton should be pressed after mouse button down."
+
+    # Release the mouse button
+    event_up = pygame.event.Event(pygame.MOUSEBUTTONUP, {"pos": ab.rect.center})
+    ab.handle_event(event_up)
+    # The arrow button should no longer be pressed.
+    assert not ab.pressed, "ArrowButton should not be pressed after mouse button up."
+
+
+def test_launch_message_blink_toggle():
+    """Check that LaunchMessage toggles its visibility after the blink interval."""
+    surface = pygame.Surface((screen_size.width, screen_size.height))
+    lm = LaunchMessage(
+        "Test Launch",
+        pos=(screen_size.width // 2, screen_size.height // 2),
+        blink_interval=1,
+    )
+    lm.last_toggle = pygame.time.get_ticks() - 2
+    original_visibility = lm.visible
+    # Call draw; this should toggle the message's visibility.
+    lm.draw(surface)
+    # Verify that the visibility has changed.
+    assert (
+        lm.visible != original_visibility
+    ), "LaunchMessage did not toggle its visibility as expected."
