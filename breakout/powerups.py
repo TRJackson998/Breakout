@@ -31,6 +31,7 @@ Thomas Nugent
 
 import random
 from dataclasses import dataclass
+from typing import Literal
 
 import pygame
 from pygame.font import SysFont
@@ -46,9 +47,8 @@ from breakout.paddle import Paddle
 class PowerupConfig:
     """Configuration for Powerup constants."""
 
-    radius = 10
+    size = 10
     default_speed = 2.5
-    max_speed = 5.0
     color = pygame.Color("red")
 
 
@@ -56,7 +56,12 @@ class PowerUp(Sprite):
     """Handle power up execution"""
 
     def __init__(
-        self, *groups, power, radius=PowerupConfig.radius, color=PowerupConfig.color
+        self,
+        *groups,
+        power,
+        shape: Literal["circle", "rectangle"] = "circle",
+        size=PowerupConfig.size,
+        color=PowerupConfig.color
     ):
         super().__init__(*groups)
         _font = SysFont("courier", max(screen_size.width // 30, 14))
@@ -64,20 +69,25 @@ class PowerUp(Sprite):
         self.y_position = 15
         self.speed_x = 0
         self.speed_y = PowerupConfig.default_speed
-        self.radius = radius
+        self.size = size
         self.color = color
         self.collect = power
         self.can_collide_with_paddle = True
 
-        # Create the surface for the ball and draw a circle
-        self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
-        pygame.draw.circle(
-            self.image, self.color, (self.radius, self.radius), self.radius
-        )
+        if shape == "circle":
+            # Create the surface for the ball and draw a circle
+            self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+            pygame.draw.circle(
+                self.image, self.color, (self.size, self.size), self.size
+            )
+        elif shape == "rectangle":
+            # Create the surface for the ball and draw a circle
+            self.image = pygame.Surface((self.size * 4, self.size * 2))
+            self.image.fill(color)
         self.text_surface = _font.render("+", True, pygame.Color("white"))
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
         text_rect = self.text_surface.get_rect(
-            center=(self.radius, self.radius)
+            center=(self.size, self.size)
         )  # Center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
@@ -96,8 +106,8 @@ class PowerUp(Sprite):
         self.rect.y = self.y_position
 
         text_rect = self.text_surface.get_rect(
-            center=(self.radius, self.radius)
-        )  # Center text
+            center=(self.x_position, self.y_position)
+        )  # center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
     def handle_paddle_collision(self, paddle: Paddle):

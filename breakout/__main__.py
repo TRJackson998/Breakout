@@ -307,8 +307,12 @@ class GameState:
         ):
             PowerUp(
                 self.powerup_group,
-                power=self.add_ball,
+                power=lambda: Paddle(
+                    self.paddle_group, color=random.choice(self.color_choices)
+                ),
+                shape="rectangle",
             )
+
             self.next_powerup_time = current_time + random.randint(
                 self.min_wait_time, self.max_wait_time
             )
