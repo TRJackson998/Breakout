@@ -203,10 +203,14 @@ class Game:
 
         # Allow paddle and ball movement only if the ball has been launched.
         if self.state.launched:
-            if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
+            if (
+                keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed
+            ) and self.state.can_go_left:
                 for paddle in self.state.paddle_group.sprites():
                     paddle.move_left()
-            if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
+            if (
+                keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed
+            ) and self.state.can_go_right:
                 for paddle in self.state.paddle_group.sprites():
                     paddle.move_right()
 
@@ -267,6 +271,8 @@ class GameState:
         self.launched = False
         self.paused = False
         self.game_over = False
+        self.can_go_left = True
+        self.can_go_right = True
 
         self.color_choices = [
             pygame.Color("red"),
@@ -327,7 +333,14 @@ class GameState:
             self.next_powerup_time = current_time + random.randint(
                 self.min_wait_time, self.max_wait_time
             )
+
+        self.can_go_left = True
+        self.can_go_right = True
         for paddle in self.paddle_group.sprites():
+            if paddle.x_position == 0:
+                self.can_go_left = False
+            if paddle.x_position == screen_size.width - paddle.rect.width:
+                self.can_go_right = False
             if not paddle.timeout:
                 continue
             if self.current_screen == Screens.GAME and current_time >= paddle.timeout:
