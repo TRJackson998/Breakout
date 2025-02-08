@@ -137,6 +137,7 @@ class PowerUp(Sprite):
             self.can_collide_with_paddle = True
 
     def change_color(self):
+        """Handles the power up color changes"""
         self.color += 1
         if self.color == len(color_choices):
             self.color = 0
