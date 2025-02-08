@@ -282,7 +282,10 @@ class GameState:
             lambda: PowerUp(
                 self.powerup_group,
                 power=lambda: Paddle(
-                    self.paddle_group, color=random.choice(self.color_choices)
+                    self.paddle_group,
+                    color=random.choice(self.color_choices),
+                    timeout=pygame.time.get_ticks()
+                    + random.randint(self.min_wait_time, self.max_wait_time),
                 ),
                 shape="rectangle",
             ),
@@ -324,6 +327,11 @@ class GameState:
             self.next_powerup_time = current_time + random.randint(
                 self.min_wait_time, self.max_wait_time
             )
+        for paddle in self.paddle_group.sprites():
+            if not paddle.timeout:
+                continue
+            if self.current_screen == Screens.GAME and current_time >= paddle.timeout:
+                paddle.kill()
 
         self.score_display.update(self.score)
         self.lives_display.update(self.lives)
