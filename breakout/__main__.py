@@ -30,7 +30,7 @@ from breakout import color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.powerups import PowerUp
+from breakout.powerups import PowerDown, PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
 
@@ -301,6 +301,7 @@ class GameState:
                 self.powerup_group,
                 power=self.add_ball,
             ),
+            lambda: PowerDown(self.powerup_group, power=self.lose_life),
         ]
 
     def update(self):
@@ -380,6 +381,7 @@ class GameState:
         sound.SoundManager.stop_other_sounds()
 
     def add_ball(self):
+        """Add a ball to the game"""
         try:
             power_up = self.powerup_group.sprites()[0]
         except IndexError:
