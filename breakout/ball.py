@@ -25,6 +25,7 @@ from dataclasses import dataclass
 import pygame
 from pygame.sprite import Sprite
 
+pygame.mixer.init()
 from breakout.paddle import Paddle
 
 # pylint: disable=no-member
@@ -65,6 +66,13 @@ class Ball(Sprite):
         self.y_position = y_position
         self.radius = radius
         self.color = color
+
+        # Load sound effects (ensure the file paths are correct)
+        try:
+            self.brick_sound = pygame.mixer.Sound("breakout/sounds/brick_hit.wav")
+        except Exception as e:
+            print("Error loading sound effects:", e)
+            self.wall_sound = self.paddle_sound = self.brick_sound = None
 
         # Initialize lives and state
         self.can_collide_with_paddle = True
@@ -183,6 +191,10 @@ class Ball(Sprite):
                 reversed_x = True
 
             points += brick.hit()
+
+            # Play sound effect for each brick hit
+            if self.brick_sound:
+                self.brick_sound.play()
         return points
 
     def bounce_x(self):
