@@ -347,7 +347,11 @@ class GameState:
                 self.can_go_right = False
             if not paddle.timeout:
                 continue
-            if self.current_screen == Screens.GAME and current_time >= paddle.timeout:
+            if (
+                self.current_screen == Screens.GAME
+                and not self.paused
+                and current_time >= paddle.timeout
+            ):
                 paddle.kill()
 
         self.score_display.update(self.score)
