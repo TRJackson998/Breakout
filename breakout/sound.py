@@ -13,9 +13,7 @@ class SoundManager:
         WALL_SOUND = pygame.mixer.Sound("breakout/sounds/wall_sound.wav")
         LIFE_LOST_SOUND = pygame.mixer.Sound("breakout/sounds/life_lost.wav")
         GAME_OVER_SOUND = pygame.mixer.Sound("breakout/sounds/game_over.wav")
-        START_SCREEN_MUSIC = pygame.mixer.Sound(
-            "breakout/sounds/start_screen_music.wav"
-        )
+        BACKGROUND_MUSIC = pygame.mixer.Sound("breakout/sounds/background_music.wav")
     except Exception as e:
         print("Error loading sound effects:", e)
         POWERUP_SOUND = None
@@ -24,7 +22,7 @@ class SoundManager:
         WALL_SOUND = None
         LIFE_LOST_SOUND = None
         GAME_OVER_SOUND = None
-        START_SCREEN_MUSIC = None
+        BACKGROUND_MUSIC = None
 
     @staticmethod
     def play_powerup():
@@ -63,13 +61,13 @@ class SoundManager:
             SoundManager.GAME_OVER_SOUND.play()
 
     @staticmethod
-    def play_start_screen_music(loops=-1):
-        """Play the start screen music on loop."""
-        if SoundManager.START_SCREEN_MUSIC:
-            SoundManager.START_SCREEN_MUSIC.play(loops=loops)
+    def play_background_music(loops=-1):
+        """Play the background music on loop."""
+        if SoundManager.BACKGROUND_MUSIC:
+            SoundManager.BACKGROUND_MUSIC.play(loops=loops)
 
     @staticmethod
-    def stop_start_screen_music():
-        """Stops the start screen music."""
-        if SoundManager.START_SCREEN_MUSIC:
-            SoundManager.START_SCREEN_MUSIC.stop()
+    def stop_background_music():
+        """Stops the background screen music."""
+        if SoundManager.BACKGROUND_MUSIC:
+            SoundManager.BACKGROUND_MUSIC.stop()
