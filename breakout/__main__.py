@@ -331,7 +331,10 @@ class GameState:
             and self.launched
             and len(self.powerup_group.sprites()) == 0
         ):
-            random_powerup = random.choice(self.powerup_choices)
+            if len(self.paddle_group.sprites()) > 1:
+                random_powerup = random.choice(self.powerup_choices[1:])
+            else:
+                random_powerup = random.choice(self.powerup_choices)
             random_powerup()
 
             self.next_powerup_time = current_time + random.randint(
