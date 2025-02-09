@@ -55,7 +55,7 @@ def test_pause_and_resume_game():
 
     # Resume the game
     game.resume_game()
-    assert game.state.paused
+    assert not game.state.paused
 
 
 def test_update_game():
@@ -101,13 +101,13 @@ def test_handle_key_events():
     up_event = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_UP})
     pygame.event.post(up_event)
     game.handle_events()
-    assert game.state.launched is True
+    assert game.state.launched
 
     # Simulate SPACE key for pausing the game
     space_event = pygame.event.Event(pygame.KEYDOWN, {"key": pygame.K_SPACE})
     pygame.event.post(space_event)
     game.handle_events()
-    assert game.state.paused is True
+    assert game.state.paused
 
 
 def test_powerup_spawn_timing():
@@ -115,8 +115,7 @@ def test_powerup_spawn_timing():
     game_state = GameState(Screens.GAME)
 
     # Simulate game state where power-ups can spawn
-    game_state.launched = True
-    game_state.current_screen = Screens.GAME
+    game_state.launch_ball()
     current_time = pygame.time.get_ticks()
 
     # Force the next power-up spawn time to trigger
