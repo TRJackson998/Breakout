@@ -25,6 +25,7 @@ from dataclasses import dataclass
 import pygame
 from pygame.sprite import Sprite
 
+from breakout import sound
 from breakout.paddle import Paddle
 
 # pylint: disable=no-member
@@ -103,13 +104,14 @@ class Ball(Sprite):
             else:
                 # this is the only ball on the screen
                 if screen_state.lives > 1:
+                    sound.SoundManager.play_life_lost()
                     screen_state.lives -= 1
                     self.reset_position()
                     screen_state.launched = False
                     screen_state.paddle.reset_position()
                 else:
                     screen_state.lives -= 1
-                    screen_state.game_over = True  # End Game
+                    screen_state.game_over_state()  # End Game
 
         return screen_state
 
@@ -127,8 +129,10 @@ class Ball(Sprite):
             or self.x_position >= screen_size.width - self.rect.width
         ):
             self.bounce_x()
+            sound.SoundManager.play_wall()
         if self.y_position <= 0:
             self.bounce_y()  # Reverse vertical movement
+            sound.SoundManager.play_wall()
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
@@ -138,6 +142,7 @@ class Ball(Sprite):
             and self.can_collide_with_paddle
         ):
             self.bounce_y()
+            sound.SoundManager.play_paddle()
             self.y_position = paddle.rect.top - self.rect.height
 
             # Adjust horizontal speed based on where the ball hits the paddle
@@ -183,6 +188,9 @@ class Ball(Sprite):
                 reversed_x = True
 
             points += brick.hit()
+
+            # Play sound effect for each brick hit
+            sound.SoundManager.play_brick()
         return points
 
     def bounce_x(self):

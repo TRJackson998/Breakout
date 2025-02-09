@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pygame
 
-from breakout import color_choices, screen_size
+from breakout import color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
@@ -73,6 +73,8 @@ class Game:
         self.setup_screens()
         self.state = GameState()
 
+        sound.SoundManager.play_background_music()
+
     def setup_screens(self):
         """Add static button elements to START and END screens"""
         # Start Screen
@@ -97,8 +99,11 @@ class Game:
         If the new screen is the game screen, start a new game
         """
         self.state.current_screen = screen
+
         if screen == Screens.GAME:
             self.start_new_game()
+        elif screen == Screens.END:
+            self.state.game_over_state()
 
     def start_new_game(self):
         """
@@ -371,6 +376,8 @@ class GameState:
     def game_over_state(self):
         """Mark game as over."""
         self.game_over = True
+        sound.SoundManager.play_game_over()
+        sound.SoundManager.stop_other_sounds()
 
     def add_ball(self):
         try:
