@@ -103,7 +103,7 @@ class Game:
         if screen == Screens.GAME:
             self.start_new_game()
         elif screen == Screens.END:
-            self.state.game_over_state()
+            self.state.game_over()
 
     def start_new_game(self):
         """
@@ -202,7 +202,7 @@ class Game:
 
     def update_game(self):
         """Handle the gameplay"""
-        if self.state.paused or self.state.game_over:
+        if self.state.paused or self.state.game_is_over:
             return
 
         keys = pygame.key.get_pressed()
@@ -282,7 +282,7 @@ class GameState:
         # State flags
         self.launched = False
         self.paused = False
-        self.game_over = False
+        self.game_is_over = False
         self.can_go_left = True
         self.can_go_right = True
 
@@ -312,7 +312,7 @@ class GameState:
         ):
             self.current_screen.add_element(self.launch_message)
 
-        if self.game_over:
+        if self.game_is_over:
             self.current_screen = Screens.END
 
         if len(self.bricks.sprites()) == 0:
@@ -373,9 +373,9 @@ class GameState:
         if self.pause_message in self.current_screen.elements:
             self.current_screen.elements.remove(self.pause_message)
 
-    def game_over_state(self):
+    def game_over(self):
         """Mark game as over."""
-        self.game_over = True
+        self.game_is_over = True
         sound.SoundManager.play_game_over()
         sound.SoundManager.stop_other_sounds()
 

@@ -111,7 +111,7 @@ class Ball(Sprite):
                     screen_state.paddle.reset_position()
                 else:
                     screen_state.lives -= 1
-                    screen_state.game_over_state()  # End Game
+                    screen_state.game_over()  # End Game
 
         return screen_state
 

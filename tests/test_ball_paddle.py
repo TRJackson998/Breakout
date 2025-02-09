@@ -126,7 +126,7 @@ def test_ball_life_lost():
     state = ball.move(screen_size, state)
 
     assert state.lives == 0, f"Expected lives to be 0, but got {state.lives}"
-    assert state.game_over is True, "Expected game_over to be True when lives reach 0"
+    assert state.game_is_over, "Expected game_is_over to be True when lives reach 0"
 
 
 def test_paddle_initialization():
