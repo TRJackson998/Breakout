@@ -28,8 +28,8 @@ from breakout import screen_size
 class Paddle(Sprite):
     """Carries all of the characteristics of the paddle"""
 
-    WIDTH = screen_size.width // 5
-    HEIGHT = screen_size.height // 25
+    width = screen_size.width // 5
+    height = screen_size.height // 25
 
     def __init__(
         self,
@@ -38,11 +38,14 @@ class Paddle(Sprite):
         x_position=screen_size.width // 2.5,
         y_position=screen_size.height // 1.25,
         speed=5,
+        width=None,
         timeout=None
     ):
         super().__init__(
             *groups,
         )
+        self.width = width if width else Paddle.width
+        self.height = Paddle.height
         self.x_position = x_position
         self.y_position = y_position
         self.color = color
@@ -53,7 +56,7 @@ class Paddle(Sprite):
         self.blink_interval = 600
 
         # Create the paddle surface
-        self.image = pygame.Surface((self.WIDTH, self.HEIGHT))
+        self.image = pygame.Surface((self.width, self.height))
         self.image.fill(color)
 
         # Initialize the rectangle for positioning
