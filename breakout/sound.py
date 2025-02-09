@@ -1,4 +1,6 @@
 # sound.py
+import time
+
 import pygame
 
 # Initialize the mixer (if not already initialized elsewhere)
@@ -57,8 +59,11 @@ class SoundManager:
     @staticmethod
     def play_game_over():
         """Plays game over sound"""
+        SoundManager.stop_background_music()
         if SoundManager.GAME_OVER_SOUND:
             SoundManager.GAME_OVER_SOUND.play()
+        time.sleep(1)
+        SoundManager.play_background_music()
 
     @staticmethod
     def play_background_music(loops=-1):
