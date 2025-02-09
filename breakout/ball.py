@@ -110,9 +110,8 @@ class Ball(Sprite):
                     screen_state.launched = False
                     screen_state.paddle.reset_position()
                 else:
-                    sound.SoundManager.play_game_over()
                     screen_state.lives -= 1
-                    screen_state.game_over = True  # End Game
+                    screen_state.game_over_state()  # End Game
 
         return screen_state
 

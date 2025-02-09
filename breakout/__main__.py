@@ -102,6 +102,8 @@ class Game:
 
         if screen == Screens.GAME:
             self.start_new_game()
+        elif screen == Screens.END:
+            self.state.game_over_state()
 
     def start_new_game(self):
         """
@@ -374,6 +376,8 @@ class GameState:
     def game_over_state(self):
         """Mark game as over."""
         self.game_over = True
+        sound.SoundManager.play_game_over()
+        sound.SoundManager.stop_other_sounds()
 
     def add_ball(self):
         try:
