@@ -179,6 +179,8 @@ class PowerDown(Sprite):
         self.can_collide_with_paddle = True
         self.blink_interval = PowerupConfig.blink_interval
         self.last_toggle = pygame.time.get_ticks()
+        self.exploded = False
+        self.explode_time = 0
 
         # Draw bomb body (shaded)
         self.image = pygame.Surface((self.radius * 6, self.radius * 6), pygame.SRCALPHA)
@@ -223,9 +225,14 @@ class PowerDown(Sprite):
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         now = pygame.time.get_ticks()
-        if now - self.last_toggle > self.blink_interval:
-            self.last_toggle = now
-            self.change_color()
+        if self.exploded:
+            if (self.explode_time + (self.blink_interval * 4)) < now:
+                self.collect()
+                self.kill()
+        else:
+            if now - self.last_toggle > self.blink_interval:
+                self.last_toggle = now
+                self.change_color()
 
         # Update position
         self.update_position()
@@ -246,13 +253,7 @@ class PowerDown(Sprite):
             and self.rect.colliderect(paddle.rect)
             and self.can_collide_with_paddle
         ):
-            self.speed_y = 0
-            self.generate_explosion()
-        elif self.speed_y == 0:
-            # give it another half sec for the explosion
-            time.sleep(0.5)
-            self.collect()
-            self.kill()
+            self.explode()
 
         if self.rect.bottom < paddle.rect.top:
             self.can_collide_with_paddle = True
@@ -263,6 +264,12 @@ class PowerDown(Sprite):
             [pygame.Color("red"), pygame.Color("orange"), pygame.Color("yellow")]
         )  # Simulates flickering
         pygame.draw.circle(self.image, fuse_color, self.fuse_end, self.radius // 2.5)
+
+    def explode(self):
+        self.exploded = True
+        self.explode_time = pygame.time.get_ticks()
+        self.speed_y = 0
+        self.generate_explosion()
 
     def generate_explosion(self):
         size = self.radius * 4
