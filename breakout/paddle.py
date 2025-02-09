@@ -46,8 +46,11 @@ class Paddle(Sprite):
         self.x_position = x_position
         self.y_position = y_position
         self.color = color
+        self.flicker_color = pygame.Color("black")
         self.speed = speed
         self.timeout = timeout
+        self.last_toggle = pygame.time.get_ticks()
+        self.blink_interval = 600
 
         # Create the paddle surface
         self.image = pygame.Surface((self.WIDTH, self.HEIGHT))
@@ -75,3 +78,14 @@ class Paddle(Sprite):
         new_x = self.x_position + self.speed
         self.x_position = max(0, min(screen_size.width - self.rect.width, new_x))
         self.rect.x = self.x_position
+
+    def change_color(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_toggle > self.blink_interval:
+            current_color = self.image.get_at((0, 0))
+            if current_color == self.color:
+                self.image.fill(self.flicker_color)
+            else:
+                self.image.fill(self.color)
+            self.last_toggle = now
+            self.blink_interval /= 1.25

@@ -350,12 +350,11 @@ class GameState:
                 self.can_go_right = False
             if not paddle.timeout:
                 continue
-            if (
-                self.current_screen == Screens.GAME
-                and not self.paused
-                and current_time >= paddle.timeout
-            ):
-                paddle.kill()
+            if self.current_screen == Screens.GAME and not self.paused:
+                if current_time >= paddle.timeout:
+                    paddle.kill()
+                elif current_time >= paddle.timeout - (3 * 1000):
+                    paddle.change_color()
 
         self.score_display.update(self.score)
         self.lives_display.update(self.lives)
