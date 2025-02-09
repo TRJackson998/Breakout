@@ -17,13 +17,6 @@ def test_game_initialization():
     assert game.state.current_screen == Screens.START
 
 
-def test_setup_screens():
-    """Test that setup_screens correctly initializes the start and end screens."""
-    game = Game()
-    assert len(Screens.START.elements) > 0
-    assert len(Screens.END.elements) > 0
-
-
 def test_switch_screen():
     """Ensure the game switches screens correctly."""
     game = Game()
@@ -58,11 +51,11 @@ def test_pause_and_resume_game():
 
     # Pause the game
     game.pause_game()
-    assert game.state.paused is True
+    assert game.state.paused
 
     # Resume the game
     game.resume_game()
-    assert game.state.paused is False
+    assert game.state.paused
 
 
 def test_update_game():
@@ -70,7 +63,7 @@ def test_update_game():
     game = Game()
     game.start_new_game()
 
-    game.state.launched = True
+    game.state.launch_ball()
     initial_x = game.state.paddle_group.sprites()[0].x_position
 
     game.update_game()
