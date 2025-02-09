@@ -26,6 +26,15 @@ class SoundManager:
         GAME_OVER_SOUND = None
         BACKGROUND_MUSIC = None
 
+    sound_effects = [
+        POWERUP_SOUND,
+        BRICK_SOUND,
+        PADDLE_SOUND,
+        WALL_SOUND,
+        LIFE_LOST_SOUND,
+        GAME_OVER_SOUND,
+    ]
+
     @staticmethod
     def play_powerup():
         """Plays powerup sound"""
@@ -76,3 +85,10 @@ class SoundManager:
         """Stops the background screen music."""
         if SoundManager.BACKGROUND_MUSIC:
             SoundManager.BACKGROUND_MUSIC.stop()
+
+    @staticmethod
+    def stop_other_sounds():
+        """Stops all sounds except background music."""
+        for sound in SoundManager.sound_effects:
+            if sound:
+                sound = None
