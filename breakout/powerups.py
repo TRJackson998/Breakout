@@ -29,7 +29,9 @@ Thomas Nugent
 
 """
 
+import math
 import random
+import time
 from dataclasses import dataclass
 from typing import Literal
 
@@ -179,7 +181,7 @@ class PowerDown(Sprite):
         self.last_toggle = pygame.time.get_ticks()
 
         # Draw bomb body (shaded)
-        self.image = pygame.Surface((self.radius * 4, self.radius * 4), pygame.SRCALPHA)
+        self.image = pygame.Surface((self.radius * 6, self.radius * 6), pygame.SRCALPHA)
 
         pygame.draw.circle(
             self.image,
@@ -213,7 +215,10 @@ class PowerDown(Sprite):
         )  # Simulates flickering
         pygame.draw.circle(self.image, fuse_color, self.fuse_end, self.radius // 2.5)
 
-        self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+        # I want the collide rectangle to be smaller
+        self.rect = pygame.Surface(
+            (self.radius * 4, self.radius * 4), pygame.SRCALPHA
+        ).get_rect(center=(self.radius * 4, self.radius * 4))
 
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
@@ -241,6 +246,11 @@ class PowerDown(Sprite):
             and self.rect.colliderect(paddle.rect)
             and self.can_collide_with_paddle
         ):
+            self.speed_y = 0
+            self.generate_explosion()
+        elif self.speed_y == 0:
+            # give it another half sec for the explosion
+            time.sleep(0.5)
             self.collect()
             self.kill()
 
@@ -253,3 +263,31 @@ class PowerDown(Sprite):
             [pygame.Color("red"), pygame.Color("orange"), pygame.Color("yellow")]
         )  # Simulates flickering
         pygame.draw.circle(self.image, fuse_color, self.fuse_end, self.radius // 2.5)
+
+    def generate_explosion(self):
+        size = self.radius * 4
+        outer_explosion = self.generate_explosion_points(size)
+        middle_explosion = self.generate_explosion_points(size * 0.7)
+        inner_explosion = self.generate_explosion_points(size * 0.4)
+
+        pygame.draw.polygon(self.image, pygame.Color("red"), outer_explosion)
+        pygame.draw.polygon(self.image, pygame.Color("orange"), middle_explosion)
+        pygame.draw.polygon(self.image, pygame.Color("yellow"), inner_explosion)
+
+    def generate_explosion_points(self, size) -> list[int]:
+        points = []
+        num_spikes = 12
+        angle_step = 360 / num_spikes
+
+        for i in range(num_spikes):
+            angle = i * angle_step
+            radius = size // 2 if i % 2 == 0 else size // 4  # Alternating spike sizes
+            x = self.radius * 3 - int(
+                radius * random.uniform(0.8, 1.2) * math.cos(math.radians(angle))
+            )
+            y = self.radius * 3 - int(
+                radius * random.uniform(0.8, 1.2) * math.sin(math.radians(angle))
+            )
+            points.append((x, y))
+
+        return points
