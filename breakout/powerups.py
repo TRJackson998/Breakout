@@ -39,6 +39,7 @@ from pygame.sprite import Sprite
 
 from breakout import color_choices, screen_size
 from breakout.paddle import Paddle
+from breakout import sound
 
 # pylint: disable=no-member
 
@@ -130,6 +131,7 @@ class PowerUp(Sprite):
             and self.rect.colliderect(paddle.rect)
             and self.can_collide_with_paddle
         ):
+            sound.SoundManager.play_powerup()
             self.collect()
             self.kill()
 

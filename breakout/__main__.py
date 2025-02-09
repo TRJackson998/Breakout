@@ -33,6 +33,7 @@ from breakout.paddle import Paddle
 from breakout.powerups import PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
+from breakout import sound
 
 # pylint: disable=no-member
 
@@ -73,6 +74,9 @@ class Game:
         self.setup_screens()
         self.state = GameState()
 
+        if self.state.current_screen == Screens.START:
+            sound.SoundManager.play_start_screen_music()
+
     def setup_screens(self):
         """Add static button elements to START and END screens"""
         # Start Screen
@@ -97,6 +101,14 @@ class Game:
         If the new screen is the game screen, start a new game
         """
         self.state.current_screen = screen
+
+        if screen == Screens.START:
+            # Play the start screen music.
+            sound.SoundManager.play_start_screen_music()
+        else:
+            # Stop the start screen music
+            sound.SoundManager.stop_start_screen_music()
+
         if screen == Screens.GAME:
             self.start_new_game()
 
