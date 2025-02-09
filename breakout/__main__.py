@@ -33,7 +33,6 @@ from breakout.paddle import Paddle
 from breakout.powerups import PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
-from breakout import sound
 
 # pylint: disable=no-member
 

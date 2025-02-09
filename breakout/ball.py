@@ -24,9 +24,9 @@ from dataclasses import dataclass
 
 import pygame
 from pygame.sprite import Sprite
-from breakout.paddle import Paddle
-from breakout import sound
 
+from breakout import sound
+from breakout.paddle import Paddle
 
 # pylint: disable=no-member
 
