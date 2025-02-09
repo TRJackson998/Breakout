@@ -13,7 +13,7 @@ class SoundManager:
         WALL_SOUND = pygame.mixer.Sound("breakout/sounds/wall_sound.wav")
         LIFE_LOST_SOUND = pygame.mixer.Sound("breakout/sounds/life_lost.wav")
         GAME_OVER_SOUND = pygame.mixer.Sound("breakout/sounds/game_over.wav")
-        BACKGROUND_MUSIC = pygame.mixer.Sound("breakout/sounds/background_music.wav")
+        BACKGROUND_MUSIC = pygame.mixer.Sound("breakout/sounds/background_music.mp3")
     except Exception as e:
         print("Error loading sound effects:", e)
         POWERUP_SOUND = None
