@@ -393,6 +393,21 @@ class GameState:
             speed_y=BallConfig.DEFAULT_SPEED,
         )
 
+    def lose_life(self):
+        """Lose a life"""
+        self.lives -= 1
+
+        if self.lives < 1:
+            self.game_over()
+            return
+
+        sound.SoundManager.play_life_lost()
+        for ball in self.ball_group.sprites():
+            ball.reset_position()
+        for paddle in self.paddle_group.sprites():
+            paddle.reset_position()
+        self.launched = False
+
 
 if __name__ == "__main__":
     Game().run()
