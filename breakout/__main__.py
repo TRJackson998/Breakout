@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pygame
 
-from breakout import color_choices, screen_size
+from breakout import color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle

@@ -21,6 +21,7 @@ Thomas Nugent
 
 import random
 from dataclasses import dataclass
+
 import pygame
 from pygame.sprite import Sprite
 from breakout.paddle import Paddle
