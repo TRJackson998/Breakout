@@ -83,12 +83,17 @@ class Paddle(Sprite):
         self.rect.x = self.x_position
 
     def change_color(self):
+        """Paddle powerups are temporary and should flicker out"""
         now = pygame.time.get_ticks()
         if now - self.last_toggle > self.blink_interval:
-            current_color = self.image.get_at((0, 0))
+            # if it's time to toggle
+            current_color = self.image.get_at((0, 0))  # check what color we are
+            # switch to the other color
             if current_color == self.color:
                 self.image.fill(self.flicker_color)
             else:
                 self.image.fill(self.color)
+
+            # we just toggled
             self.last_toggle = now
-            self.blink_interval /= 1.25
+            self.blink_interval /= 1.25  # speed up the flickering

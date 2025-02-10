@@ -337,16 +337,21 @@ class GameState:
         self.can_go_left = True
         self.can_go_right = True
         for paddle in self.paddle_group.sprites():
+            paddle: Paddle
             if paddle.x_position == 0:
                 self.can_go_left = False
             if paddle.x_position == screen_size.width - paddle.rect.width:
                 self.can_go_right = False
             if not paddle.timeout:
+                # not a temp paddle
                 continue
+
+            # temp paddle, update it
             if self.current_screen == Screens.GAME and not self.paused:
                 if current_time >= paddle.timeout:
                     paddle.kill()
                 elif current_time >= paddle.timeout - (3 * 1000):
+                    # in the last 3 seconds of its life, flicker out
                     paddle.change_color()
 
         self.score_display.update(self.score)
@@ -395,14 +400,21 @@ class GameState:
         )
 
     def add_paddle(self):
+        """
+        Add a new paddle to the screen as a powerup
 
+        This paddle is twice as big and appears centered on the original
+        """
         Paddle(
             self.paddle_group,
-            x_position=self.paddle.x_position - (Paddle.width // 2),
-            width=Paddle.width * 2,
+            x_position=self.paddle.x_position
+            - (Paddle.width // 2),  # in the center of the current paddle
+            width=Paddle.width * 2,  # twice as big
             color=random.choice(color_choices),
             timeout=pygame.time.get_ticks()
-            + random.randint(self.min_wait_time, self.max_wait_time),
+            + random.randint(
+                self.min_wait_time, self.max_wait_time
+            ),  # when it should disappear
         )
 
     def lose_life(self):
