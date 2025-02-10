@@ -219,7 +219,7 @@ class PowerDown(Sprite):
         # I want the collide rectangle to be smaller
         self.rect = pygame.Surface(
             (self.radius * 4, self.radius * 4), pygame.SRCALPHA
-        ).get_rect(center=(self.radius * 4, self.radius * 4))
+        ).get_rect(center=(self.x_position, self.y_position))
 
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
