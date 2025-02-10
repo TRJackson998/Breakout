@@ -436,6 +436,9 @@ class GameState:
             ball.reset_position()
         for paddle in self.paddle_group.sprites():
             paddle.reset_position()
+
+        self.can_go_left = True
+        self.can_go_right = True
         self.launched = False
 
 
