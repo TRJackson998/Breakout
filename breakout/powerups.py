@@ -176,7 +176,6 @@ class PowerDown(Sprite):
         self.radius = PowerupConfig.size
         self.speed_y = PowerupConfig.default_speed
         self.collect = power
-        self.can_collide_with_paddle = True
         self.blink_interval = PowerupConfig.blink_interval
         self.last_toggle = pygame.time.get_ticks()
         self.exploded = False
@@ -248,15 +247,8 @@ class PowerDown(Sprite):
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
-        if (
-            self.speed_y > 0
-            and self.rect.colliderect(paddle.rect)
-            and self.can_collide_with_paddle
-        ):
+        if self.speed_y > 0 and self.rect.colliderect(paddle.rect):
             self.explode()
-
-        if self.rect.bottom < paddle.rect.top:
-            self.can_collide_with_paddle = True
 
     def change_color(self):
         """Redraw flickering spark at the end of the fuse"""
