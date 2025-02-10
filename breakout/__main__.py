@@ -278,7 +278,7 @@ class GameState:
         # Power-up spawn timing
         self.min_wait_time = 15 * 1000  # 15 seconds in milliseconds
         self.max_wait_time = 30 * 1000  # 30 seconds in milliseconds
-        self.next_powerup_time = pygame.time.get_ticks() + random.randint(
+        self.next_powerup_time = self.time + random.randint(
             self.min_wait_time, self.max_wait_time
         )
 
@@ -320,10 +320,9 @@ class GameState:
             Screens.GAME.add_element(self.bricks)
 
         # add a powerup at random intervals
-        current_time = pygame.time.get_ticks()
         if (
             self.current_screen == Screens.GAME
-            and current_time >= self.next_powerup_time
+            and self.time >= self.next_powerup_time
             and self.launched
             and len(self.powerup_group.sprites()) == 0
         ):
@@ -333,7 +332,7 @@ class GameState:
                 random_powerup = random.choice(self.powerup_choices)
             random_powerup()
 
-            self.next_powerup_time = current_time + random.randint(
+            self.next_powerup_time = self.time + random.randint(
                 self.min_wait_time, self.max_wait_time
             )
 
@@ -350,10 +349,14 @@ class GameState:
                 continue
 
             # temp paddle, update it
-            if self.current_screen == Screens.GAME and not self.paused:
-                if current_time >= paddle.timeout:
+            if (
+                self.current_screen == Screens.GAME
+                and self.launched
+                and not self.paused
+            ):
+                if self.time >= paddle.timeout:
                     paddle.kill()
-                elif current_time >= paddle.timeout - (3 * 1000):
+                elif self.time >= paddle.timeout - (3 * 1000):
                     # in the last 3 seconds of its life, flicker out
                     paddle.change_color()
 
@@ -414,7 +417,7 @@ class GameState:
             - (Paddle.width // 2),  # in the center of the current paddle
             width=Paddle.width * 2,  # twice as big
             color=random.choice(color_choices),
-            timeout=pygame.time.get_ticks()
+            timeout=self.time
             + random.randint(
                 self.min_wait_time, self.max_wait_time
             ),  # when it should disappear
