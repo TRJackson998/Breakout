@@ -398,7 +398,7 @@ class GameState:
 
         Paddle(
             self.paddle_group,
-            x_position=self.paddle.x_position,
+            x_position=self.paddle.x_position - (Paddle.width // 2),
             width=Paddle.width * 2,
             color=random.choice(color_choices),
             timeout=pygame.time.get_ticks()
