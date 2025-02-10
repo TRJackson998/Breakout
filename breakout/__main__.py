@@ -288,14 +288,7 @@ class GameState:
 
         self.powerup_choices = [
             lambda: PowerUp(
-                self.powerup_group,
-                power=lambda: Paddle(
-                    self.paddle_group,
-                    color=random.choice(color_choices),
-                    timeout=pygame.time.get_ticks()
-                    + random.randint(self.min_wait_time, self.max_wait_time),
-                ),
-                shape="rectangle",
+                self.powerup_group, power=self.add_paddle, shape="rectangle"
             ),
             lambda: PowerUp(
                 self.powerup_group,
@@ -399,6 +392,15 @@ class GameState:
             x_position=power_up_position.center[0],
             color=random.choice(color_choices),
             speed_y=BallConfig.DEFAULT_SPEED,
+        )
+
+    def add_paddle(self):
+
+        Paddle(
+            self.paddle_group,
+            color=random.choice(color_choices),
+            timeout=pygame.time.get_ticks()
+            + random.randint(self.min_wait_time, self.max_wait_time),
         )
 
     def lose_life(self):
