@@ -30,7 +30,7 @@ from breakout import color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
-from breakout.powerups import PowerUp
+from breakout.powerups import PowerDown, PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
 
@@ -103,7 +103,7 @@ class Game:
         if screen == Screens.GAME:
             self.start_new_game()
         elif screen == Screens.END:
-            self.state.game_over_state()
+            self.state.game_over()
 
     def start_new_game(self):
         """
@@ -202,7 +202,7 @@ class Game:
 
     def update_game(self):
         """Handle the gameplay"""
-        if self.state.paused or self.state.game_over:
+        if self.state.paused or self.state.game_is_over:
             return
 
         keys = pygame.key.get_pressed()
@@ -250,7 +250,9 @@ class Game:
 
             self.state.current_screen.draw(self.window)
             pygame.display.update()
-            self.clock.tick(50)
+            time = self.clock.tick(50)
+            if not self.state.paused and self.state.launched:
+                self.state.time += time
 
 
 class GameState:
@@ -260,6 +262,7 @@ class GameState:
         """Reset the game state for a new game."""
         self.score = 0  # Default starting score
         self.lives = 3  # Default starting lives
+        self.time = 0
         self.bricks = Brick.create_brick_layout(rows=6, cols=8)
         self.ball_group = pygame.sprite.Group()
         self.powerup_group = pygame.sprite.Group()
@@ -275,32 +278,26 @@ class GameState:
         # Power-up spawn timing
         self.min_wait_time = 15 * 1000  # 15 seconds in milliseconds
         self.max_wait_time = 30 * 1000  # 30 seconds in milliseconds
-        self.next_powerup_time = pygame.time.get_ticks() + random.randint(
+        self.next_powerup_time = self.time + random.randint(
             self.min_wait_time, self.max_wait_time
         )
 
         # State flags
         self.launched = False
         self.paused = False
-        self.game_over = False
+        self.game_is_over = False
         self.can_go_left = True
         self.can_go_right = True
 
         self.powerup_choices = [
             lambda: PowerUp(
-                self.powerup_group,
-                power=lambda: Paddle(
-                    self.paddle_group,
-                    color=random.choice(color_choices),
-                    timeout=pygame.time.get_ticks()
-                    + random.randint(self.min_wait_time, self.max_wait_time),
-                ),
-                shape="rectangle",
+                self.powerup_group, power=self.add_paddle, shape="rectangle"
             ),
             lambda: PowerUp(
                 self.powerup_group,
                 power=self.add_ball,
             ),
+            lambda: PowerDown(self.powerup_group, power=self.lose_life),
         ]
 
     def update(self):
@@ -312,7 +309,7 @@ class GameState:
         ):
             self.current_screen.add_element(self.launch_message)
 
-        if self.game_over:
+        if self.game_is_over:
             self.current_screen = Screens.END
 
         if len(self.bricks.sprites()) == 0:
@@ -323,31 +320,45 @@ class GameState:
             Screens.GAME.add_element(self.bricks)
 
         # add a powerup at random intervals
-        current_time = pygame.time.get_ticks()
         if (
             self.current_screen == Screens.GAME
-            and current_time >= self.next_powerup_time
+            and self.time >= self.next_powerup_time
             and self.launched
             and len(self.powerup_group.sprites()) == 0
         ):
-            random_powerup = random.choice(self.powerup_choices)
+            if len(self.paddle_group.sprites()) > 1:
+                random_powerup = random.choice(self.powerup_choices[1:])
+            else:
+                random_powerup = random.choice(self.powerup_choices)
             random_powerup()
 
-            self.next_powerup_time = current_time + random.randint(
+            self.next_powerup_time = self.time + random.randint(
                 self.min_wait_time, self.max_wait_time
             )
 
         self.can_go_left = True
         self.can_go_right = True
         for paddle in self.paddle_group.sprites():
+            paddle: Paddle
             if paddle.x_position == 0:
                 self.can_go_left = False
             if paddle.x_position == screen_size.width - paddle.rect.width:
                 self.can_go_right = False
             if not paddle.timeout:
+                # not a temp paddle
                 continue
-            if self.current_screen == Screens.GAME and current_time >= paddle.timeout:
-                paddle.kill()
+
+            # temp paddle, update it
+            if (
+                self.current_screen == Screens.GAME
+                and self.launched
+                and not self.paused
+            ):
+                if self.time >= paddle.timeout:
+                    paddle.kill()
+                elif self.time >= paddle.timeout - (3 * 1000):
+                    # in the last 3 seconds of its life, flicker out
+                    paddle.change_color()
 
         self.score_display.update(self.score)
         self.lives_display.update(self.lives)
@@ -373,13 +384,14 @@ class GameState:
         if self.pause_message in self.current_screen.elements:
             self.current_screen.elements.remove(self.pause_message)
 
-    def game_over_state(self):
+    def game_over(self):
         """Mark game as over."""
-        self.game_over = True
+        self.game_is_over = True
         sound.SoundManager.play_game_over()
         sound.SoundManager.stop_other_sounds()
 
     def add_ball(self):
+        """Add a ball to the game"""
         try:
             power_up = self.powerup_group.sprites()[0]
         except IndexError:
@@ -392,6 +404,42 @@ class GameState:
             color=random.choice(color_choices),
             speed_y=BallConfig.DEFAULT_SPEED,
         )
+
+    def add_paddle(self):
+        """
+        Add a new paddle to the screen as a powerup
+
+        This paddle is twice as big and appears centered on the original
+        """
+        Paddle(
+            self.paddle_group,
+            x_position=self.paddle.x_position
+            - (Paddle.width // 2),  # in the center of the current paddle
+            width=Paddle.width * 2,  # twice as big
+            color=random.choice(color_choices),
+            timeout=self.time
+            + random.randint(
+                self.min_wait_time, self.max_wait_time
+            ),  # when it should disappear
+        )
+
+    def lose_life(self):
+        """Lose a life"""
+        self.lives -= 1
+
+        if self.lives < 1:
+            self.game_over()
+            return
+
+        sound.SoundManager.play_life_lost()
+        for ball in self.ball_group.sprites():
+            ball.reset_position()
+        for paddle in self.paddle_group.sprites():
+            paddle.reset_position()
+
+        self.can_go_left = True
+        self.can_go_right = True
+        self.launched = False
 
 
 if __name__ == "__main__":

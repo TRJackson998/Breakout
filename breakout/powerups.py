@@ -29,7 +29,9 @@ Thomas Nugent
 
 """
 
+import math
 import random
+import time
 from dataclasses import dataclass
 from typing import Literal
 
@@ -37,9 +39,8 @@ import pygame
 from pygame.font import SysFont
 from pygame.sprite import Sprite
 
-from breakout import color_choices, screen_size
+from breakout import color_choices, screen_size, sound
 from breakout.paddle import Paddle
-from breakout import sound
 
 # pylint: disable=no-member
 
@@ -162,3 +163,130 @@ class PowerUp(Sprite):
             center=(self.size, self.size)
         )  # Center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
+
+
+class PowerDown(Sprite):
+    def __init__(self, *groups, power=lambda: None):
+        super().__init__(*groups)
+        self.x_position = random.randint(
+            PowerupConfig.size * 5, screen_size.width - PowerupConfig.size * 5
+        )
+        self.y_position = 15
+        self.speed_x = 0
+        self.radius = PowerupConfig.size
+        self.speed_y = PowerupConfig.default_speed
+        self.collect = power
+        self.blink_interval = PowerupConfig.blink_interval
+        self.last_toggle = pygame.time.get_ticks()
+        self.exploded = False
+        self.explode_time = 0
+
+        # Draw bomb body (shaded)
+        self.image = pygame.Surface((self.radius * 6, self.radius * 6), pygame.SRCALPHA)
+
+        pygame.draw.circle(
+            self.image,
+            pygame.Color("dark gray"),
+            (self.radius * 3, self.radius * 3),
+            self.radius,
+        )  # Outline
+        pygame.draw.circle(
+            self.image,
+            pygame.Color("black"),
+            (self.radius * 3, self.radius * 3),
+            self.radius // 1.25,
+        )  # Main body
+        pygame.draw.circle(
+            self.image,
+            pygame.Color("white"),
+            (self.radius * 3 - 2.25, self.radius * 3 - 2.25),
+            self.radius // 2.25,
+        )  # Highlight
+
+        # Draw fuse
+        fuse_start = (self.radius * 3, self.radius * 2)
+        self.fuse_end = (self.radius * 3.5, self.radius)
+        pygame.draw.line(
+            self.image, pygame.Color("dark gray"), fuse_start, self.fuse_end, 3
+        )
+
+        # Flickering spark at the end of the fuse
+        fuse_color = random.choice(
+            [pygame.Color("red"), pygame.Color("orange"), pygame.Color("yellow")]
+        )  # Simulates flickering
+        pygame.draw.circle(self.image, fuse_color, self.fuse_end, self.radius // 2.5)
+
+        # I want the collide rectangle to be smaller
+        self.rect = pygame.Surface(
+            (self.radius * 4, self.radius * 4), pygame.SRCALPHA
+        ).get_rect(center=(self.x_position, self.y_position))
+
+    def move(self, screen_state):
+        """Handles movement and collision with walls, paddle, and bricks."""
+        now = pygame.time.get_ticks()
+        if self.exploded:
+            if (self.explode_time + (self.blink_interval * 4)) < now:
+                self.collect()
+                self.kill()
+        else:
+            if now - self.last_toggle > self.blink_interval:
+                self.last_toggle = now
+                self.change_color()
+
+        # Update position
+        self.update_position()
+        for paddle in screen_state.paddle_group.sprites():
+            self.handle_paddle_collision(paddle)
+        if self.y_position >= screen_size.height:
+            self.kill()
+
+    def update_position(self):
+        """Update the powerup's position based on its speed."""
+        self.y_position += self.speed_y
+        self.rect.y = self.y_position
+
+    def handle_paddle_collision(self, paddle: Paddle):
+        """Handle collisions with the paddle"""
+        if self.speed_y > 0 and self.rect.colliderect(paddle.rect):
+            self.explode()
+
+    def change_color(self):
+        """Redraw flickering spark at the end of the fuse"""
+        fuse_color = random.choice(
+            [pygame.Color("red"), pygame.Color("orange"), pygame.Color("yellow")]
+        )  # Simulates flickering
+        pygame.draw.circle(self.image, fuse_color, self.fuse_end, self.radius // 2.5)
+
+    def explode(self):
+        self.exploded = True
+        self.explode_time = pygame.time.get_ticks()
+        self.speed_y = 0
+        self.generate_explosion()
+
+    def generate_explosion(self):
+        size = self.radius * 4
+        outer_explosion = self.generate_explosion_points(size)
+        middle_explosion = self.generate_explosion_points(size * 0.7)
+        inner_explosion = self.generate_explosion_points(size * 0.4)
+
+        pygame.draw.polygon(self.image, pygame.Color("red"), outer_explosion)
+        pygame.draw.polygon(self.image, pygame.Color("orange"), middle_explosion)
+        pygame.draw.polygon(self.image, pygame.Color("yellow"), inner_explosion)
+
+    def generate_explosion_points(self, size) -> list[int]:
+        points = []
+        num_spikes = 12
+        angle_step = 360 / num_spikes
+
+        for i in range(num_spikes):
+            angle = i * angle_step
+            radius = size // 2 if i % 2 == 0 else size // 4  # Alternating spike sizes
+            x = self.radius * 3 - int(
+                radius * random.uniform(0.8, 1.2) * math.cos(math.radians(angle))
+            )
+            y = self.radius * 3 - int(
+                radius * random.uniform(0.8, 1.2) * math.sin(math.radians(angle))
+            )
+            points.append((x, y))
+
+        return points
