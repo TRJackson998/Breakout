@@ -30,13 +30,14 @@ class Paddle(Sprite):
 
     width = screen_size.width // 5
     height = screen_size.height // 25
+    initial_x = screen_size.width // 2.5
+    initial_y = screen_size.height // 1.25
 
     def __init__(
         self,
         *groups,
         color=pygame.Color("white"),
-        x_position=screen_size.width // 2.5,
-        y_position=screen_size.height // 1.25,
+        x_position=None,
         speed=5,
         width=None,
         timeout=None
@@ -46,8 +47,8 @@ class Paddle(Sprite):
         )
         self.width = width if width else Paddle.width
         self.height = Paddle.height
-        self.x_position = x_position
-        self.y_position = y_position
+        self.x_position = x_position if x_position else Paddle.initial_x
+        self.y_position = Paddle.initial_y
         self.color = color
         self.flicker_color = pygame.Color("black")
         self.speed = speed
@@ -57,7 +58,7 @@ class Paddle(Sprite):
 
         # Create the paddle surface
         self.image = pygame.Surface((self.width, self.height))
-        self.image.fill(color)
+        self.image.fill(self.color)
 
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
