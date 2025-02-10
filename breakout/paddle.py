@@ -62,13 +62,12 @@ class Paddle(Sprite):
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
 
-        # Store the initial position for later resets
-        self.initial_position = (self.x_position, self.y_position)
-
     def reset_position(self):
         """Reset the paddle to its initial position."""
-        self.x_position, self.y_position = self.initial_position
-        self.rect.topleft = self.initial_position
+        self.image = pygame.Surface((self.width, self.height))
+        self.x_position = Paddle.initial_x
+        self.image.fill(self.color)
+        self.rect = self.image.get_rect(topleft=(Paddle.initial_x, Paddle.initial_y))
 
     def move_left(self):
         """Move the paddle to the left"""
