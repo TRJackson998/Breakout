@@ -21,7 +21,7 @@ import pygame
 
 from breakout import screen_size
 from breakout.__main__ import Game, GameState
-from breakout.screens import ArrowButton, LaunchMessage, ScreenManager, Screens
+from breakout.screens import ArrowButton, BlinkingMessage, ScreenManager, Screens
 
 
 def test_game_initialization():
@@ -191,7 +191,7 @@ def test_arrow_button_click():
 def test_launch_message_blink_toggle():
     """Check that LaunchMessage toggles its visibility after the blink interval."""
     surface = pygame.Surface((screen_size.width, screen_size.height))
-    lm = LaunchMessage(
+    lm = BlinkingMessage(
         "Test Launch",
         pos=(screen_size.width // 2, screen_size.height // 2),
         blink_interval=1,

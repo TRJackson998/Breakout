@@ -32,7 +32,13 @@ from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.powerups import PowerDown, PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
-from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
+from breakout.screens import (
+    ArrowButton,
+    BlinkingMessage,
+    Button,
+    ScreenManager,
+    Screens,
+)
 
 # pylint: disable=no-member
 
@@ -270,8 +276,8 @@ class GameState:
         self.paddle = Paddle(self.paddle_group)
         self.score_display = ScoreDisplay(self.score)
         self.lives_display = LivesDisplay(self.lives)
-        self.launch_message = LaunchMessage()
-        self.pause_message = LaunchMessage("Paused!", blink_interval=500)
+        self.launch_message = BlinkingMessage("Press ↑ to Launch!")
+        self.pause_message = BlinkingMessage("Paused!", blink_interval=500)
         self.current_screen: ScreenManager = screen
 
         # Power-up spawn timing

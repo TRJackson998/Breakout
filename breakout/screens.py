@@ -237,14 +237,14 @@ class ArrowButton:
             self.pressed = False
 
 
-class LaunchMessage:
+class BlinkingMessage:
     """Displays a launch message with blinking effect."""
 
     _font = SysFont("courier", max(screen_size.width // 20, 14))
 
     def __init__(
         self,
-        text="Press ↑ to Launch!",
+        text: str,
         pos=None,
         text_color=pygame.Color("white"),
         background_color=pygame.Color("blue"),
@@ -273,7 +273,9 @@ class LaunchMessage:
 
         if self.visible:
             # Render the text.
-            rendered_text = LaunchMessage._font.render(self.text, True, self.text_color)
+            rendered_text = BlinkingMessage._font.render(
+                self.text, True, self.text_color
+            )
             text_rect = rendered_text.get_rect(center=self.pos)
 
             bg_rect = text_rect.inflate(self.padding * 2, self.padding * 2)
