@@ -132,10 +132,10 @@ def test_powerup_spawn_timing():
 
     # Simulate game state where power-ups can spawn
     game_state.launch_ball()
-    current_time = pygame.time.get_ticks()
+    game_state.time += 2000
 
     # Force the next power-up spawn time to trigger
-    game_state.next_powerup_time = current_time - 1000  # Set to the past
+    game_state.next_powerup_time = game_state.time - 1000  # Set to the past
     game_state.update()
 
     # Verify a power-up was added to the group
