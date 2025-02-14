@@ -49,7 +49,7 @@ class Game:
             # PyInstaller creates a temp folder and stores path in _MEIPASS
             base_path = Path(sys._MEIPASS)
         except Exception:
-            base_path = Path(__file__).joinpath("..")
+            base_path = Path(__file__).parent
         start_bg = pygame.image.load(
             base_path.joinpath("textures", "StartScreen.jpg")
         ).convert()

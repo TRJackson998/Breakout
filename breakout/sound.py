@@ -33,7 +33,7 @@ class SoundManager:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = Path(sys._MEIPASS)
     except Exception:
-        base_path = Path(__file__).joinpath("..")
+        base_path = Path(__file__).parent
 
     sound_path = base_path.joinpath("sounds")
 
