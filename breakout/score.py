@@ -143,7 +143,7 @@ class LivesDisplay:
     def __init__(self, lives=2):
         self.lives = lives
 
-    def update(self, lives):
+    def update(self, lives: int):
         """Update the number of lives displayed."""
         self.lives = lives
 

@@ -36,10 +36,10 @@ class Brick(Sprite):
     def __init__(
         self,
         *groups,
-        color=pygame.Color(255, 0, 0),
-        x_position=0,
-        y_position=0,
-        border_radius=5
+        color: pygame.Color,
+        x_position: int = 0,
+        y_position: int = 0,
+        border_radius: int = 5
     ):
         super().__init__(
             *groups,
@@ -74,7 +74,7 @@ class Brick(Sprite):
         return self.points
 
     @classmethod
-    def create_brick_layout(cls, rows, cols):
+    def create_brick_layout(cls, rows: int, cols: int):
         """Orders and centers the brick grid layout with dynamic colors."""
         brick_group = pygame.sprite.Group()
 

@@ -25,8 +25,11 @@ from dataclasses import dataclass
 import pygame
 from pygame.sprite import Sprite
 
-from breakout import sound
+from breakout import Size
+from breakout.__main__ import GameState
+from breakout.bricks import Brick
 from breakout.paddle import Paddle
+from breakout.sound import SoundManager
 
 # pylint: disable=no-member
 
@@ -49,11 +52,11 @@ class Ball(Sprite):
     def __init__(
         self,
         *groups,
-        x_position=BallConfig.initial_x,
-        y_position=BallConfig.initial_y,
-        speed_y=-BallConfig.default_speed,
-        radius=BallConfig.radius,
-        color=BallConfig.color,
+        x_position: int = BallConfig.initial_x,
+        y_position: int = BallConfig.initial_y,
+        speed_y: int = -BallConfig.default_speed,
+        radius: int = BallConfig.radius,
+        color: pygame.Color = BallConfig.color,
     ):
         """
         Initialize the ball.
@@ -83,7 +86,7 @@ class Ball(Sprite):
         self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size, screen_state):
+    def move(self, screen_size: Size, screen_state: GameState):
         """Handles movement and collision with walls, paddle, and bricks."""
         # Update position
         self.update_position()
@@ -114,17 +117,17 @@ class Ball(Sprite):
         self.rect.x = self.x_position
         self.rect.y = self.y_position
 
-    def handle_wall_collisions(self, screen_size):
+    def handle_wall_collisions(self, screen_size: Size):
         """Handle collisions with the walls and ceiling."""
         if (
             self.x_position <= 0
             or self.x_position >= screen_size.width - self.rect.width
         ):
             self.bounce_x()
-            sound.SoundManager.play_wall()
+            SoundManager.play_wall()
         if self.y_position <= 0:
             self.bounce_y()  # Reverse vertical movement
-            sound.SoundManager.play_wall()
+            SoundManager.play_wall()
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
@@ -134,7 +137,7 @@ class Ball(Sprite):
             and self.can_collide_with_paddle
         ):
             self.bounce_y()
-            sound.SoundManager.play_paddle()
+            SoundManager.play_paddle()
             self.y_position = paddle.rect.top - self.rect.height
 
             # Adjust horizontal speed based on where the ball hits the paddle
@@ -163,6 +166,7 @@ class Ball(Sprite):
         reversed_y = False
 
         for brick in hit_bricks:
+            brick: Brick
             vertical_overlap = min(
                 abs(self.rect.bottom - brick.rect.top),
                 abs(self.rect.top - brick.rect.bottom),
@@ -182,7 +186,7 @@ class Ball(Sprite):
             points += brick.hit()
 
             # Play sound effect for each brick hit
-            sound.SoundManager.play_brick()
+            SoundManager.play_brick()
         return points
 
     def bounce_x(self):

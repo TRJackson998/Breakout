@@ -36,11 +36,11 @@ class Paddle(Sprite):
     def __init__(
         self,
         *groups,
-        color=pygame.Color("white"),
-        x_position=None,
-        speed=5,
-        width=None,
-        timeout=None
+        color: pygame.Color = pygame.Color("white"),
+        x_position: int = None,
+        speed: int = 5,
+        width: int = None,
+        timeout: int = None
     ):
         super().__init__(
             *groups,

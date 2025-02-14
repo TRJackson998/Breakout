@@ -35,6 +35,7 @@ from pygame.font import SysFont
 from pygame.sprite import Sprite
 
 from breakout import color_choices, screen_size, sound
+from breakout.__main__ import GameState
 from breakout.paddle import Paddle
 
 # pylint: disable=no-member
@@ -55,10 +56,10 @@ class PowerUp(Sprite):
     def __init__(
         self,
         *groups,
-        power,
+        power=lambda: None,
         shape: Literal["circle", "rectangle"] = "circle",
-        size=PowerupConfig.size,
-        color=random.choice([i for i in range(len(color_choices))])
+        size: int = PowerupConfig.size,
+        color: int = random.choice([i for i in range(len(color_choices))])
     ):
         super().__init__(*groups)
         self.font = SysFont("courier", max(screen_size.width // 30, 14))
@@ -96,7 +97,7 @@ class PowerUp(Sprite):
         )  # Center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
-    def move(self, screen_state):
+    def move(self, screen_state: GameState):
         """Handles movement and collision with walls, paddle, and bricks."""
         now = pygame.time.get_ticks()
         if now - self.last_toggle > self.blink_interval:
@@ -216,7 +217,7 @@ class PowerDown(Sprite):
             (self.radius * 4, self.radius * 4), pygame.SRCALPHA
         ).get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_state):
+    def move(self, screen_state: GameState):
         """Handles movement and collision with walls, paddle, and bricks."""
         now = pygame.time.get_ticks()
         if self.exploded:
@@ -268,7 +269,7 @@ class PowerDown(Sprite):
         pygame.draw.polygon(self.image, pygame.Color("orange"), middle_explosion)
         pygame.draw.polygon(self.image, pygame.Color("yellow"), inner_explosion)
 
-    def generate_explosion_points(self, size) -> list[int]:
+    def generate_explosion_points(self, size: int) -> list[int]:
         points = []
         num_spikes = 12
         angle_step = 360 / num_spikes
