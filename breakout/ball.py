@@ -36,11 +36,11 @@ class BallConfig:
     """Configuration for Ball constants."""
 
     radius = 10
-    DEFAULT_SPEED = 2.5
-    MAX_SPEED = 5.0
-    INITIAL_X = 250
-    INITIAL_Y = 380
-    COLOR = pygame.Color("white")
+    default_speed = 2.5
+    max_speed = 5.0
+    initial_x = 250
+    initial_y = 380
+    color = pygame.Color("white")
 
 
 class Ball(Sprite):
@@ -49,11 +49,11 @@ class Ball(Sprite):
     def __init__(
         self,
         *groups,
-        x_position=BallConfig.INITIAL_X,
-        y_position=BallConfig.INITIAL_Y,
-        speed_y=-BallConfig.DEFAULT_SPEED,
+        x_position=BallConfig.initial_x,
+        y_position=BallConfig.initial_y,
+        speed_y=-BallConfig.default_speed,
         radius=BallConfig.radius,
-        color=BallConfig.COLOR,
+        color=BallConfig.color,
     ):
         """
         Initialize the ball.
@@ -78,7 +78,7 @@ class Ball(Sprite):
 
         # Configure ball properties
         self.speed_x = random.choice(
-            [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
+            [-BallConfig.default_speed, BallConfig.default_speed]
         )
         self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
@@ -143,10 +143,10 @@ class Ball(Sprite):
             offset = ball_center - paddle_center
             max_offset = paddle.rect.width / 2
             self.speed_x = max(
-                -BallConfig.MAX_SPEED,
+                -BallConfig.max_speed,
                 min(
-                    BallConfig.DEFAULT_SPEED * (offset / max_offset),
-                    BallConfig.MAX_SPEED,
+                    BallConfig.default_speed * (offset / max_offset),
+                    BallConfig.max_speed,
                 ),
             )
 
@@ -196,10 +196,10 @@ class Ball(Sprite):
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
         self.speed_x = random.choice(
-            [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
+            [-BallConfig.default_speed, BallConfig.default_speed]
         )
-        self.speed_y = -BallConfig.DEFAULT_SPEED
-        self.x_position = BallConfig.INITIAL_X
-        self.y_position = BallConfig.INITIAL_Y
+        self.speed_y = -BallConfig.default_speed
+        self.x_position = BallConfig.initial_x
+        self.y_position = BallConfig.initial_y
         self.rect.x = self.x_position
         self.rect.y = self.y_position
