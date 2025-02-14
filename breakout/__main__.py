@@ -268,7 +268,7 @@ class GameState:
         self.score = 0  # Default starting score
         self.lives = 3  # Default starting lives
         self.time = 0
-        self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+        self.bricks = Brick.create_brick_layout(rows=1, cols=1)
         self.ball_group = pygame.sprite.Group()
         self.powerup_group = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
@@ -314,6 +314,7 @@ class GameState:
         # broke all bricks, go again
         if len(self.bricks.sprites()) == 0:
             for ball in self.ball_group.sprites():
+                ball.increase_speed()  # Increase speed for each ball
                 ball.reset_position()
             self.launch_ball()
             self.bricks = Brick.create_brick_layout(rows=6, cols=8)
