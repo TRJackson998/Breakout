@@ -1,11 +1,27 @@
-"""Test game/GUI events"""
+"""
+Test Game
+=========
+Test game/GUI events
 
-import pytest
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
+
 import pygame
-from breakout.screens import ScreenManager, Button, ArrowButton, LaunchMessage
+
 from breakout import screen_size
 from breakout.__main__ import Game, GameState
-from breakout.screens import Screens
+from breakout.screens import ArrowButton, BlinkingMessage, ScreenManager, Screens
 
 
 def test_game_initialization():
@@ -116,10 +132,10 @@ def test_powerup_spawn_timing():
 
     # Simulate game state where power-ups can spawn
     game_state.launch_ball()
-    current_time = pygame.time.get_ticks()
+    game_state.time += 2000
 
     # Force the next power-up spawn time to trigger
-    game_state.next_powerup_time = current_time - 1000  # Set to the past
+    game_state.next_powerup_time = game_state.time - 1000  # Set to the past
     game_state.update()
 
     # Verify a power-up was added to the group
@@ -175,7 +191,7 @@ def test_arrow_button_click():
 def test_launch_message_blink_toggle():
     """Check that LaunchMessage toggles its visibility after the blink interval."""
     surface = pygame.Surface((screen_size.width, screen_size.height))
-    lm = LaunchMessage(
+    lm = BlinkingMessage(
         "Test Launch",
         pos=(screen_size.width // 2, screen_size.height // 2),
         blink_interval=1,

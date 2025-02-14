@@ -1,11 +1,30 @@
-"""Test file for powerup actions"""
+"""
+Test Powerups
+=============
+Test file for powerup actions
+
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
 
 from unittest.mock import Mock
+
 import pygame
-from breakout.__main__ import GameState
-from breakout.powerups import PowerUp, PowerupConfig
+
 from breakout import screen_size
+from breakout.__main__ import GameState
 from breakout.paddle import Paddle
+from breakout.powerups import PowerUp, PowerupConfig
 from breakout.screens import Screens
 
 

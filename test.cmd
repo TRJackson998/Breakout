@@ -1,0 +1,1 @@
+call poetry run pytest --cov=breakout tests/

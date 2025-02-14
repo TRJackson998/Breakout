@@ -1,4 +1,22 @@
-"""Test ball object and its movements/actions."""
+"""
+Test Ball and Paddle
+====================
+Test ball object and its movements/actions.
+Test paddle object and its interactions with the screen and ball.
+
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
 
 from pygame import Color, sprite
 
@@ -133,9 +151,10 @@ def test_paddle_initialization():
     """Verify that a Paddle is initialized with the correct default settings."""
     paddle = Paddle()
     # Check that the paddle's starting position is recorded correctly.
-    assert paddle.initial_position == (paddle.x_position, paddle.y_position)
+    assert paddle.x_position == Paddle.initial_x
+    assert paddle.y_position == Paddle.initial_y
     assert paddle.rect.topleft == (paddle.x_position, paddle.y_position)
-    assert paddle.image.get_size() == (Paddle.WIDTH, Paddle.HEIGHT)  # verify dimensions
+    assert paddle.image.get_size() == (Paddle.width, Paddle.height)  # verify dimensions
     pixel_color = paddle.image.get_at((0, 0))  # check that it is the correct color.
     assert pixel_color == paddle.color
 
@@ -144,15 +163,14 @@ def test_paddle_reset_position():
     """Test that reset_position returns the paddle to its original location."""
     paddle = Paddle()
     # Move the paddle to a new position.
-    paddle.x_position = 100
-    paddle.y_position = 100
-    paddle.rect.topleft = (100, 100)
+    paddle.move_left()
     # Reset the paddle's position.
     paddle.reset_position()
     # Confirm that the position and the rect's position are reset.
-    assert paddle.x_position == paddle.initial_position[0]
-    assert paddle.y_position == paddle.initial_position[1]
-    assert paddle.rect.topleft == paddle.initial_position
+    assert paddle.x_position == Paddle.initial_x
+    assert paddle.y_position == Paddle.initial_y
+    assert paddle.rect.topleft[0] == Paddle.initial_x, f"{paddle.rect.topleft}"
+    assert paddle.rect.topleft[1] == Paddle.initial_y
 
 
 def test_paddle_move_left_normal():

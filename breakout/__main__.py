@@ -32,7 +32,13 @@ from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.powerups import PowerDown, PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
-from breakout.screens import ArrowButton, Button, LaunchMessage, ScreenManager, Screens
+from breakout.screens import (
+    ArrowButton,
+    BlinkingMessage,
+    Button,
+    ScreenManager,
+    Screens,
+)
 
 # pylint: disable=no-member
 
@@ -49,7 +55,7 @@ class Game:
             # PyInstaller creates a temp folder and stores path in _MEIPASS
             base_path = Path(sys._MEIPASS)
         except Exception:
-            base_path = Path(__file__).joinpath("..")
+            base_path = Path(__file__).parent
         start_bg = pygame.image.load(
             base_path.joinpath("textures", "StartScreen.jpg")
         ).convert()
@@ -184,28 +190,29 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit_game()
-            elif event.type == pygame.KEYDOWN:
-                # Launch the ball only when the up arrow is pressed
-                if (
-                    self.up_arrow in self.state.current_screen.elements
-                    and event.key == pygame.K_UP
-                ):
-                    self.state.launch_ball()
-                    self.state.current_screen.elements.remove(self.up_arrow)
-                if event.key == pygame.K_SPACE:
-                    if self.state.paused:
-                        self.resume_game()
-                    else:
-                        self.pause_game()
+            if (
+                event.type == pygame.KEYDOWN
+                and self.up_arrow in self.state.current_screen.elements
+                and event.key == pygame.K_UP
+            ):
+                self.state.launch_ball()
+                self.state.current_screen.elements.remove(self.up_arrow)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                if self.state.paused:
+                    self.resume_game()
+                else:
+                    self.pause_game()
 
             self.state.current_screen.handle_event(event)
 
     def update_game(self):
         """Handle the gameplay"""
-        if self.state.paused or self.state.game_is_over:
+        if (
+            self.state.paused
+            or self.state.game_is_over
+            or self.state.current_screen != Screens.GAME
+        ):
             return
-
-        keys = pygame.key.get_pressed()
 
         # Check for GUI arrow press for launching the ball.
         if self.up_arrow.pressed:
@@ -213,33 +220,31 @@ class Game:
             if self.up_arrow in self.state.current_screen.elements:
                 self.state.current_screen.elements.remove(self.up_arrow)
 
-        # Allow paddle and ball movement only if the ball has been launched.
-        if self.state.launched:
-            if (
-                keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed
-            ) and self.state.can_go_left:
-                for paddle in self.state.paddle_group.sprites():
-                    paddle.move_left()
-            if (
-                keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed
-            ) and self.state.can_go_right:
-                for paddle in self.state.paddle_group.sprites():
-                    paddle.move_right()
-
-            for ball in self.state.ball_group.sprites():
-                self.state = ball.move(screen_size, self.state)
-
-            for powerup in self.state.powerup_group.sprites():
-                powerup.move(self.state)
-
         # if the ball is waiting for launch, ensure the up arrow is on screen.
-        if (
-            not self.state.launched
-            and self.state.current_screen == Screens.GAME
-            and self.up_arrow not in self.state.current_screen.elements
-        ):
-            self.up_arrow = ArrowButton("up")
-            self.state.current_screen.add_element(self.up_arrow)
+        if not self.state.launched:
+            if self.up_arrow not in self.state.current_screen.elements:
+                self.up_arrow = ArrowButton("up")
+                self.state.current_screen.add_element(self.up_arrow)
+            return
+
+        # Ball has been launched, allow movement.
+        self.move_game_pieces()
+
+    def move_game_pieces(self):
+        """Move the paddles, balls, and powerups on the screen"""
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
+            for paddle in self.state.paddle_group.sprites():
+                paddle.move_left()
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
+            for paddle in self.state.paddle_group.sprites():
+                paddle.move_right()
+
+        for ball in self.state.ball_group.sprites():
+            self.state = ball.move(screen_size, self.state)
+
+        for powerup in self.state.powerup_group.sprites():
+            powerup.move(self.state)
 
     def run(self):
         """Run the main game loop"""
@@ -271,8 +276,8 @@ class GameState:
         self.paddle = Paddle(self.paddle_group)
         self.score_display = ScoreDisplay(self.score)
         self.lives_display = LivesDisplay(self.lives)
-        self.launch_message = LaunchMessage()
-        self.pause_message = LaunchMessage("Paused!", blink_interval=500)
+        self.launch_message = BlinkingMessage("Press ↑ to Launch!")
+        self.pause_message = BlinkingMessage("Paused!", blink_interval=500)
         self.current_screen: ScreenManager = screen
 
         # Power-up spawn timing
@@ -286,8 +291,6 @@ class GameState:
         self.launched = False
         self.paused = False
         self.game_is_over = False
-        self.can_go_left = True
-        self.can_go_right = True
 
         self.powerup_choices = [
             lambda: PowerUp(
@@ -302,16 +305,13 @@ class GameState:
 
     def update(self):
         """Update the game based on the current state"""
-        if (
-            not self.launched
-            and self.launch_message not in self.current_screen.elements
-            and self.current_screen == Screens.GAME
-        ):
-            self.current_screen.add_element(self.launch_message)
-
         if self.game_is_over:
             self.current_screen = Screens.END
+        if self.current_screen != Screens.GAME or self.paused:
+            # game state only changes if we're still in the game
+            return
 
+        # broke all bricks, go again
         if len(self.bricks.sprites()) == 0:
             for ball in self.ball_group.sprites():
                 ball.reset_position()
@@ -319,49 +319,40 @@ class GameState:
             self.bricks = Brick.create_brick_layout(rows=6, cols=8)
             Screens.GAME.add_element(self.bricks)
 
-        # add a powerup at random intervals
+        if not self.launched:
+            if self.launch_message not in self.current_screen.elements:
+                self.current_screen.add_element(self.launch_message)
+            # game state can only change if we're launched
+            return
+
         if (
-            self.current_screen == Screens.GAME
-            and self.time >= self.next_powerup_time
-            and self.launched
+            self.time >= self.next_powerup_time
             and len(self.powerup_group.sprites()) == 0
         ):
-            if len(self.paddle_group.sprites()) > 1:
-                random_powerup = random.choice(self.powerup_choices[1:])
-            else:
-                random_powerup = random.choice(self.powerup_choices)
-            random_powerup()
+            self.add_powerup()
 
-            self.next_powerup_time = self.time + random.randint(
-                self.min_wait_time, self.max_wait_time
-            )
-
-        self.can_go_left = True
-        self.can_go_right = True
         for paddle in self.paddle_group.sprites():
-            paddle: Paddle
-            if paddle.x_position == 0:
-                self.can_go_left = False
-            if paddle.x_position == screen_size.width - paddle.rect.width:
-                self.can_go_right = False
-            if not paddle.timeout:
-                # not a temp paddle
-                continue
-
-            # temp paddle, update it
-            if (
-                self.current_screen == Screens.GAME
-                and self.launched
-                and not self.paused
-            ):
-                if self.time >= paddle.timeout:
-                    paddle.kill()
-                elif self.time >= paddle.timeout - (3 * 1000):
-                    # in the last 3 seconds of its life, flicker out
-                    paddle.change_color()
+            if paddle.timeout:
+                # temp paddle, update it
+                paddle.check_timeout(self.time)
 
         self.score_display.update(self.score)
         self.lives_display.update(self.lives)
+
+    def add_powerup(self):
+        """
+        Choose a random powerup and add it to the screen
+        Only allow one paddle powerup at a time to avoid confusion
+        """
+        if len(self.paddle_group.sprites()) > 1:
+            random_powerup = random.choice(self.powerup_choices[1:])
+        else:
+            random_powerup = random.choice(self.powerup_choices)
+        random_powerup()
+
+        self.next_powerup_time = self.time + random.randint(
+            self.min_wait_time, self.max_wait_time
+        )
 
     def launch_ball(self):
         """Trigger ball launch."""
@@ -437,8 +428,6 @@ class GameState:
         for paddle in self.paddle_group.sprites():
             paddle.reset_position()
 
-        self.can_go_left = True
-        self.can_go_right = True
         self.launched = False
 
 

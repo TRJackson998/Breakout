@@ -7,12 +7,8 @@ Subclass of BreakoutSprite
 Powers
 ------
 Paddle size bigger
-Ball size bigger
-Paddle speed faster
-Ball speed slower
-Extra paddle
 Extra ball
-Extra life
+Lose a life
 
 Class
 -----
@@ -31,7 +27,6 @@ Thomas Nugent
 
 import math
 import random
-import time
 from dataclasses import dataclass
 from typing import Literal
 

@@ -1,6 +1,26 @@
+"""
+Test Score
+==========
+Test file for the scoreboard and name input
+
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
+
 import pygame
-from breakout.score import Scoreboard, NameInput, ScoreDisplay, LivesDisplay
+
 from breakout import screen_size
+from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 
 
 def test_scoreboard_initialization():
