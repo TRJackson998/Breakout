@@ -184,19 +184,18 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.quit_game()
-            elif event.type == pygame.KEYDOWN:
-                # Launch the ball only when the up arrow is pressed
-                if (
-                    self.up_arrow in self.state.current_screen.elements
-                    and event.key == pygame.K_UP
-                ):
-                    self.state.launch_ball()
-                    self.state.current_screen.elements.remove(self.up_arrow)
-                if event.key == pygame.K_SPACE:
-                    if self.state.paused:
-                        self.resume_game()
-                    else:
-                        self.pause_game()
+            if (
+                event.type == pygame.KEYDOWN
+                and self.up_arrow in self.state.current_screen.elements
+                and event.key == pygame.K_UP
+            ):
+                self.state.launch_ball()
+                self.state.current_screen.elements.remove(self.up_arrow)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                if self.state.paused:
+                    self.resume_game()
+                else:
+                    self.pause_game()
 
             self.state.current_screen.handle_event(event)
 
