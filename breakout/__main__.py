@@ -241,7 +241,7 @@ class Game:
                 paddle.move_right()
 
         for ball in self.state.ball_group.sprites():
-            self.state = ball.move(screen_size, self.state)
+            self.state = ball.move(self.state)
 
         for powerup in self.state.powerup_group.sprites():
             powerup.move(self.state)

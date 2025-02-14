@@ -44,7 +44,7 @@ def test_ball_wall_collision():
     # Simulate hitting the left wall
     ball.x_position = 0  # Place ball at the left wall
     ball.speed_x = -2.5  # Ball moving left
-    ball.handle_wall_collisions(screen_size)
+    ball.handle_wall_collisions()
     assert (
         ball.speed_x > 0
     ), f"Expected ball to bounce right, but we got speed_x={ball.speed_x}"
@@ -54,7 +54,7 @@ def test_ball_wall_collision():
         screen_size.width - ball.rect.width
     )  # Place ball at the right wall
     ball.speed_x = 2.5  # Ball moving right
-    ball.handle_wall_collisions(screen_size)
+    ball.handle_wall_collisions()
     assert (
         ball.speed_x < 0
     ), f"Expected ball to bounce left, but we got speed_x={ball.speed_x}"
@@ -67,7 +67,7 @@ def test_ball_ceiling_collision():
     # Simulate hitting the ceiling
     ball.y_position = 0  # Place ball at the ceiling
     ball.speed_y = -2.5  # Ball moving upward
-    ball.handle_wall_collisions(screen_size)
+    ball.handle_wall_collisions()
 
     assert (
         ball.speed_y > 0
@@ -131,17 +131,17 @@ def test_ball_life_lost():
 
     # Simulate ball falling below the screen (Lose 1 life)
     ball.y_position = screen_size.height + 10
-    state = ball.move(screen_size, state)
+    state = ball.move(state)
     assert state.lives == 2, f"Expected lives to decrease to 2, but got {state.lives}"
 
     # Simulate another life lost
     ball.y_position = screen_size.height + 10
-    state = ball.move(screen_size, state)
+    state = ball.move(state)
     assert state.lives == 1, f"Expected lives to decrease to 1, but got {state.lives}"
 
     # Lose final life
     ball.y_position = screen_size.height + 10
-    state = ball.move(screen_size, state)
+    state = ball.move(state)
 
     assert state.lives == 0, f"Expected lives to be 0, but got {state.lives}"
     assert state.game_is_over, "Expected game_is_over to be True when lives reach 0"

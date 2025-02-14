@@ -25,7 +25,7 @@ from dataclasses import dataclass
 import pygame
 from pygame.sprite import Sprite
 
-from breakout import Size
+from breakout import screen_size
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.sound import SoundManager
@@ -85,13 +85,13 @@ class Ball(Sprite):
         self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size: Size, screen_state):
+    def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         # Update position
         self.update_position()
 
         # Handle collisions
-        self.handle_wall_collisions(screen_size)
+        self.handle_wall_collisions()
         for paddle in screen_state.paddle_group.sprites():
             self.handle_paddle_collision(paddle)
         points = self.handle_brick_collisions(screen_state.bricks)
@@ -116,7 +116,7 @@ class Ball(Sprite):
         self.rect.x = self.x_position
         self.rect.y = self.y_position
 
-    def handle_wall_collisions(self, screen_size: Size):
+    def handle_wall_collisions(self):
         """Handle collisions with the walls and ceiling."""
         if (
             self.x_position <= 0
