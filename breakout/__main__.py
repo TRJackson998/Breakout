@@ -227,14 +227,10 @@ class Game:
     def move_game_pieces(self):
         """Move the paddles, balls, and powerups on the screen"""
         keys = pygame.key.get_pressed()
-        if (
-            keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed
-        ) and self.state.can_go_left:
+        if keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed:
             for paddle in self.state.paddle_group.sprites():
                 paddle.move_left()
-        if (
-            keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed
-        ) and self.state.can_go_right:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed:
             for paddle in self.state.paddle_group.sprites():
                 paddle.move_right()
 
@@ -289,8 +285,6 @@ class GameState:
         self.launched = False
         self.paused = False
         self.game_is_over = False
-        self.can_go_left = True
-        self.can_go_right = True
 
         self.powerup_choices = [
             lambda: PowerUp(
@@ -339,14 +333,8 @@ class GameState:
                 self.min_wait_time, self.max_wait_time
             )
 
-        self.can_go_left = True
-        self.can_go_right = True
         for paddle in self.paddle_group.sprites():
             paddle: Paddle
-            if paddle.x_position == 0:
-                self.can_go_left = False
-            if paddle.x_position == screen_size.width - paddle.rect.width:
-                self.can_go_right = False
             if not paddle.timeout:
                 # not a temp paddle
                 continue
@@ -440,8 +428,6 @@ class GameState:
         for paddle in self.paddle_group.sprites():
             paddle.reset_position()
 
-        self.can_go_left = True
-        self.can_go_right = True
         self.launched = False
 
 
