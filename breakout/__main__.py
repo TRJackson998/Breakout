@@ -201,10 +201,12 @@ class Game:
 
     def update_game(self):
         """Handle the gameplay"""
-        if self.state.paused or self.state.game_is_over:
+        if (
+            self.state.paused
+            or self.state.game_is_over
+            or self.state.current_screen != Screens.GAME
+        ):
             return
-
-        keys = pygame.key.get_pressed()
 
         # Check for GUI arrow press for launching the ball.
         if self.up_arrow.pressed:
@@ -212,33 +214,35 @@ class Game:
             if self.up_arrow in self.state.current_screen.elements:
                 self.state.current_screen.elements.remove(self.up_arrow)
 
-        # Allow paddle and ball movement only if the ball has been launched.
-        if self.state.launched:
-            if (
-                keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed
-            ) and self.state.can_go_left:
-                for paddle in self.state.paddle_group.sprites():
-                    paddle.move_left()
-            if (
-                keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed
-            ) and self.state.can_go_right:
-                for paddle in self.state.paddle_group.sprites():
-                    paddle.move_right()
-
-            for ball in self.state.ball_group.sprites():
-                self.state = ball.move(screen_size, self.state)
-
-            for powerup in self.state.powerup_group.sprites():
-                powerup.move(self.state)
-
         # if the ball is waiting for launch, ensure the up arrow is on screen.
+        if not self.state.launched:
+            if self.up_arrow not in self.state.current_screen.elements:
+                self.up_arrow = ArrowButton("up")
+                self.state.current_screen.add_element(self.up_arrow)
+            return
+
+        # Ball has been launched, allow movement.
+        self.move_game_pieces()
+
+    def move_game_pieces(self):
+        """Move the paddles, balls, and powerups on the screen"""
+        keys = pygame.key.get_pressed()
         if (
-            not self.state.launched
-            and self.state.current_screen == Screens.GAME
-            and self.up_arrow not in self.state.current_screen.elements
-        ):
-            self.up_arrow = ArrowButton("up")
-            self.state.current_screen.add_element(self.up_arrow)
+            keys[pygame.K_LEFT] or keys[pygame.K_a] or self.left_arrow.pressed
+        ) and self.state.can_go_left:
+            for paddle in self.state.paddle_group.sprites():
+                paddle.move_left()
+        if (
+            keys[pygame.K_RIGHT] or keys[pygame.K_d] or self.right_arrow.pressed
+        ) and self.state.can_go_right:
+            for paddle in self.state.paddle_group.sprites():
+                paddle.move_right()
+
+        for ball in self.state.ball_group.sprites():
+            self.state = ball.move(screen_size, self.state)
+
+        for powerup in self.state.powerup_group.sprites():
+            powerup.move(self.state)
 
     def run(self):
         """Run the main game loop"""
