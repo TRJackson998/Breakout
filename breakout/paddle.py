@@ -97,3 +97,11 @@ class Paddle(Sprite):
             # we just toggled
             self.last_toggle = now
             self.blink_interval /= 1.25  # speed up the flickering
+
+    def check_timeout(self, time: int):
+        """Check if it's time for a temp paddle to die or change color"""
+        if time >= self.timeout:
+            self.kill()
+        elif time >= self.timeout - (3 * 1000):
+            # in the last 3 seconds of its life, flicker out
+            self.change_color()

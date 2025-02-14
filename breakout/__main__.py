@@ -299,16 +299,13 @@ class GameState:
 
     def update(self):
         """Update the game based on the current state"""
-        if (
-            not self.launched
-            and self.launch_message not in self.current_screen.elements
-            and self.current_screen == Screens.GAME
-        ):
-            self.current_screen.add_element(self.launch_message)
-
         if self.game_is_over:
             self.current_screen = Screens.END
+        if self.current_screen != Screens.GAME or self.paused:
+            # game state only changes if we're still in the game
+            return
 
+        # broke all bricks, go again
         if len(self.bricks.sprites()) == 0:
             for ball in self.ball_group.sprites():
                 ball.reset_position()
@@ -316,43 +313,40 @@ class GameState:
             self.bricks = Brick.create_brick_layout(rows=6, cols=8)
             Screens.GAME.add_element(self.bricks)
 
-        # add a powerup at random intervals
+        if not self.launched:
+            if self.launch_message not in self.current_screen.elements:
+                self.current_screen.add_element(self.launch_message)
+            # game state can only change if we're launched
+            return
+
         if (
-            self.current_screen == Screens.GAME
-            and self.time >= self.next_powerup_time
-            and self.launched
+            self.time >= self.next_powerup_time
             and len(self.powerup_group.sprites()) == 0
         ):
-            if len(self.paddle_group.sprites()) > 1:
-                random_powerup = random.choice(self.powerup_choices[1:])
-            else:
-                random_powerup = random.choice(self.powerup_choices)
-            random_powerup()
-
-            self.next_powerup_time = self.time + random.randint(
-                self.min_wait_time, self.max_wait_time
-            )
+            self.add_powerup()
 
         for paddle in self.paddle_group.sprites():
-            paddle: Paddle
-            if not paddle.timeout:
-                # not a temp paddle
-                continue
-
-            # temp paddle, update it
-            if (
-                self.current_screen == Screens.GAME
-                and self.launched
-                and not self.paused
-            ):
-                if self.time >= paddle.timeout:
-                    paddle.kill()
-                elif self.time >= paddle.timeout - (3 * 1000):
-                    # in the last 3 seconds of its life, flicker out
-                    paddle.change_color()
+            if paddle.timeout:
+                # temp paddle, update it
+                paddle.check_timeout(self.time)
 
         self.score_display.update(self.score)
         self.lives_display.update(self.lives)
+
+    def add_powerup(self):
+        """
+        Choose a random powerup and add it to the screen
+        Only allow one paddle powerup at a time to avoid confusion
+        """
+        if len(self.paddle_group.sprites()) > 1:
+            random_powerup = random.choice(self.powerup_choices[1:])
+        else:
+            random_powerup = random.choice(self.powerup_choices)
+        random_powerup()
+
+        self.next_powerup_time = self.time + random.randint(
+            self.min_wait_time, self.max_wait_time
+        )
 
     def launch_ball(self):
         """Trigger ball launch."""
