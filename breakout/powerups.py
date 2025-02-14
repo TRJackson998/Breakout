@@ -7,12 +7,8 @@ Subclass of BreakoutSprite
 Powers
 ------
 Paddle size bigger
-Ball size bigger
-Paddle speed faster
-Ball speed slower
-Extra paddle
 Extra ball
-Extra life
+Lose a life
 
 Class
 -----

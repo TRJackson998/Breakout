@@ -1,4 +1,22 @@
-"""Test ball object and its movements/actions."""
+"""
+Test Ball and Paddle
+====================
+Test ball object and its movements/actions.
+Test paddle object and its interactions with the screen and ball.
+
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
 
 from pygame import Color, sprite
 

@@ -1,4 +1,22 @@
-# sound.py
+"""
+Sound
+=======
+Handle the sound files and add sound effects to the game.
+
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
+
 import time
 
 import pygame

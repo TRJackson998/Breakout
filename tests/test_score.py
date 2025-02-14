@@ -1,3 +1,22 @@
+"""
+Test Score
+==========
+Test file for the scoreboard and name input
+
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
+
 import pygame
 
 from breakout import screen_size

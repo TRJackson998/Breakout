@@ -1,4 +1,21 @@
-"""Test game/GUI events"""
+"""
+Test Game
+=========
+Test game/GUI events
+
+Class
+-----
+Capstone in Computer Science
+UMGC CMSC 495
+Professor Munoz
+
+Team Charlie
+------------
+Daniel Coreas
+Aimi Hanson
+Terrence Jackson
+Thomas Nugent
+"""
 
 import pygame
 
