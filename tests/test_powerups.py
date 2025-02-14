@@ -1,11 +1,13 @@
 """Test file for powerup actions"""
 
 from unittest.mock import Mock
+
 import pygame
-from breakout.__main__ import GameState
-from breakout.powerups import PowerUp, PowerupConfig
+
 from breakout import screen_size
+from breakout.__main__ import GameState
 from breakout.paddle import Paddle
+from breakout.powerups import PowerUp, PowerupConfig
 from breakout.screens import Screens
 
 

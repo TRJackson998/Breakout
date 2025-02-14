@@ -1,6 +1,7 @@
 import pygame
-from breakout.score import Scoreboard, NameInput, ScoreDisplay, LivesDisplay
+
 from breakout import screen_size
+from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 
 
 def test_scoreboard_initialization():

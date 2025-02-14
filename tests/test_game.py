@@ -1,11 +1,10 @@
 """Test game/GUI events"""
 
-import pytest
 import pygame
-from breakout.screens import ScreenManager, Button, ArrowButton, LaunchMessage
+
 from breakout import screen_size
 from breakout.__main__ import Game, GameState
-from breakout.screens import Screens
+from breakout.screens import ArrowButton, LaunchMessage, ScreenManager, Screens
 
 
 def test_game_initialization():
