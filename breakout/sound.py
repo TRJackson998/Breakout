@@ -17,23 +17,36 @@ Terrence Jackson
 Thomas Nugent
 """
 
+import sys
 import time
+from pathlib import Path
 
 import pygame
 
 # Initialize the mixer (if not already initialized elsewhere)
 pygame.mixer.init()
+# pylint: disable=no-member
 
 
 class SoundManager:
     try:
-        POWERUP_SOUND = pygame.mixer.Sound("breakout/sounds/powerup_catch.wav")
-        BRICK_SOUND = pygame.mixer.Sound("breakout/sounds/brick_hit.wav")
-        PADDLE_SOUND = pygame.mixer.Sound("breakout/sounds/wall_sound.wav")
-        WALL_SOUND = pygame.mixer.Sound("breakout/sounds/wall_sound.wav")
-        LIFE_LOST_SOUND = pygame.mixer.Sound("breakout/sounds/life_lost.wav")
-        GAME_OVER_SOUND = pygame.mixer.Sound("breakout/sounds/game_over.wav")
-        BACKGROUND_MUSIC = pygame.mixer.Sound("breakout/sounds/background_music.mp3")
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = Path(sys._MEIPASS)
+    except Exception:
+        base_path = Path(__file__).joinpath("..")
+
+    sound_path = base_path.joinpath("sounds")
+
+    try:
+        POWERUP_SOUND = pygame.mixer.Sound(sound_path.joinpath("powerup_catch.wav"))
+        BRICK_SOUND = pygame.mixer.Sound(sound_path.joinpath("brick_hit.wav"))
+        PADDLE_SOUND = pygame.mixer.Sound(sound_path.joinpath("wall_sound.wav"))
+        WALL_SOUND = pygame.mixer.Sound(sound_path.joinpath("wall_sound.wav"))
+        LIFE_LOST_SOUND = pygame.mixer.Sound(sound_path.joinpath("life_lost.wav"))
+        GAME_OVER_SOUND = pygame.mixer.Sound(sound_path.joinpath("game_over.wav"))
+        BACKGROUND_MUSIC = pygame.mixer.Sound(
+            sound_path.joinpath("background_music.mp3")
+        )
     except Exception as e:
         print("Error loading sound effects:", e)
         POWERUP_SOUND = None
