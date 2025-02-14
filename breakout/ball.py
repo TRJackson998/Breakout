@@ -26,7 +26,6 @@ import pygame
 from pygame.sprite import Sprite
 
 from breakout import Size
-from breakout.__main__ import GameState
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.sound import SoundManager
@@ -86,7 +85,7 @@ class Ball(Sprite):
         self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_size: Size, screen_state: GameState):
+    def move(self, screen_size: Size, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         # Update position
         self.update_position()

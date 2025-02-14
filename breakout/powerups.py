@@ -35,7 +35,6 @@ from pygame.font import SysFont
 from pygame.sprite import Sprite
 
 from breakout import color_choices, screen_size, sound
-from breakout.__main__ import GameState
 from breakout.paddle import Paddle
 
 # pylint: disable=no-member
@@ -97,7 +96,7 @@ class PowerUp(Sprite):
         )  # Center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
-    def move(self, screen_state: GameState):
+    def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         now = pygame.time.get_ticks()
         if now - self.last_toggle > self.blink_interval:
@@ -217,7 +216,7 @@ class PowerDown(Sprite):
             (self.radius * 4, self.radius * 4), pygame.SRCALPHA
         ).get_rect(center=(self.x_position, self.y_position))
 
-    def move(self, screen_state: GameState):
+    def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         now = pygame.time.get_ticks()
         if self.exploded:
