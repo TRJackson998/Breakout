@@ -99,8 +99,8 @@ def test_ball_brick_collision():
     """Test ball interaction with bricks."""
     brick_group = sprite.Group()
     # Stage a red brick at specified location
-    brick1 = Brick(brick_group, color=Color("red"), x_position=100, y_position=100)
-    brick2 = Brick(brick_group, color=Color("yellow"), x_position=50, y_position=50)
+    brick1 = Brick(brick_group, color=Color("red"), position=(100, 100))
+    brick2 = Brick(brick_group, color=Color("yellow"), position=(50, 50))
     ball = Ball()
 
     # Position the ball to collide with the red brick w/horizontal overlap

@@ -19,20 +19,20 @@ Thomas Nugent
 
 """
 
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 
 import pygame
 from pygame.sprite import Sprite
 
-from breakout import screen_size
+from breakout import Position, Size, screen_size
+
 
 # pylint: disable=no-member
 @dataclass
 class BrickConfig:
     """Configuration for Ball constants."""
 
-    width = 51
-    height = 25
+    size = Size(51, 25)
     border_radius = 5
 
 
@@ -43,29 +43,27 @@ class Brick(Sprite):
         self,
         *groups,
         color: pygame.Color,
-        x_position: int = 0,
-        y_position: int = 0,
-        border_radius: int = 5
+        position: Position | tuple = Position(0, 0),
     ):
         super().__init__(
             *groups,
         )
-        self.x_position = x_position
-        self.y_position = y_position
+        if isinstance(position, tuple):
+            self.position = Position(position[0], position[1])
+        else:
+            self.position = position
         self.color = color
-        self.width = BrickConfig.width
-        self.height = BrickConfig.height
+        self.size = BrickConfig.size
 
         # Create the surface/rect for the brick
-        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self.image = pygame.Surface(astuple(self.size), pygame.SRCALPHA)
         # Initialize the rectangle for positioning
-        self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
+        self.rect = self.image.get_rect(topleft=(self.position.x, self.position.y))
         # Fill the rectangle onto the image
         pygame.draw.rect(
             self.image,  # Surface to draw on
             color,  # Color of the rectangle
-            (0, 0, self.width, self.height),  # Rectangle dimensions
-            border_radius=border_radius,  # Rounded corners
+            (0, 0, self.size.width, self.size.height),  # Rectangle dimensions
             border_radius=BrickConfig.border_radius,  # Rounded corners
         )
 
@@ -95,11 +93,11 @@ class Brick(Sprite):
         top_margin = 2  # Number of empty rows at the top
 
         # Calculate the total brick area width and starting X position for centering
-        brick_area_width = cols * (BrickConfig.width + x_offset) - x_offset
+        brick_area_width = cols * (BrickConfig.size.width + x_offset) - x_offset
         start_x = (screen_width - brick_area_width) // 2  # Center bricks horizontally
 
         # Calculate starting Y position to account for the top margin
-        start_y = BrickConfig.height * top_margin
+        start_y = BrickConfig.size.height * top_margin
 
         # Determine the number of rows for each color
         red_rows = max(1, rows // 4)  # Red occupies the first quarter
@@ -110,10 +108,10 @@ class Brick(Sprite):
         for row in range(rows):
             for col in range(cols):
                 x = start_x + col * (
-                    BrickConfig.width + x_offset
+                    BrickConfig.size.width + x_offset
                 )  # Adjusted x position
                 y = start_y + row * (
-                    BrickConfig.height + y_offset
+                    BrickConfig.size.height + y_offset
                 )  # Adjusted y position
 
                 # Assign colors based on row
@@ -124,7 +122,7 @@ class Brick(Sprite):
                 else:
                     color = pygame.Color("green")  # Green
 
-                brick = cls(brick_group, color=color, x_position=x, y_position=y)
+                brick = cls(brick_group, color=color, position=Position(x, y))
                 brick_group.add(brick)
 
         return brick_group
