@@ -317,6 +317,7 @@ class GameState:
             brick for brick in self.bricks.sprites() if brick.breakable
         ]
         if len(remaining_breakable) == 0:
+            self.level += 1
             for ball in self.ball_group.sprites():
                 ball.increase_speed()  # Increase speed for each ball
                 ball.reset_position()

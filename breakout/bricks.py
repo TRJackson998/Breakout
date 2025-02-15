@@ -22,8 +22,8 @@ Thomas Nugent
 import random
 import pygame
 from pygame.sprite import Sprite
-
 from breakout import screen_size
+from pathlib import Path
 
 # pylint: disable=no-member
 
@@ -79,10 +79,9 @@ class Brick(Sprite):
         return self.points
 
     @classmethod
-    def create_brick_layout(cls, rows, cols, level=1):
+    def create_brick_layout(cls, rows, cols, level):
         """Orders and centers the brick grid layout with dynamic colors."""
         brick_group = pygame.sprite.Group()
-
         screen_width = screen_size.width
 
         # Spacing and margins
@@ -93,8 +92,6 @@ class Brick(Sprite):
         # Calculate the total brick area width and starting X position for centering
         brick_area_width = cols * (cls.WIDTH + x_offset) - x_offset
         start_x = (screen_width - brick_area_width) // 2  # Center bricks horizontally
-
-        # Calculate starting Y position to account for the top margin
         start_y = cls.HEIGHT * top_margin
 
         # Determine the number of rows for each color
@@ -103,6 +100,22 @@ class Brick(Sprite):
             1, rows // 3
         )  # Yellow occupies the next third with the remaining being green
 
+        # Load the brick texture
+        if level >= 2 and not hasattr(cls, "unbreakable_texture"):
+            try:
+                base_path = Path(__file__).parent
+                texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
+                cls.unbreakable_texture = pygame.image.load(
+                    str(texture_path)
+                ).convert_alpha()
+                cls.unbreakable_texture = pygame.transform.scale(
+                    cls.unbreakable_texture, (cls.WIDTH, cls.HEIGHT)
+                )
+                print("Texture loaded successfully from", texture_path)
+            except Exception as e:
+                print("Error loading texture:", e)
+                cls.unbreakable_texture = None
+
         for row in range(rows):
             for col in range(cols):
                 x = start_x + col * (cls.WIDTH + x_offset)  # Adjusted x position
@@ -110,21 +123,21 @@ class Brick(Sprite):
 
                 # Assign colors based on row
                 if row < red_rows:
-                    color = pygame.Color("red")  # Red
+                    color = pygame.Color("red")
                 elif row < red_rows + yellow_rows:
-                    color = pygame.Color("yellow")  # Yellow
+                    color = pygame.Color("yellow")
                 else:
-                    color = pygame.Color("green")  # Green
+                    color = pygame.Color("green")
 
                 brick = cls(brick_group, color=color, x_position=x, y_position=y)
-                # For levels 3 and higher, randomly mark some bricks as unbreakable.
-                if level >= 1 and random.random() < 0.2:  # 20% chance
-                    brick.breakable = False
-                    brick.color = pygame.Color("black")
-                    brick.points = 0  # No points for unbreakable bricks
-                    # Redraw the brick with the new color
-                    brick.image.fill("black")
 
+                if level >= 2 and random.random() < 0.2:  # 20% chance
+                    brick.breakable = False
+                    brick.points = 0  # No points for unbreakable bricks
+                    if hasattr(cls, "unbreakable_texture") and cls.unbreakable_texture:
+                        brick.image.blit(cls.unbreakable_texture, (0, 0))
+                    else:
+                        brick.image.fill((0, 0, 0))
                 brick_group.add(brick)
 
         return brick_group
