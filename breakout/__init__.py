@@ -49,6 +49,9 @@ class Position:
     def __add__(self, speed: Speed):
         return Position(self.x + speed.x, self.y + speed.y)
 
+    def __sub__(self, speed: Speed):
+        return Position(self.x - speed.x, self.y - speed.y)
+
 
 pygame.init()
 screen_size = Size(500, 600)

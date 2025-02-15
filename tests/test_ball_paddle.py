@@ -18,6 +18,8 @@ Terrence Jackson
 Thomas Nugent
 """
 
+from dataclasses import astuple
+
 from pygame import Color, sprite
 
 from breakout import screen_size
@@ -150,13 +152,9 @@ def test_paddle_initialization():
     """Verify that a Paddle is initialized with the correct default settings."""
     paddle = Paddle()
     # Check that the paddle's starting position is recorded correctly.
-    assert paddle.x_position == PaddleConfig.initial_x
-    assert paddle.y_position == PaddleConfig.initial_y
-    assert paddle.rect.topleft == (paddle.x_position, paddle.y_position)
-    assert paddle.image.get_size() == (
-        PaddleConfig.width,
-        PaddleConfig.height,
-    )  # verify dimensions
+    assert paddle.position == PaddleConfig.initial_position
+    assert paddle.rect.topleft == (paddle.position.x, paddle.position.y)
+    assert paddle.image.get_size() == astuple(PaddleConfig.size)  # verify dimensions
     pixel_color = paddle.image.get_at((0, 0))  # check that it is the correct color.
     assert pixel_color == paddle.color
 
@@ -169,53 +167,54 @@ def test_paddle_reset_position():
     # Reset the paddle's position.
     paddle.reset_position()
     # Confirm that the position and the rect's position are reset.
-    assert paddle.x_position == PaddleConfig.initial_x
-    assert paddle.y_position == PaddleConfig.initial_y
-    assert paddle.rect.topleft[0] == PaddleConfig.initial_x, f"{paddle.rect.topleft}"
-    assert paddle.rect.topleft[1] == PaddleConfig.initial_y
+    assert paddle.position == PaddleConfig.initial_position
+    assert (
+        paddle.rect.topleft[0] == PaddleConfig.initial_position.x
+    ), f"{paddle.rect.topleft}"
+    assert paddle.rect.topleft[1] == PaddleConfig.initial_position.y
 
 
 def test_paddle_move_left_normal():
     """Test that move_left decreases the paddle's x_position by its speed."""
-    paddle = Paddle(x_position=200, speed=10)
-    original_x = paddle.x_position
+    paddle = Paddle(x_position=200)
+    original_x = paddle.position.x
     paddle.move_left()
-    expected_x = original_x - 10
+    expected_x = original_x - paddle.speed.x
     if expected_x < 0:
         expected_x = 0
-    assert paddle.x_position == expected_x
+    assert paddle.position.x == expected_x
     assert paddle.rect.x == expected_x
 
 
 def test_paddle_move_left_boundary():
     """Ensure that move_left does not move the paddle beyond the left screen edge."""
-    paddle = Paddle(x_position=5, speed=10)
+    paddle = Paddle(x_position=5)
     paddle.move_left()
     # The paddle should not move left past 0.
-    assert paddle.x_position == 0
+    assert paddle.position.x == 0
     assert paddle.rect.x == 0
 
 
 def test_paddle_move_right_normal():
     """Test that move_right increases the paddle's x_position by its speed."""
-    paddle = Paddle(x_position=100, speed=10)
-    original_x = paddle.x_position
+    paddle = Paddle(x_position=100)
+    original_x = paddle.position.x
     paddle.move_right()
-    expected_x = original_x + 10
+    expected_x = original_x + paddle.speed.x
     # Ensure the new position does not exceed the right boundary.
     max_x = screen_size.width - paddle.rect.width
     if expected_x > max_x:
         expected_x = max_x
-    assert paddle.x_position == expected_x
+    assert paddle.position.x == expected_x
     assert paddle.rect.x == expected_x
 
 
 def test_paddle_move_right_boundary():
     """Ensure that move_right does not move the paddle beyond the right screen edge."""
     # Start with an x_position near the right boundary.
-    paddle = Paddle(x_position=screen_size.width - 5, speed=10)
+    paddle = Paddle(x_position=screen_size.width - 5)
     paddle.move_right()
     # The paddle should not exceed the maximum allowed x position.
     max_x = screen_size.width - paddle.rect.width
-    assert paddle.x_position == max_x
+    assert paddle.position.x == max_x
     assert paddle.rect.x == max_x

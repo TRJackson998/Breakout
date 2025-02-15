@@ -415,9 +415,9 @@ class GameState:
         """
         Paddle(
             self.paddle_group,
-            x_position=self.paddle.x_position
-            - (PaddleConfig.width // 2),  # in the center of the current paddle
-            width=PaddleConfig.width * 2,  # twice as big
+            x_position=self.paddle.position.x
+            - (PaddleConfig.size.width // 2),  # in the center of the current paddle
+            width=PaddleConfig.size.width * 2,  # twice as big
             color=random.choice(color_choices),
             timeout=self.time
             + random.randint(
