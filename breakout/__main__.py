@@ -398,13 +398,16 @@ class GameState:
             current_speed = self.ball_group.sprites()[0].speed
         else:
             current_speed = BallConfig.DEFAULT_SPEED
+        if current_speed.y < 0:
+            # use a positive value to hit paddle and bounce appropriately
+            current_speed.y *= -1
 
-        # Create the new ball with the current speed (using a positive value to hit paddle and bounce appropriately)
+        # Create the new ball with the current speed
         Ball(
             self.ball_group,
             position=Position(power_up_position.center[0], power_up_position.center[1]),
             color=random.choice(color_choices),
-            speed=Speed(0, current_speed),
+            speed=Speed(0, current_speed.y),
         )
 
     def add_paddle(self):
