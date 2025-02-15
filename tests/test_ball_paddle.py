@@ -24,7 +24,7 @@ from breakout import screen_size
 from breakout.__main__ import GameState
 from breakout.ball import Ball
 from breakout.bricks import Brick
-from breakout.paddle import Paddle
+from breakout.paddle import Paddle, PaddleConfig
 
 
 def test_ball_initialization():
@@ -151,10 +151,13 @@ def test_paddle_initialization():
     """Verify that a Paddle is initialized with the correct default settings."""
     paddle = Paddle()
     # Check that the paddle's starting position is recorded correctly.
-    assert paddle.x_position == Paddle.initial_x
-    assert paddle.y_position == Paddle.initial_y
+    assert paddle.x_position == PaddleConfig.initial_x
+    assert paddle.y_position == PaddleConfig.initial_y
     assert paddle.rect.topleft == (paddle.x_position, paddle.y_position)
-    assert paddle.image.get_size() == (Paddle.width, Paddle.height)  # verify dimensions
+    assert paddle.image.get_size() == (
+        PaddleConfig.width,
+        PaddleConfig.height,
+    )  # verify dimensions
     pixel_color = paddle.image.get_at((0, 0))  # check that it is the correct color.
     assert pixel_color == paddle.color
 
@@ -167,10 +170,10 @@ def test_paddle_reset_position():
     # Reset the paddle's position.
     paddle.reset_position()
     # Confirm that the position and the rect's position are reset.
-    assert paddle.x_position == Paddle.initial_x
-    assert paddle.y_position == Paddle.initial_y
-    assert paddle.rect.topleft[0] == Paddle.initial_x, f"{paddle.rect.topleft}"
-    assert paddle.rect.topleft[1] == Paddle.initial_y
+    assert paddle.x_position == PaddleConfig.initial_x
+    assert paddle.y_position == PaddleConfig.initial_y
+    assert paddle.rect.topleft[0] == PaddleConfig.initial_x, f"{paddle.rect.topleft}"
+    assert paddle.rect.topleft[1] == PaddleConfig.initial_y
 
 
 def test_paddle_move_left_normal():

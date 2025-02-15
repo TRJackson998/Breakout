@@ -29,7 +29,7 @@ import pygame
 from breakout import Position, Speed, color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
-from breakout.paddle import Paddle
+from breakout.paddle import Paddle, PaddleConfig
 from breakout.powerups import PowerDown, PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import (
@@ -405,8 +405,8 @@ class GameState:
         Paddle(
             self.paddle_group,
             x_position=self.paddle.x_position
-            - (Paddle.width // 2),  # in the center of the current paddle
-            width=Paddle.width * 2,  # twice as big
+            - (PaddleConfig.width // 2),  # in the center of the current paddle
+            width=PaddleConfig.width * 2,  # twice as big
             color=random.choice(color_choices),
             timeout=self.time
             + random.randint(
