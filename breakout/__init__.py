@@ -31,6 +31,25 @@ class Size:
     height: int
 
 
+@dataclass
+class Speed:
+    """Dataclass to store speeds for easy access"""
+
+    x: int
+    y: int
+
+
+@dataclass
+class Position:
+    """Dataclass to store positions for easy access"""
+
+    x: int
+    y: int
+
+    def __add__(self, speed: Speed):
+        return Position(self.x + speed.x, self.y + speed.y)
+
+
 pygame.init()
 screen_size = Size(500, 500)
 
@@ -50,6 +69,10 @@ __all__ = [
     "paddle",
     "powerups",
     "score",
+    "screens",
     "color_choices",
     "screen_size",
+    "Size",
+    "Position",
+    "Speed",
 ]
