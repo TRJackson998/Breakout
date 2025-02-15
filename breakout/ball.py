@@ -192,7 +192,10 @@ class Ball(Sprite):
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""
-        self.speed_x = -self.speed_x
+        if self.speed_x == 0:
+            self.speed_x = random.choice([-self.current_speed, self.current_speed])
+        else:
+            self.speed_x = -self.speed_x
 
     def bounce_y(self):
         """Reverse the vertical direction of the ball."""

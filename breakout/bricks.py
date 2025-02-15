@@ -128,7 +128,7 @@ class Brick(Sprite):
                 print("Error loading texture:", e)
                 cls.unbreakable_texture = None
 
-        chance = min(level * 0.2, 1.0)
+        chance = min(level * 0.1, 1.0)
 
         for row in range(rows):
             for col in range(cols):
