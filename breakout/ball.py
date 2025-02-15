@@ -51,7 +51,6 @@ class Ball(Sprite):
         self,
         *groups,
         position: Position = BallConfig.initial_position,
-        speed: Speed = None,
         radius=BallConfig.radius,
         color: pygame.Color = BallConfig.color,
     ):
@@ -76,18 +75,17 @@ class Ball(Sprite):
         )
 
         # Configure ball properties
-        self.speed = (
-            speed
-            if speed
-            else Speed(
-                random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
-                -BallConfig.default_speed,
-            )
+        self.speed = Speed(
+            random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
+            -BallConfig.default_speed,
         )
         self.rect = self.image.get_rect(center=astuple(self.position))
 
     def increase_speed(self, factor=1.5):
         """Increase the ball's current speed by a factor without exceeding max_speed."""
+        BallConfig.default_speed = min(
+            BallConfig.default_speed * factor, BallConfig.max_speed
+        )
         self.speed.x = min(self.speed.x * factor, BallConfig.max_speed)
         self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
 
