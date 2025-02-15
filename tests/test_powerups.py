@@ -35,7 +35,7 @@ def test_powerup_initialization():
     assert powerup.position.x >= PowerupConfig.size * 5
     assert powerup.position.x <= screen_size.width - PowerupConfig.size * 5
     assert powerup.position.y == 15  # Power-up starts near the top
-    assert powerup.speed.y == PowerupConfig.default_speed
+    assert powerup.speed == PowerupConfig.default_speed
     assert powerup.shape == "rectangle"  # Ensures rectangle initialization
     assert isinstance(powerup.color, int)
 
