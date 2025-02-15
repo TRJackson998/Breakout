@@ -109,7 +109,7 @@ class Brick(Sprite):
         start_y = BrickConfig.size.height * (offset // 5)
 
         # Load the brick texture
-        if level >= 2 and not hasattr(cls, "unbreakable_texture"):
+        if level >= 1 and not hasattr(cls, "unbreakable_texture"):
             try:
                 base_path = Path(__file__).parent
                 texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
@@ -145,7 +145,7 @@ class Brick(Sprite):
                     color = pygame.Color("green")
 
                 brick = cls(brick_group, color=color, position=Position(x, y))
-                if level >= 2 and random.random() < chance:
+                if level >= 1 and random.random() < chance:
                     brick.breakable = False
                     if hasattr(cls, "unbreakable_texture") and cls.unbreakable_texture:
                         brick.image.blit(cls.unbreakable_texture, (0, 0))
