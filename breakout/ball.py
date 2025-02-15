@@ -36,10 +36,10 @@ class BallConfig:
     """Configuration for Ball constants."""
 
     radius = 10
-    DEFAULT_SPEED = 2.5
-    MAX_SPEED = 5.0
+    DEFAULT_SPEED = 3.0
+    MAX_SPEED = 6.0
     INITIAL_X = 250
-    INITIAL_Y = 380
+    INITIAL_Y = 475
     COLOR = pygame.Color("white")
 
 
@@ -76,12 +76,17 @@ class Ball(Sprite):
             self.image, self.color, (self.radius, self.radius), self.radius
         )
 
-        # Configure ball properties
-        self.speed_x = random.choice(
-            [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
-        )
+        # Use current_speed to track ball speed that increases over levels
+        self.current_speed = BallConfig.DEFAULT_SPEED
+
+        # Configure ball properties using the current_speed
+        self.speed_x = random.choice([-self.current_speed, self.current_speed])
         self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+
+    def increase_speed(self, factor=1.5):
+        """Increase the ball's current speed by a factor without exceeding MAX_SPEED."""
+        self.current_speed = min(self.current_speed * factor, BallConfig.MAX_SPEED)
 
     def move(self, screen_size, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
@@ -187,7 +192,10 @@ class Ball(Sprite):
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""
-        self.speed_x = -self.speed_x
+        if self.speed_x == 0:
+            self.speed_x = random.choice([-self.current_speed, self.current_speed])
+        else:
+            self.speed_x = -self.speed_x
 
     def bounce_y(self):
         """Reverse the vertical direction of the ball."""
@@ -195,10 +203,8 @@ class Ball(Sprite):
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
-        self.speed_x = random.choice(
-            [-BallConfig.DEFAULT_SPEED, BallConfig.DEFAULT_SPEED]
-        )
-        self.speed_y = -BallConfig.DEFAULT_SPEED
+        self.speed_x = random.choice([-self.current_speed, self.current_speed])
+        self.speed_y = -self.current_speed
         self.x_position = BallConfig.INITIAL_X
         self.y_position = BallConfig.INITIAL_Y
         self.rect.x = self.x_position
