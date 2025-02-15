@@ -398,6 +398,7 @@ class GameState:
             self.ball_group,
             position=Position(power_up_position.center[0], power_up_position.center[1]),
             color=random.choice(color_choices),
+            speed=Speed(0, BallConfig.default_speed),
         )
 
     def add_paddle(self):

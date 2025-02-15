@@ -53,6 +53,7 @@ class Ball(Sprite):
         position: Position = BallConfig.initial_position,
         radius=BallConfig.radius,
         color: pygame.Color = BallConfig.color,
+        speed: Speed = None
     ):
         """
         Initialize the ball.
@@ -75,9 +76,13 @@ class Ball(Sprite):
         )
 
         # Configure ball properties
-        self.speed = Speed(
-            random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
-            -BallConfig.default_speed,
+        self.speed = (
+            speed
+            if speed
+            else Speed(
+                random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
+                -BallConfig.default_speed,
+            )
         )
         self.rect = self.image.get_rect(center=astuple(self.position))
 
