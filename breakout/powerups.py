@@ -27,7 +27,7 @@ Thomas Nugent
 
 import math
 import random
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 from typing import Literal
 
 import pygame
@@ -45,7 +45,8 @@ class PowerupConfig:
     """Configuration for Powerup constants."""
 
     size = 10
-    default_speed = 2.5
+    default_speed = Speed(0, 2.5)
+    initial_y = 15
     blink_interval = 100
     font = SysFont("courier", max(screen_size.width // 30, 14))
 
@@ -58,47 +59,49 @@ class PowerUp(Sprite):
         *groups,
         power=lambda: None,
         shape: Literal["circle", "rectangle"] = "circle",
-        size: int = PowerupConfig.size,
-        color: int = random.choice([i for i in range(len(color_choices))])
+        color: int = random.choice(list(range(len(color_choices))))
     ):
         super().__init__(*groups)
-        self.x_position = random.randint(
-            PowerupConfig.size * 5, screen_size.width - PowerupConfig.size * 5
+        self.position = Position(
+            random.randint(
+                PowerupConfig.size * 5, screen_size.width - PowerupConfig.size * 5
+            ),
+            PowerupConfig.initial_y,
         )
-        self.y_position = 15
-        self.speed_x = 0
-        self.speed_y = PowerupConfig.default_speed
-        self.size = size
+        self.speed = PowerupConfig.default_speed
         self.color = color
         self.collect = power
         self.shape = shape
-        self.blink_interval = PowerupConfig.blink_interval
         self.last_toggle = pygame.time.get_ticks()
 
         if self.shape == "circle":
             # Create the surface for the ball and draw a circle
-            self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+            self.image = pygame.Surface(
+                (PowerupConfig.size * 2, PowerupConfig.size * 2), pygame.SRCALPHA
+            )
             pygame.draw.circle(
                 self.image,
                 color_choices[self.color],
-                (self.size, self.size),
-                self.size,
+                (PowerupConfig.size, PowerupConfig.size),
+                PowerupConfig.size,
             )
         elif self.shape == "rectangle":
             # Create the surface for the ball and draw a circle
-            self.image = pygame.Surface((self.size * 4, self.size * 2))
+            self.image = pygame.Surface(
+                (PowerupConfig.size * 4, PowerupConfig.size * 2)
+            )
             self.image.fill(color)
         self.text_surface = PowerupConfig.font.render("+", True, pygame.Color("black"))
-        self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+        self.rect = self.image.get_rect(center=astuple(self.position))
         text_rect = self.text_surface.get_rect(
-            center=(self.size, self.size)
+            center=(PowerupConfig.size, PowerupConfig.size)
         )  # Center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         now = pygame.time.get_ticks()
-        if now - self.last_toggle > self.blink_interval:
+        if now - self.last_toggle > PowerupConfig.blink_interval:
             self.last_toggle = now
             self.change_color()
 
@@ -106,16 +109,16 @@ class PowerUp(Sprite):
         self.update_position()
         for paddle in screen_state.paddle_group.sprites():
             self.handle_paddle_collision(paddle)
-        if self.y_position >= screen_size.height:
+        if self.position.y >= screen_size.height:
             self.kill()
 
     def update_position(self):
         """Update the powerup's position based on its speed."""
-        self.y_position += self.speed_y
-        self.rect.y = self.y_position
+        self.position += self.speed
+        self.rect.y = self.position.y
 
         text_rect = self.text_surface.get_rect(
-            center=(self.x_position, self.y_position)
+            center=astuple(self.position)
         )  # center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
@@ -132,22 +135,20 @@ class PowerUp(Sprite):
         if self.color == len(color_choices):
             self.color = 0
         if self.shape == "circle":
-            # Create the surface for the ball and draw a circle
-            self.image = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+            # Redraw the circle in the new color
             pygame.draw.circle(
                 self.image,
                 color_choices[self.color],
-                (self.size, self.size),
-                self.size,
+                (PowerupConfig.size, PowerupConfig.size),
+                PowerupConfig.size,
             )
         elif self.shape == "rectangle":
-            # Create the surface for the ball and draw a circle
-            self.image = pygame.Surface((self.size * 4, self.size * 2))
+            # Redraw the rectangle in the new color
             self.image.fill(color_choices[self.color])
-        self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
         self.text_surface = PowerupConfig.font.render("+", True, pygame.Color("black"))
+        self.rect = self.image.get_rect(center=astuple(self.position))
         text_rect = self.text_surface.get_rect(
-            center=(self.size, self.size)
+            center=(PowerupConfig.size, PowerupConfig.size)
         )  # Center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
@@ -161,7 +162,7 @@ class PowerDown(Sprite):
         self.y_position = 15
         self.speed_x = 0
         self.radius = PowerupConfig.size
-        self.speed_y = PowerupConfig.default_speed
+        self.speed_y = PowerupConfig.default_speed.y
         self.collect = power
         self.blink_interval = PowerupConfig.blink_interval
         self.last_toggle = pygame.time.get_ticks()
