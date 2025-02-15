@@ -30,10 +30,10 @@ from breakout.paddle import Paddle
 def test_ball_initialization():
     """Test ball initializes with correct attributes."""
     ball = Ball()
-    assert ball.x_position == 250
-    assert ball.y_position == 380
-    assert ball.speed_x in [-2.5, 2.5]
-    assert ball.speed_y == -2.5
+    assert ball.position.x == 250
+    assert ball.position.y == 380
+    assert ball.speed.x in [-2.5, 2.5]
+    assert ball.speed.y == -2.5
     assert ball.color == Color("white")
 
 
@@ -42,22 +42,22 @@ def test_ball_wall_collision():
     ball = Ball()
 
     # Simulate hitting the left wall
-    ball.x_position = 0  # Place ball at the left wall
-    ball.speed_x = -2.5  # Ball moving left
+    ball.position.x = 0  # Place ball at the left wall
+    ball.speed.x = -2.5  # Ball moving left
     ball.handle_wall_collisions()
     assert (
-        ball.speed_x > 0
-    ), f"Expected ball to bounce right, but we got speed_x={ball.speed_x}"
+        ball.speed.x > 0
+    ), f"Expected ball to bounce right, but we got speed_x={ball.speed.x}"
 
     # Simulate hitting the right wall
-    ball.x_position = (
+    ball.position.x = (
         screen_size.width - ball.rect.width
     )  # Place ball at the right wall
-    ball.speed_x = 2.5  # Ball moving right
+    ball.speed.x = 2.5  # Ball moving right
     ball.handle_wall_collisions()
     assert (
-        ball.speed_x < 0
-    ), f"Expected ball to bounce left, but we got speed_x={ball.speed_x}"
+        ball.speed.x < 0
+    ), f"Expected ball to bounce left, but we got speed_x={ball.speed.x}"
 
 
 def test_ball_ceiling_collision():
@@ -65,13 +65,13 @@ def test_ball_ceiling_collision():
     ball = Ball()
 
     # Simulate hitting the ceiling
-    ball.y_position = 0  # Place ball at the ceiling
-    ball.speed_y = -2.5  # Ball moving upward
+    ball.position.y = 0  # Place ball at the ceiling
+    ball.speed.y = -2.5  # Ball moving upward
     ball.handle_wall_collisions()
 
     assert (
-        ball.speed_y > 0
-    ), f"Expected ball to bounce downward, but got speed_y={ball.speed_y}"
+        ball.speed.y > 0
+    ), f"Expected ball to bounce downward, but got speed_y={ball.speed.y}"
 
 
 def test_ball_paddle_collision():
@@ -80,18 +80,18 @@ def test_ball_paddle_collision():
     ball = Ball()
 
     # Don't collide with paddle
-    ball.speed_y = -2.5  # traveling up
+    ball.speed.y = -2.5  # traveling up
     assert ball.can_collide_with_paddle
     ball.handle_paddle_collision(paddle)
     assert ball.can_collide_with_paddle
 
     # Collide with paddle
     ball.rect.center = paddle.rect.center  # Place ball on the paddle
-    ball.speed_y = 2.5  # traveling down
+    ball.speed.y = 2.5  # traveling down
     ball.handle_paddle_collision(paddle)
     assert (
-        ball.speed_y < 0
-    ), f"Expected ball to bounce upward, but got speed_y={ball.speed_y}"
+        ball.speed.y < 0
+    ), f"Expected ball to bounce upward, but got speed_y={ball.speed.y}"
     assert not ball.can_collide_with_paddle
 
 
@@ -130,17 +130,17 @@ def test_ball_life_lost():
     assert state.lives == 3, f"Expected initial lives to be 3, but got {state.lives}"
 
     # Simulate ball falling below the screen (Lose 1 life)
-    ball.y_position = screen_size.height + 10
+    ball.position.y = screen_size.height + 10
     state = ball.move(state)
     assert state.lives == 2, f"Expected lives to decrease to 2, but got {state.lives}"
 
     # Simulate another life lost
-    ball.y_position = screen_size.height + 10
+    ball.position.y = screen_size.height + 10
     state = ball.move(state)
     assert state.lives == 1, f"Expected lives to decrease to 1, but got {state.lives}"
 
     # Lose final life
-    ball.y_position = screen_size.height + 10
+    ball.position.y = screen_size.height + 10
     state = ball.move(state)
 
     assert state.lives == 0, f"Expected lives to be 0, but got {state.lives}"

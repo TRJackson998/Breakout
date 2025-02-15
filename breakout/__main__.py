@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pygame
 
-from breakout import color_choices, screen_size, sound
+from breakout import Position, Speed, color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
@@ -391,9 +391,9 @@ class GameState:
         power_up_position: pygame.Rect = power_up.rect
         Ball(
             self.ball_group,
-            x_position=power_up_position.center[0],
+            position=Position(power_up_position.center[0], power_up_position.center[1]),
             color=random.choice(color_choices),
-            speed_y=BallConfig.default_speed,
+            speed=Speed(0, BallConfig.default_speed),
         )
 
     def add_paddle(self):

@@ -20,12 +20,12 @@ Thomas Nugent
 """
 
 import random
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 
 import pygame
 from pygame.sprite import Sprite
 
-from breakout import screen_size
+from breakout import Position, Speed, screen_size
 from breakout.bricks import Brick
 from breakout.paddle import Paddle
 from breakout.sound import SoundManager
@@ -40,8 +40,7 @@ class BallConfig:
     radius = 10
     default_speed = 2.5
     max_speed = 5.0
-    initial_x = 250
-    initial_y = 380
+    initial_position = Position(250, 380)
     color = pygame.Color("white")
 
 
@@ -51,10 +50,9 @@ class Ball(Sprite):
     def __init__(
         self,
         *groups,
-        x_position: int = BallConfig.initial_x,
-        y_position: int = BallConfig.initial_y,
-        speed_y: int = -BallConfig.default_speed,
-        radius: int = BallConfig.radius,
+        position: Position = BallConfig.initial_position,
+        speed: Speed = None,
+        radius=BallConfig.radius,
         color: pygame.Color = BallConfig.color,
     ):
         """
@@ -64,8 +62,7 @@ class Ball(Sprite):
             color: The color of the ball.
         """
         super().__init__(*groups)
-        self.x_position = x_position
-        self.y_position = y_position
+        self.position = position
         self.radius = radius
         self.color = color
 
@@ -79,11 +76,15 @@ class Ball(Sprite):
         )
 
         # Configure ball properties
-        self.speed_x = random.choice(
-            [-BallConfig.default_speed, BallConfig.default_speed]
+        self.speed = (
+            speed
+            if speed
+            else Speed(
+                random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
+                -BallConfig.default_speed,
+            )
         )
-        self.speed_y = speed_y
-        self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+        self.rect = self.image.get_rect(center=astuple(self.position))
 
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
@@ -98,7 +99,7 @@ class Ball(Sprite):
         screen_state.score += points
 
         # Handle bottom screen collision (losing a life or ending the game)
-        if self.y_position >= screen_size.height:
+        if self.position.y >= screen_size.height:
             group = self.groups()[0]
             if len(group.sprites()) > 1:
                 # There's more balls, losing this one doesn't lose a life
@@ -111,40 +112,39 @@ class Ball(Sprite):
 
     def update_position(self):
         """Update the ball's position based on its speed."""
-        self.x_position += self.speed_x
-        self.y_position += self.speed_y
-        self.rect.x = self.x_position
-        self.rect.y = self.y_position
+        self.position += self.speed
+        self.rect.x = self.position.x
+        self.rect.y = self.position.y
 
     def handle_wall_collisions(self):
         """Handle collisions with the walls and ceiling."""
         if (
-            self.x_position <= 0
-            or self.x_position >= screen_size.width - self.rect.width
+            self.position.x <= 0
+            or self.position.x >= screen_size.width - self.rect.width
         ):
             self.bounce_x()
             SoundManager.play_wall()
-        if self.y_position <= 0:
+        if self.position.y <= 0:
             self.bounce_y()  # Reverse vertical movement
             SoundManager.play_wall()
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
         if (
-            self.speed_y > 0
+            self.speed.y > 0
             and self.rect.colliderect(paddle.rect)
             and self.can_collide_with_paddle
         ):
             self.bounce_y()
             SoundManager.play_paddle()
-            self.y_position = paddle.rect.top - self.rect.height
+            self.position.y = paddle.rect.top - self.rect.height
 
             # Adjust horizontal speed based on where the ball hits the paddle
             paddle_center = paddle.rect.centerx
             ball_center = self.rect.centerx
             offset = ball_center - paddle_center
             max_offset = paddle.rect.width / 2
-            self.speed_x = max(
+            self.speed.x = max(
                 -BallConfig.max_speed,
                 min(
                     BallConfig.default_speed * (offset / max_offset),
@@ -190,19 +190,18 @@ class Ball(Sprite):
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""
-        self.speed_x = -self.speed_x
+        self.speed.x *= -1
 
     def bounce_y(self):
         """Reverse the vertical direction of the ball."""
-        self.speed_y = -self.speed_y
+        self.speed.y *= -1
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
-        self.speed_x = random.choice(
+        self.speed.x = random.choice(
             [-BallConfig.default_speed, BallConfig.default_speed]
         )
-        self.speed_y = -BallConfig.default_speed
-        self.x_position = BallConfig.initial_x
-        self.y_position = BallConfig.initial_y
-        self.rect.x = self.x_position
-        self.rect.y = self.y_position
+        self.speed.y = -BallConfig.default_speed
+        self.position = BallConfig.initial_position
+        self.rect.x = self.position.x
+        self.rect.y = self.position.y
