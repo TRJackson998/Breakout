@@ -49,6 +49,7 @@ class Brick(Sprite):
         self.y_position = y_position
         self.color = color
         self.breakable = True  # Bricks are breakable by default
+        self.border_radius = border_radius
 
         # Create the surface/rect for the brick
         self.image = pygame.Surface((self.WIDTH, self.HEIGHT), pygame.SRCALPHA)
@@ -77,7 +78,12 @@ class Brick(Sprite):
             self.breakable = True
             # Clear the texture by redrawing the brick in its base color.
             self.image.fill((0, 0, 0, 0))  # Clear with transparency.
-            pygame.draw.rect(self.image, self.color, (0, 0, self.WIDTH, self.HEIGHT))
+            pygame.draw.rect(
+                self.image,
+                self.color,
+                (0, 0, self.WIDTH, self.HEIGHT),
+                border_radius=self.border_radius,
+            )
             return 0
         else:
             self.kill()  # remove the brick from the game
