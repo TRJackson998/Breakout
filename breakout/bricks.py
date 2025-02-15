@@ -19,6 +19,7 @@ Thomas Nugent
 
 """
 
+import random
 import pygame
 from pygame.sprite import Sprite
 
@@ -47,6 +48,7 @@ class Brick(Sprite):
         self.x_position = x_position
         self.y_position = y_position
         self.color = color
+        self.breakable = True  # Bricks are breakable by default
 
         # Create the surface/rect for the brick
         self.image = pygame.Surface((self.WIDTH, self.HEIGHT), pygame.SRCALPHA)
@@ -70,11 +72,14 @@ class Brick(Sprite):
 
     def hit(self) -> int:
         """Actions when bricks are hit by the ball"""
+        if not self.breakable:
+            # Unbreakable bricks do not get destroyed.
+            return 0
         self.kill()  # remove the brick from the game
         return self.points
 
     @classmethod
-    def create_brick_layout(cls, rows, cols):
+    def create_brick_layout(cls, rows, cols, level=1):
         """Orders and centers the brick grid layout with dynamic colors."""
         brick_group = pygame.sprite.Group()
 
@@ -112,6 +117,14 @@ class Brick(Sprite):
                     color = pygame.Color("green")  # Green
 
                 brick = cls(brick_group, color=color, x_position=x, y_position=y)
+                # For levels 3 and higher, randomly mark some bricks as unbreakable.
+                if level >= 1 and random.random() < 0.2:  # 20% chance
+                    brick.breakable = False
+                    brick.color = pygame.Color("black")
+                    brick.points = 0  # No points for unbreakable bricks
+                    # Redraw the brick with the new color
+                    brick.image.fill("black")
+
                 brick_group.add(brick)
 
         return brick_group

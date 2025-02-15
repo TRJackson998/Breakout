@@ -265,10 +265,11 @@ class GameState:
 
     def __init__(self, screen: ScreenManager = Screens.START):
         """Reset the game state for a new game."""
+        self.level = 1
         self.score = 0  # Default starting score
         self.lives = 3  # Default starting lives
         self.time = 0
-        self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+        self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
         self.ball_group = pygame.sprite.Group()
         self.powerup_group = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
@@ -312,12 +313,15 @@ class GameState:
             return
 
         # broke all bricks, go again
-        if len(self.bricks.sprites()) == 0:
+        remaining_breakable = [
+            brick for brick in self.bricks.sprites() if brick.breakable
+        ]
+        if len(remaining_breakable) == 0:
             for ball in self.ball_group.sprites():
                 ball.increase_speed()  # Increase speed for each ball
                 ball.reset_position()
             self.launch_ball()
-            self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+            self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
             Screens.GAME.add_element(self.bricks)
 
         if not self.launched:
