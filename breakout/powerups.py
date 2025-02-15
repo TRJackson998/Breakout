@@ -154,6 +154,8 @@ class PowerUp(Sprite):
 
 
 class PowerDown(Sprite):
+    """An obstacle that causes the player to lose a life"""
+
     def __init__(self, *groups, power=lambda: None):
         super().__init__(*groups)
         self.position = Position(
@@ -251,12 +253,14 @@ class PowerDown(Sprite):
         )
 
     def explode(self):
+        """Update the powerdown because the player hit it"""
         self.exploded = True
         self.explode_time = pygame.time.get_ticks()
         self.speed.y = 0
         self.generate_explosion()
 
     def generate_explosion(self):
+        """Create the graphics for the explosion"""
         size = PowerupConfig.size * 4
         outer_explosion = self.generate_explosion_points(size)
         middle_explosion = self.generate_explosion_points(size * 0.7)
@@ -267,6 +271,7 @@ class PowerDown(Sprite):
         pygame.draw.polygon(self.image, pygame.Color("yellow"), inner_explosion)
 
     def generate_explosion_points(self, size: int) -> list[int]:
+        """Do the math to generate the points on the screen for each explosion layer"""
         points = []
         num_spikes = 12
         angle_step = 360 / num_spikes
