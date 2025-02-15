@@ -86,6 +86,7 @@ class Brick(Sprite):
             )
             return 0
         else:
+            self.image.fill((0, 0, 0, 0))  # Clear the bricks image entirely
             self.kill()  # remove the brick from the game
             return self.points
 
@@ -127,6 +128,8 @@ class Brick(Sprite):
                 print("Error loading texture:", e)
                 cls.unbreakable_texture = None
 
+        chance = min(level * 0.2, 1.0)
+
         for row in range(rows):
             for col in range(cols):
                 x = start_x + col * (cls.WIDTH + x_offset)  # Adjusted x position
@@ -142,7 +145,7 @@ class Brick(Sprite):
 
                 brick = cls(brick_group, color=color, x_position=x, y_position=y)
 
-                if level >= 1 and random.random() < 0.2:  # 20% chance
+                if random.random() < chance:
                     brick.breakable = False
                     if hasattr(cls, "unbreakable_texture") and cls.unbreakable_texture:
                         brick.image.blit(cls.unbreakable_texture, (0, 0))
