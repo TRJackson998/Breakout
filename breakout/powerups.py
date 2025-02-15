@@ -34,7 +34,7 @@ import pygame
 from pygame.font import SysFont
 from pygame.sprite import Sprite
 
-from breakout import color_choices, screen_size, sound
+from breakout import Position, Speed, color_choices, screen_size, sound
 from breakout.paddle import Paddle
 
 # pylint: disable=no-member
@@ -47,6 +47,7 @@ class PowerupConfig:
     size = 10
     default_speed = 2.5
     blink_interval = 100
+    font = SysFont("courier", max(screen_size.width // 30, 14))
 
 
 class PowerUp(Sprite):
@@ -61,7 +62,6 @@ class PowerUp(Sprite):
         color: int = random.choice([i for i in range(len(color_choices))])
     ):
         super().__init__(*groups)
-        self.font = SysFont("courier", max(screen_size.width // 30, 14))
         self.x_position = random.randint(
             PowerupConfig.size * 5, screen_size.width - PowerupConfig.size * 5
         )
@@ -89,7 +89,7 @@ class PowerUp(Sprite):
             # Create the surface for the ball and draw a circle
             self.image = pygame.Surface((self.size * 4, self.size * 2))
             self.image.fill(color)
-        self.text_surface = self.font.render("+", True, pygame.Color("black"))
+        self.text_surface = PowerupConfig.font.render("+", True, pygame.Color("black"))
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
         text_rect = self.text_surface.get_rect(
             center=(self.size, self.size)
@@ -152,8 +152,8 @@ class PowerUp(Sprite):
             # Create the surface for the ball and draw a circle
             self.image = pygame.Surface((self.size * 4, self.size * 2))
             self.image.fill(color_choices[self.color])
-        self.text_surface = self.font.render("+", True, pygame.Color("black"))
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+        self.text_surface = PowerupConfig.font.render("+", True, pygame.Color("black"))
         text_rect = self.text_surface.get_rect(
             center=(self.size, self.size)
         )  # Center text
