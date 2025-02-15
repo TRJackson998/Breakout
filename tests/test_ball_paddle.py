@@ -82,9 +82,7 @@ def test_ball_paddle_collision():
 
     # Don't collide with paddle
     ball.speed.y = -2.5  # traveling up
-    assert ball.can_collide_with_paddle
     ball.handle_paddle_collision(paddle)
-    assert ball.can_collide_with_paddle
 
     # Collide with paddle
     ball.rect.center = paddle.rect.center  # Place ball on the paddle
@@ -93,7 +91,6 @@ def test_ball_paddle_collision():
     assert (
         ball.speed.y < 0
     ), f"Expected ball to bounce upward, but got speed_y={ball.speed.y}"
-    assert not ball.can_collide_with_paddle
 
 
 def test_ball_brick_collision():

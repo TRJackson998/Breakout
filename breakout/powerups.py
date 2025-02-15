@@ -71,7 +71,6 @@ class PowerUp(Sprite):
         self.size = size
         self.color = color
         self.collect = power
-        self.can_collide_with_paddle = True
         self.shape = shape
         self.blink_interval = PowerupConfig.blink_interval
         self.last_toggle = pygame.time.get_ticks()
@@ -122,17 +121,10 @@ class PowerUp(Sprite):
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
-        if (
-            self.speed_y > 0
-            and self.rect.colliderect(paddle.rect)
-            and self.can_collide_with_paddle
-        ):
+        if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
             sound.SoundManager.play_powerup()
             self.collect()
             self.kill()
-
-        if self.rect.bottom < paddle.rect.top:
-            self.can_collide_with_paddle = True
 
     def change_color(self):
         """Handles the power up color changes"""

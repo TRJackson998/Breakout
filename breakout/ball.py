@@ -66,9 +66,6 @@ class Ball(Sprite):
         self.radius = radius
         self.color = color
 
-        # Initialize lives and state
-        self.can_collide_with_paddle = True
-
         # Create the surface for the ball and draw a circle
         self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
         pygame.draw.circle(
@@ -138,11 +135,7 @@ class Ball(Sprite):
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
-        if (
-            self.speed.y > 0
-            and self.rect.colliderect(paddle.rect)
-            and self.can_collide_with_paddle
-        ):
+        if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
             self.bounce_y()
             SoundManager.play_paddle()
             self.position.y = paddle.rect.top - self.rect.height
@@ -159,11 +152,6 @@ class Ball(Sprite):
                     BallConfig.max_speed,
                 ),
             )
-
-            self.can_collide_with_paddle = False
-
-        if self.rect.bottom < paddle.rect.top:
-            self.can_collide_with_paddle = True
 
     def handle_brick_collisions(self, bricks: pygame.sprite.Group) -> int:
         """Handle collisions with bricks and return points scored."""
