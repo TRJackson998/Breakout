@@ -51,7 +51,7 @@ class Position:
 
 
 pygame.init()
-screen_size = Size(500, 500)
+screen_size = Size(500, 600)
 
 color_choices = [
     pygame.Color("red"),

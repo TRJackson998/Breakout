@@ -22,7 +22,7 @@ from pygame import Color, sprite
 
 from breakout import screen_size
 from breakout.__main__ import GameState
-from breakout.ball import Ball
+from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle, PaddleConfig
 
@@ -30,10 +30,9 @@ from breakout.paddle import Paddle, PaddleConfig
 def test_ball_initialization():
     """Test ball initializes with correct attributes."""
     ball = Ball()
-    assert ball.position.x == 250
-    assert ball.position.y == 380
-    assert ball.speed.x in [-2.5, 2.5]
-    assert ball.speed.y == -2.5
+    assert ball.position == BallConfig.initial_position
+    assert ball.speed.x in [-BallConfig.default_speed, BallConfig.default_speed]
+    assert ball.speed.y == -BallConfig.default_speed
     assert ball.color == Color("white")
 
 

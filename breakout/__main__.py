@@ -57,7 +57,7 @@ class Game:
         except Exception:
             base_path = Path(__file__).parent
         start_bg = pygame.image.load(
-            base_path.joinpath("textures", "StartScreen.jpg")
+            base_path.joinpath("textures", "StartScreen3.jpg")
         ).convert()
         game_bg = pygame.image.load(
             base_path.joinpath("textures", "GameScreen.jpg")
@@ -265,10 +265,11 @@ class GameState:
 
     def __init__(self, screen: ScreenManager = Screens.START):
         """Reset the game state for a new game."""
+        self.level = 1
         self.score = 0  # Default starting score
         self.lives = 3  # Default starting lives
         self.time = 0
-        self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+        self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
         self.ball_group = pygame.sprite.Group()
         self.powerup_group = pygame.sprite.Group()
         self.paddle_group = pygame.sprite.Group()
@@ -313,10 +314,12 @@ class GameState:
 
         # broke all bricks, go again
         if len(self.bricks.sprites()) == 0:
+            self.level += 1
             for ball in self.ball_group.sprites():
                 ball.reset_position()
+                ball.increase_speed()  # Increase speed for each ball
             self.launch_ball()
-            self.bricks = Brick.create_brick_layout(rows=6, cols=8)
+            self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
             Screens.GAME.add_element(self.bricks)
 
         if not self.launched:
@@ -389,11 +392,19 @@ class GameState:
             # pull from where the paddle is if you can't find the powerup
             power_up = self.paddle_group.sprites()[0]
         power_up_position: pygame.Rect = power_up.rect
+
+        # Get the current speed from an existing ball if available; otherwise, use the default
+        if self.ball_group.sprites():
+            current_speed = self.ball_group.sprites()[0].speed
+        else:
+            current_speed = BallConfig.DEFAULT_SPEED
+
+        # Create the new ball with the current speed (using a positive value to hit paddle and bounce appropriately)
         Ball(
             self.ball_group,
             position=Position(power_up_position.center[0], power_up_position.center[1]),
             color=random.choice(color_choices),
-            speed=Speed(0, BallConfig.default_speed),
+            speed=Speed(0, current_speed),
         )
 
     def add_paddle(self):

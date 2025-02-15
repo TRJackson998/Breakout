@@ -19,7 +19,9 @@ Thomas Nugent
 
 """
 
+import random
 from dataclasses import astuple, dataclass
+from pathlib import Path
 
 import pygame
 from pygame.sprite import Sprite
@@ -34,6 +36,17 @@ class BrickConfig:
 
     size = Size(51, 25)
     border_radius = 5
+
+    # Load the brick texture
+    try:
+        base_path = Path(__file__).parent
+        texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
+        unbreakable_texture = pygame.image.load(str(texture_path)).convert_alpha()
+        unbreakable_texture = pygame.transform.scale(unbreakable_texture, astuple(size))
+        print("Texture loaded successfully from", texture_path)
+    except Exception as e:
+        print("Error loading texture:", e)
+        unbreakable_texture = None
 
 
 class Brick(Sprite):
@@ -54,6 +67,7 @@ class Brick(Sprite):
             self.position = position
         self.color = color
         self.size = BrickConfig.size
+        self.breakable = True  # Bricks are breakable by default
 
         # Create the surface/rect for the brick
         self.image = pygame.Surface(astuple(self.size), pygame.SRCALPHA)
@@ -77,11 +91,24 @@ class Brick(Sprite):
 
     def hit(self) -> int:
         """Actions when bricks are hit by the ball"""
+        if not self.breakable:
+            # Unbreakable bricks do not get destroyed.
+            self.breakable = True
+            # Clear the texture by redrawing the brick in its base color.
+            self.image.fill((0, 0, 0, 0))  # Clear with transparency.
+            pygame.draw.rect(
+                self.image,
+                self.color,
+                (0, 0, self.size.width, self.size.height),
+                border_radius=BrickConfig.border_radius,
+            )
+            return 0
+        # self.image.fill((0, 0, 0, 0))  # Clear the bricks image entirely TODO is this needed?
         self.kill()  # remove the brick from the game
         return self.points
 
     @classmethod
-    def create_brick_layout(cls, rows: int, cols: int):
+    def create_brick_layout(cls, rows: int, cols: int, level: int):
         """Orders and centers the brick grid layout with dynamic colors."""
         brick_group = pygame.sprite.Group()
         offset = 10  # Margin between bricks
@@ -92,6 +119,8 @@ class Brick(Sprite):
 
         # Calculate starting Y position to account for the top margin
         start_y = BrickConfig.size.height * (offset // 5)
+
+        chance = min(level * 0.1, 1.0)
 
         for row in range(rows):
             for col in range(cols):
@@ -112,6 +141,12 @@ class Brick(Sprite):
                     color = pygame.Color("green")
 
                 brick = cls(brick_group, color=color, position=Position(x, y))
+                if random.random() < chance:
+                    brick.breakable = False
+                    if BrickConfig.unbreakable_texture:
+                        brick.image.blit(BrickConfig.unbreakable_texture, (0, 0))
+                    else:
+                        brick.image.fill((0, 0, 0))
                 brick_group.add(brick)
 
         return brick_group

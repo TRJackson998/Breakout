@@ -38,9 +38,9 @@ class BallConfig:
     """Configuration for Ball constants."""
 
     radius = 10
-    default_speed = 2.5
-    max_speed = 5.0
-    initial_position = Position(250, 380)
+    default_speed = 3.0
+    max_speed = 6.0
+    initial_position = Position(250, 475)
     color = pygame.Color("white")
 
 
@@ -85,6 +85,11 @@ class Ball(Sprite):
             )
         )
         self.rect = self.image.get_rect(center=astuple(self.position))
+
+    def increase_speed(self, factor=1.5):
+        """Increase the ball's current speed by a factor without exceeding max_speed."""
+        self.speed.x = min(self.speed.x * factor, BallConfig.max_speed)
+        self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
 
     def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
@@ -190,7 +195,10 @@ class Ball(Sprite):
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""
-        self.speed.x *= -1
+        if self.speed.x == 0:
+            self.speed.x = random.choice([-self.speed.x, self.speed.x])
+        else:
+            self.speed.x *= -1
 
     def bounce_y(self):
         """Reverse the vertical direction of the ball."""
@@ -198,10 +206,7 @@ class Ball(Sprite):
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
-        self.speed.x = random.choice(
-            [-BallConfig.default_speed, BallConfig.default_speed]
-        )
-        self.speed.y = -BallConfig.default_speed
+        self.speed = Speed(random.choice([-self.speed.x, self.speed.x]), -self.speed.y)
         self.position = BallConfig.initial_position
         self.rect.x = self.position.x
         self.rect.y = self.position.y
