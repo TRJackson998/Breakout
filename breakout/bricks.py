@@ -74,9 +74,14 @@ class Brick(Sprite):
         """Actions when bricks are hit by the ball"""
         if not self.breakable:
             # Unbreakable bricks do not get destroyed.
+            self.breakable = True
+            # Clear the texture by redrawing the brick in its base color.
+            self.image.fill((0, 0, 0, 0))  # Clear with transparency.
+            pygame.draw.rect(self.image, self.color, (0, 0, self.WIDTH, self.HEIGHT))
             return 0
-        self.kill()  # remove the brick from the game
-        return self.points
+        else:
+            self.kill()  # remove the brick from the game
+            return self.points
 
     @classmethod
     def create_brick_layout(cls, rows, cols, level):
@@ -101,7 +106,7 @@ class Brick(Sprite):
         )  # Yellow occupies the next third with the remaining being green
 
         # Load the brick texture
-        if level >= 2 and not hasattr(cls, "unbreakable_texture"):
+        if level >= 1 and not hasattr(cls, "unbreakable_texture"):
             try:
                 base_path = Path(__file__).parent
                 texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
@@ -131,9 +136,8 @@ class Brick(Sprite):
 
                 brick = cls(brick_group, color=color, x_position=x, y_position=y)
 
-                if level >= 2 and random.random() < 0.2:  # 20% chance
+                if level >= 1 and random.random() < 0.2:  # 20% chance
                     brick.breakable = False
-                    brick.points = 0  # No points for unbreakable bricks
                     if hasattr(cls, "unbreakable_texture") and cls.unbreakable_texture:
                         brick.image.blit(cls.unbreakable_texture, (0, 0))
                     else:
