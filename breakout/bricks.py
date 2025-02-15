@@ -102,8 +102,9 @@ class Brick(Sprite):
         brick_group = pygame.sprite.Group()
         offset = 10  # Margin between bricks
 
-        # Calculate the total brick area width and starting X position for centering bricks horizontally
+        # Calculate the total brick area width
         brick_area_width = cols * (BrickConfig.size.width + offset) - offset
+        # Calculate starting X position for centering bricks horizontally
         start_x = (screen_size.width - brick_area_width) // 2
 
         # Calculate starting Y position to account for the top margin

@@ -131,6 +131,7 @@ def test_powerup_text_position_update():
 
     text_rect = powerup.text_surface.get_rect(center=powerup.rect.center)
 
-    assert (
-        text_rect.center == powerup.rect.center
-    ), f"Expected text surface center {text_rect.center} to match power-up center {powerup.rect.center}."
+    assert text_rect.center == powerup.rect.center, (
+        f"Expected text surface center {text_rect.center} "
+        + "to match power-up center {powerup.rect.center}."
+    )
