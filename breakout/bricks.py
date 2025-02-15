@@ -37,17 +37,6 @@ class BrickConfig:
     size = Size(51, 25)
     border_radius = 5
 
-    # Load the brick texture
-    try:
-        base_path = Path(__file__).parent
-        texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
-        unbreakable_texture = pygame.image.load(str(texture_path)).convert_alpha()
-        unbreakable_texture = pygame.transform.scale(unbreakable_texture, astuple(size))
-        print("Texture loaded successfully from", texture_path)
-    except Exception as e:
-        print("Error loading texture:", e)
-        unbreakable_texture = None
-
 
 class Brick(Sprite):
     """Brick class - Characteristics for a single brick in the game."""
@@ -120,6 +109,22 @@ class Brick(Sprite):
         # Calculate starting Y position to account for the top margin
         start_y = BrickConfig.size.height * (offset // 5)
 
+        # Load the brick texture
+        if level >= 2 and not hasattr(cls, "unbreakable_texture"):
+            try:
+                base_path = Path(__file__).parent
+                texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
+                cls.unbreakable_texture = pygame.image.load(
+                    str(texture_path)
+                ).convert_alpha()
+                cls.unbreakable_texture = pygame.transform.scale(
+                    cls.unbreakable_texture, astuple(BrickConfig.size)
+                )
+                print("Texture loaded successfully from", texture_path)
+            except Exception as e:
+                print("Error loading texture:", e)
+                cls.unbreakable_texture = None
+
         chance = min(level * 0.1, 1.0)
 
         for row in range(rows):
@@ -141,10 +146,10 @@ class Brick(Sprite):
                     color = pygame.Color("green")
 
                 brick = cls(brick_group, color=color, position=Position(x, y))
-                if random.random() < chance:
+                if level >= 2 and random.random() < chance:
                     brick.breakable = False
-                    if BrickConfig.unbreakable_texture:
-                        brick.image.blit(BrickConfig.unbreakable_texture, (0, 0))
+                    if hasattr(cls, "unbreakable_texture") and cls.unbreakable_texture:
+                        brick.image.blit(cls.unbreakable_texture, (0, 0))
                     else:
                         brick.image.fill((0, 0, 0))
                 brick_group.add(brick)
