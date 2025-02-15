@@ -19,19 +19,25 @@ Thomas Nugent
 
 """
 
+from dataclasses import dataclass
+
 import pygame
 from pygame.sprite import Sprite
 
 from breakout import screen_size
 
 # pylint: disable=no-member
+@dataclass
+class BrickConfig:
+    """Configuration for Ball constants."""
+
+    width = 51
+    height = 25
+    border_radius = 5
 
 
 class Brick(Sprite):
     """Brick class - Characteristics for a single brick in the game."""
-
-    width = 51
-    height = 25
 
     def __init__(
         self,
@@ -47,6 +53,8 @@ class Brick(Sprite):
         self.x_position = x_position
         self.y_position = y_position
         self.color = color
+        self.width = BrickConfig.width
+        self.height = BrickConfig.height
 
         # Create the surface/rect for the brick
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
@@ -58,6 +66,7 @@ class Brick(Sprite):
             color,  # Color of the rectangle
             (0, 0, self.width, self.height),  # Rectangle dimensions
             border_radius=border_radius,  # Rounded corners
+            border_radius=BrickConfig.border_radius,  # Rounded corners
         )
 
         # Set point value
@@ -86,11 +95,11 @@ class Brick(Sprite):
         top_margin = 2  # Number of empty rows at the top
 
         # Calculate the total brick area width and starting X position for centering
-        brick_area_width = cols * (cls.width + x_offset) - x_offset
+        brick_area_width = cols * (BrickConfig.width + x_offset) - x_offset
         start_x = (screen_width - brick_area_width) // 2  # Center bricks horizontally
 
         # Calculate starting Y position to account for the top margin
-        start_y = cls.height * top_margin
+        start_y = BrickConfig.height * top_margin
 
         # Determine the number of rows for each color
         red_rows = max(1, rows // 4)  # Red occupies the first quarter
@@ -100,8 +109,12 @@ class Brick(Sprite):
 
         for row in range(rows):
             for col in range(cols):
-                x = start_x + col * (cls.width + x_offset)  # Adjusted x position
-                y = start_y + row * (cls.height + y_offset)  # Adjusted y position
+                x = start_x + col * (
+                    BrickConfig.width + x_offset
+                )  # Adjusted x position
+                y = start_y + row * (
+                    BrickConfig.height + y_offset
+                )  # Adjusted y position
 
                 # Assign colors based on row
                 if row < red_rows:
