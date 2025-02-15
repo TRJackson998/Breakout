@@ -84,43 +84,32 @@ class Brick(Sprite):
     def create_brick_layout(cls, rows: int, cols: int):
         """Orders and centers the brick grid layout with dynamic colors."""
         brick_group = pygame.sprite.Group()
+        offset = 10  # Margin between bricks
 
-        screen_width = screen_size.width
-
-        # Spacing and margins
-        x_offset = 10  # Horizontal spacing between bricks
-        y_offset = 10  # Vertical spacing between bricks
-        top_margin = 2  # Number of empty rows at the top
-
-        # Calculate the total brick area width and starting X position for centering
-        brick_area_width = cols * (BrickConfig.size.width + x_offset) - x_offset
-        start_x = (screen_width - brick_area_width) // 2  # Center bricks horizontally
+        # Calculate the total brick area width and starting X position for centering bricks horizontally
+        brick_area_width = cols * (BrickConfig.size.width + offset) - offset
+        start_x = (screen_size.width - brick_area_width) // 2
 
         # Calculate starting Y position to account for the top margin
-        start_y = BrickConfig.size.height * top_margin
-
-        # Determine the number of rows for each color
-        red_rows = max(1, rows // 4)  # Red occupies the first quarter
-        yellow_rows = max(
-            1, rows // 3
-        )  # Yellow occupies the next third with the remaining being green
+        start_y = BrickConfig.size.height * (offset // 5)
 
         for row in range(rows):
             for col in range(cols):
-                x = start_x + col * (
-                    BrickConfig.size.width + x_offset
-                )  # Adjusted x position
-                y = start_y + row * (
-                    BrickConfig.size.height + y_offset
-                )  # Adjusted y position
+                # calculate position for this specific brick
+                x = start_x + col * (BrickConfig.size.width + offset)
+                y = start_y + row * (BrickConfig.size.height + offset)
 
                 # Assign colors based on row
-                if row < red_rows:
-                    color = pygame.Color("red")  # Red
-                elif row < red_rows + yellow_rows:
-                    color = pygame.Color("yellow")  # Yellow
+                first_quarter = max(1, rows // 4)
+                if row < first_quarter:
+                    # Red occupies the first quarter
+                    color = pygame.Color("red")
+                elif row < first_quarter + max(1, rows // 3):
+                    # Yellow occupies the next third
+                    color = pygame.Color("yellow")
                 else:
-                    color = pygame.Color("green")  # Green
+                    # Rest are green
+                    color = pygame.Color("green")
 
                 brick = cls(brick_group, color=color, position=Position(x, y))
                 brick_group.add(brick)
