@@ -36,7 +36,7 @@ class BallConfig:
     """Configuration for Ball constants."""
 
     radius = 10
-    DEFAULT_SPEED = 1.5
+    DEFAULT_SPEED = 3.0
     MAX_SPEED = 6.0
     INITIAL_X = 250
     INITIAL_Y = 475
@@ -84,7 +84,7 @@ class Ball(Sprite):
         self.speed_y = speed_y
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
-    def increase_speed(self, factor=3):
+    def increase_speed(self, factor=1.5):
         """Increase the ball's current speed by a factor without exceeding MAX_SPEED."""
         self.current_speed = min(self.current_speed * factor, BallConfig.MAX_SPEED)
 
