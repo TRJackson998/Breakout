@@ -60,7 +60,7 @@ class Game:
             base_path.joinpath("textures", "THE BREAKOUT.png")
         ).convert()
         game_bg = pygame.image.load(
-            base_path.joinpath("textures", "GameScreen.jpg")
+            base_path.joinpath("textures", "BlueBackground.png")
         ).convert()
         end_bg = pygame.image.load(
             base_path.joinpath("textures", "EndScreen.jpg")
