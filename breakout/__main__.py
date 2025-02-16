@@ -63,7 +63,7 @@ class Game:
             base_path.joinpath("textures", "BlueBackground.png")
         ).convert()
         end_bg = pygame.image.load(
-            base_path.joinpath("textures", "EndScreen.jpg")
+            base_path.joinpath("textures", "BlueBackground.png")
         ).convert()
         # Assign the background image to the start screen.
         Screens.START.background_image = start_bg
