@@ -199,5 +199,4 @@ class Ball(Sprite):
         """Resets ball to starting position and waits for launch."""
         self.speed = Speed(random.choice([-self.speed.x, self.speed.x]), -self.speed.y)
         self.position = BallConfig.initial_position
-        self.rect.x = self.position.x
-        self.rect.y = self.position.y
+        self.rect.center = astuple(self.position)

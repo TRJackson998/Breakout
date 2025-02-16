@@ -100,7 +100,7 @@ class Brick(Sprite):
                 border_radius=BrickConfig.border_radius,
             )
             return 0
-        # self.image.fill((0, 0, 0, 0))  # Clear the bricks image entirely TODO is this needed?
+        self.image.fill((0, 0, 0, 0))
         self.kill()  # remove the brick from the game
         return self.points
 
