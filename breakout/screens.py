@@ -245,11 +245,11 @@ class BlinkingMessage:
     def __init__(
         self,
         text: str,
-        pos=None,
-        text_color=pygame.Color("white"),
-        background_color=pygame.Color("blue"),
-        blink_interval=1000,
-        padding=10,
+        pos: tuple[int, int] = None,
+        text_color: pygame.Color = pygame.Color("white"),
+        background_color: pygame.Color = pygame.Color("blue"),
+        blink_interval: int = 1000,
+        padding: int = 10,
     ):
         self.text = text
         self.text_color = text_color

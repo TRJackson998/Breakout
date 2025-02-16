@@ -20,13 +20,15 @@ Thomas Nugent
 """
 
 import random
-from dataclasses import dataclass
+from dataclasses import astuple, dataclass
 
 import pygame
 from pygame.sprite import Sprite
 
-from breakout import sound
+from breakout import Position, Speed, screen_size
+from breakout.bricks import Brick
 from breakout.paddle import Paddle
+from breakout.sound import SoundManager
 
 # pylint: disable=no-member
 
@@ -36,11 +38,10 @@ class BallConfig:
     """Configuration for Ball constants."""
 
     radius = 10
-    DEFAULT_SPEED = 3.0
-    MAX_SPEED = 6.0
-    INITIAL_X = 250
-    INITIAL_Y = 475
-    COLOR = pygame.Color("white")
+    default_speed = 3.0
+    max_speed = 6.0
+    initial_position = Position(250, 475)
+    color = pygame.Color("white")
 
 
 class Ball(Sprite):
@@ -49,11 +50,10 @@ class Ball(Sprite):
     def __init__(
         self,
         *groups,
-        x_position=BallConfig.INITIAL_X,
-        y_position=BallConfig.INITIAL_Y,
-        speed_y=-BallConfig.DEFAULT_SPEED,
+        position: Position = BallConfig.initial_position,
         radius=BallConfig.radius,
-        color=BallConfig.COLOR,
+        color: pygame.Color = BallConfig.color,
+        speed: Speed = None
     ):
         """
         Initialize the ball.
@@ -62,13 +62,9 @@ class Ball(Sprite):
             color: The color of the ball.
         """
         super().__init__(*groups)
-        self.x_position = x_position
-        self.y_position = y_position
+        self.position = position
         self.radius = radius
         self.color = color
-
-        # Initialize lives and state
-        self.can_collide_with_paddle = True
 
         # Create the surface for the ball and draw a circle
         self.image = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
@@ -76,32 +72,39 @@ class Ball(Sprite):
             self.image, self.color, (self.radius, self.radius), self.radius
         )
 
-        # Use current_speed to track ball speed that increases over levels
-        self.current_speed = BallConfig.DEFAULT_SPEED
-
-        # Configure ball properties using the current_speed
-        self.speed_x = random.choice([-self.current_speed, self.current_speed])
-        self.speed_y = speed_y
-        self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
+        # Configure ball properties
+        self.speed = (
+            speed
+            if speed
+            else Speed(
+                random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
+                -BallConfig.default_speed,
+            )
+        )
+        self.rect = self.image.get_rect(center=astuple(self.position))
 
     def increase_speed(self, factor=1.5):
-        """Increase the ball's current speed by a factor without exceeding MAX_SPEED."""
-        self.current_speed = min(self.current_speed * factor, BallConfig.MAX_SPEED)
+        """Increase the ball's current speed by a factor without exceeding max_speed."""
+        BallConfig.default_speed = min(
+            BallConfig.default_speed * factor, BallConfig.max_speed
+        )
+        self.speed.x = min(self.speed.x * factor, BallConfig.max_speed)
+        self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
 
-    def move(self, screen_size, screen_state):
+    def move(self, screen_state):
         """Handles movement and collision with walls, paddle, and bricks."""
         # Update position
         self.update_position()
 
         # Handle collisions
-        self.handle_wall_collisions(screen_size)
+        self.handle_wall_collisions()
         for paddle in screen_state.paddle_group.sprites():
             self.handle_paddle_collision(paddle)
         points = self.handle_brick_collisions(screen_state.bricks)
         screen_state.score += points
 
         # Handle bottom screen collision (losing a life or ending the game)
-        if self.y_position >= screen_size.height:
+        if self.position.y >= screen_size.height:
             group = self.groups()[0]
             if len(group.sprites()) > 1:
                 # There's more balls, losing this one doesn't lose a life
@@ -114,51 +117,41 @@ class Ball(Sprite):
 
     def update_position(self):
         """Update the ball's position based on its speed."""
-        self.x_position += self.speed_x
-        self.y_position += self.speed_y
-        self.rect.x = self.x_position
-        self.rect.y = self.y_position
+        self.position += self.speed
+        self.rect.x = self.position.x
+        self.rect.y = self.position.y
 
-    def handle_wall_collisions(self, screen_size):
+    def handle_wall_collisions(self):
         """Handle collisions with the walls and ceiling."""
         if (
-            self.x_position <= 0
-            or self.x_position >= screen_size.width - self.rect.width
+            self.position.x <= 0
+            or self.position.x >= screen_size.width - self.rect.width
         ):
             self.bounce_x()
-            sound.SoundManager.play_wall()
-        if self.y_position <= 0:
+            SoundManager.play_wall()
+        if self.position.y <= 0:
             self.bounce_y()  # Reverse vertical movement
-            sound.SoundManager.play_wall()
+            SoundManager.play_wall()
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
-        if (
-            self.speed_y > 0
-            and self.rect.colliderect(paddle.rect)
-            and self.can_collide_with_paddle
-        ):
+        if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
             self.bounce_y()
-            sound.SoundManager.play_paddle()
-            self.y_position = paddle.rect.top - self.rect.height
+            SoundManager.play_paddle()
+            self.position.y = paddle.rect.top - self.rect.height
 
             # Adjust horizontal speed based on where the ball hits the paddle
             paddle_center = paddle.rect.centerx
             ball_center = self.rect.centerx
             offset = ball_center - paddle_center
             max_offset = paddle.rect.width / 2
-            self.speed_x = max(
-                -BallConfig.MAX_SPEED,
+            self.speed.x = max(
+                -BallConfig.max_speed,
                 min(
-                    BallConfig.DEFAULT_SPEED * (offset / max_offset),
-                    BallConfig.MAX_SPEED,
+                    BallConfig.default_speed * (offset / max_offset),
+                    BallConfig.max_speed,
                 ),
             )
-
-            self.can_collide_with_paddle = False
-
-        if self.rect.bottom < paddle.rect.top:
-            self.can_collide_with_paddle = True
 
     def handle_brick_collisions(self, bricks: pygame.sprite.Group) -> int:
         """Handle collisions with bricks and return points scored."""
@@ -168,6 +161,7 @@ class Ball(Sprite):
         reversed_y = False
 
         for brick in hit_bricks:
+            brick: Brick
             vertical_overlap = min(
                 abs(self.rect.bottom - brick.rect.top),
                 abs(self.rect.top - brick.rect.bottom),
@@ -187,25 +181,22 @@ class Ball(Sprite):
             points += brick.hit()
 
             # Play sound effect for each brick hit
-            sound.SoundManager.play_brick()
+            SoundManager.play_brick()
         return points
 
     def bounce_x(self):
         """Reverse the horizontal direction of the ball."""
-        if self.speed_x == 0:
-            self.speed_x = random.choice([-self.current_speed, self.current_speed])
+        if self.speed.x == 0:
+            self.speed.x = random.choice([-self.speed.x, self.speed.x])
         else:
-            self.speed_x = -self.speed_x
+            self.speed.x *= -1
 
     def bounce_y(self):
         """Reverse the vertical direction of the ball."""
-        self.speed_y = -self.speed_y
+        self.speed.y *= -1
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
-        self.speed_x = random.choice([-self.current_speed, self.current_speed])
-        self.speed_y = -self.current_speed
-        self.x_position = BallConfig.INITIAL_X
-        self.y_position = BallConfig.INITIAL_Y
-        self.rect.x = self.x_position
-        self.rect.y = self.y_position
+        self.speed = Speed(random.choice([-self.speed.x, self.speed.x]), -self.speed.y)
+        self.position = BallConfig.initial_position
+        self.rect.center = astuple(self.position)

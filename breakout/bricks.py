@@ -20,47 +20,55 @@ Thomas Nugent
 """
 
 import random
-import pygame
-from pygame.sprite import Sprite
-from breakout import screen_size
+from dataclasses import astuple, dataclass
 from pathlib import Path
 
+import pygame
+from pygame.sprite import Sprite
+
+from breakout import Position, Size, screen_size
+
+
 # pylint: disable=no-member
+@dataclass
+class BrickConfig:
+    """Configuration for Ball constants."""
+
+    size = Size(51, 25)
+    border_radius = 5
 
 
 class Brick(Sprite):
     """Brick class - Characteristics for a single brick in the game."""
 
-    WIDTH = 51
-    HEIGHT = 25
-
     def __init__(
         self,
         *groups,
-        color=pygame.Color(255, 0, 0),
-        x_position=0,
-        y_position=0,
-        border_radius=5
+        color: pygame.Color,
+        position: Position | tuple = Position(0, 0),
+        texture: bool = False
     ):
         super().__init__(
             *groups,
         )
-        self.x_position = x_position
-        self.y_position = y_position
+        if isinstance(position, tuple):
+            self.position = Position(position[0], position[1])
+        else:
+            self.position = position
         self.color = color
+        self.size = BrickConfig.size
         self.breakable = True  # Bricks are breakable by default
-        self.border_radius = border_radius
 
         # Create the surface/rect for the brick
-        self.image = pygame.Surface((self.WIDTH, self.HEIGHT), pygame.SRCALPHA)
+        self.image = pygame.Surface(astuple(self.size), pygame.SRCALPHA)
         # Initialize the rectangle for positioning
-        self.rect = self.image.get_rect(topleft=(self.x_position, self.y_position))
+        self.rect = self.image.get_rect(topleft=(self.position.x, self.position.y))
         # Fill the rectangle onto the image
         pygame.draw.rect(
             self.image,  # Surface to draw on
             color,  # Color of the rectangle
-            (0, 0, self.WIDTH, self.HEIGHT),  # Rectangle dimensions
-            border_radius=border_radius,  # Rounded corners
+            (0, 0, self.size.width, self.size.height),  # Rectangle dimensions
+            border_radius=BrickConfig.border_radius,  # Rounded corners
         )
 
         # Set point value
@@ -70,6 +78,13 @@ class Brick(Sprite):
             self.points = 2
         else:
             self.points = 1
+
+        if texture:
+            self.breakable = False
+            if hasattr(Brick, "unbreakable_texture") and Brick.unbreakable_texture:
+                self.image.blit(Brick.unbreakable_texture, (0, 0))
+            else:
+                self.image.fill((0, 0, 0))
 
     def hit(self) -> int:
         """Actions when bricks are hit by the ball"""
@@ -81,76 +96,89 @@ class Brick(Sprite):
             pygame.draw.rect(
                 self.image,
                 self.color,
-                (0, 0, self.WIDTH, self.HEIGHT),
-                border_radius=self.border_radius,
+                (0, 0, self.size.width, self.size.height),
+                border_radius=BrickConfig.border_radius,
             )
             return 0
-        else:
-            self.image.fill((0, 0, 0, 0))  # Clear the bricks image entirely
-            self.kill()  # remove the brick from the game
-            return self.points
+        self.image.fill((0, 0, 0, 0))
+        self.kill()  # remove the brick from the game
+        return self.points
 
     @classmethod
-    def create_brick_layout(cls, rows, cols, level):
+    def load_texture(cls):
+        """Load the unbreakable texture"""
+        try:
+            base_path = Path(__file__).parent
+            texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
+            Brick.unbreakable_texture = pygame.image.load(
+                str(texture_path)
+            ).convert_alpha()
+            Brick.unbreakable_texture = pygame.transform.scale(
+                Brick.unbreakable_texture, astuple(BrickConfig.size)
+            )
+            print("Texture loaded successfully from", texture_path)
+        except Exception as e:
+            print("Error loading texture:", e)
+            Brick.unbreakable_texture = None
+
+    @classmethod
+    def create_brick_layout(cls, rows: int, cols: int, level: int):
         """Orders and centers the brick grid layout with dynamic colors."""
         brick_group = pygame.sprite.Group()
-        screen_width = screen_size.width
+        offset = 10  # Margin between bricks
 
-        # Spacing and margins
-        x_offset = 10  # Horizontal spacing between bricks
-        y_offset = 10  # Vertical spacing between bricks
-        top_margin = 2  # Number of empty rows at the top
+        # Calculate the total brick area width
+        brick_area_width = cols * (BrickConfig.size.width + offset) - offset
 
-        # Calculate the total brick area width and starting X position for centering
-        brick_area_width = cols * (cls.WIDTH + x_offset) - x_offset
-        start_x = (screen_width - brick_area_width) // 2  # Center bricks horizontally
-        start_y = cls.HEIGHT * top_margin
-
-        # Determine the number of rows for each color
-        red_rows = max(1, rows // 4)  # Red occupies the first quarter
-        yellow_rows = max(
-            1, rows // 3
-        )  # Yellow occupies the next third with the remaining being green
+        # Center bricks horizontally, account for top margin
+        start_position = Position(
+            (screen_size.width - brick_area_width) // 2,
+            BrickConfig.size.height * (offset // 5),
+        )
 
         # Load the brick texture
         if level >= 1 and not hasattr(cls, "unbreakable_texture"):
-            try:
-                base_path = Path(__file__).parent
-                texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
-                cls.unbreakable_texture = pygame.image.load(
-                    str(texture_path)
-                ).convert_alpha()
-                cls.unbreakable_texture = pygame.transform.scale(
-                    cls.unbreakable_texture, (cls.WIDTH, cls.HEIGHT)
-                )
-                print("Texture loaded successfully from", texture_path)
-            except Exception as e:
-                print("Error loading texture:", e)
-                cls.unbreakable_texture = None
+            cls.load_texture()
 
         chance = min(level * 0.1, 1.0)
 
         for row in range(rows):
             for col in range(cols):
-                x = start_x + col * (cls.WIDTH + x_offset)  # Adjusted x position
-                y = start_y + row * (cls.HEIGHT + y_offset)  # Adjusted y position
-
+                # calculate position for this specific brick
+                position = Position(
+                    start_position.x + col * (BrickConfig.size.width + offset),
+                    start_position.y + row * (BrickConfig.size.height + offset),
+                )
                 # Assign colors based on row
-                if row < red_rows:
-                    color = pygame.Color("red")
-                elif row < red_rows + yellow_rows:
-                    color = pygame.Color("yellow")
-                else:
-                    color = pygame.Color("green")
-
-                brick = cls(brick_group, color=color, x_position=x, y_position=y)
-
-                if random.random() < chance:
-                    brick.breakable = False
-                    if hasattr(cls, "unbreakable_texture") and cls.unbreakable_texture:
-                        brick.image.blit(cls.unbreakable_texture, (0, 0))
-                    else:
-                        brick.image.fill((0, 0, 0))
-                brick_group.add(brick)
+                color = assign_color(rows, row)
+                texture = False
+                if level >= 1 and random.random() < chance:
+                    texture = True
+                brick_group.add(
+                    cls(
+                        brick_group,
+                        color=color,
+                        position=position,
+                        texture=texture,
+                    )
+                )
 
         return brick_group
+
+
+def assign_color(rows: int, row: int):
+    """
+    Pick what color the brick will be based on which row
+    it is in out of the total rows
+    """
+    first_quarter = max(1, rows // 4)
+    if row < first_quarter:
+        # Red occupies the first quarter
+        color = pygame.Color("red")
+    elif row < first_quarter + max(1, rows // 3):
+        # Yellow occupies the next third
+        color = pygame.Color("yellow")
+    else:
+        # Rest are green
+        color = pygame.Color("green")
+    return color

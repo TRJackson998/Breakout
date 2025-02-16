@@ -32,11 +32,10 @@ def test_powerup_initialization():
     """Test power-up initializes with correct attributes."""
     powerup = PowerUp(power=lambda: None, shape="rectangle")  # Test rectangle power-up
 
-    assert powerup.x_position >= PowerupConfig.size * 5
-    assert powerup.x_position <= screen_size.width - PowerupConfig.size * 5
-    assert powerup.y_position == 15  # Power-up starts near the top
-    assert powerup.speed_y == PowerupConfig.default_speed
-    assert powerup.can_collide_with_paddle is True
+    assert powerup.position.x >= PowerupConfig.size * 5
+    assert powerup.position.x <= screen_size.width - PowerupConfig.size * 5
+    assert powerup.position.y == 15  # Power-up starts near the top
+    assert powerup.speed == PowerupConfig.default_speed
     assert powerup.shape == "rectangle"  # Ensures rectangle initialization
     assert isinstance(powerup.color, int)
 
@@ -44,12 +43,12 @@ def test_powerup_initialization():
 def test_powerup_movement():
     """Test power-up moves downward."""
     powerup = PowerUp(power=lambda: None)
-    initial_y = powerup.y_position
+    initial_y = powerup.position.y
     powerup.update_position()
 
     assert (
-        powerup.y_position > initial_y
-    ), f"Expected power-up to move down, but got {powerup.y_position}"
+        powerup.position.y > initial_y
+    ), f"Expected power-up to move down, but got {powerup.position.y}"
 
 
 def test_powerup_paddle_collision():
@@ -60,8 +59,7 @@ def test_powerup_paddle_collision():
 
     powerup.rect.bottom = paddle.rect.top + 1  # Ensure overlap with the paddle
     powerup.rect.centerx = paddle.rect.centerx
-    powerup.speed_y = 2.5
-    powerup.can_collide_with_paddle = True  # Allow collision
+    powerup.speed.y = 2.5
 
     # Simulate collision
     powerup.handle_paddle_collision(paddle)
@@ -79,7 +77,7 @@ def test_powerup_falls_off_screen():
     powerup = PowerUp(power=lambda: None)
 
     # Move power-up below the screen
-    powerup.y_position = screen_size.height + 10
+    powerup.position.y = screen_size.height + 10
     powerup.move(state)  # Pass the correct game state
 
     assert (
@@ -133,6 +131,7 @@ def test_powerup_text_position_update():
 
     text_rect = powerup.text_surface.get_rect(center=powerup.rect.center)
 
-    assert (
-        text_rect.center == powerup.rect.center
-    ), f"Expected text surface center {text_rect.center} to match power-up center {powerup.rect.center}."
+    assert text_rect.center == powerup.rect.center, (
+        f"Expected text surface center {text_rect.center} "
+        + "to match power-up center {powerup.rect.center}."
+    )

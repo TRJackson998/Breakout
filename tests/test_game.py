@@ -80,11 +80,11 @@ def test_update_game():
     game.start_new_game()
 
     game.state.launch_ball()
-    initial_x = game.state.paddle_group.sprites()[0].x_position
+    initial_x = game.state.paddle_group.sprites()[0].position.x
 
     game.update_game()
     assert (
-        game.state.paddle_group.sprites()[0].x_position == initial_x
+        game.state.paddle_group.sprites()[0].position.x == initial_x
     )  # Ensure paddle does not move unexpectedly
 
 

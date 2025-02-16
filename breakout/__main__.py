@@ -26,10 +26,10 @@ from pathlib import Path
 
 import pygame
 
-from breakout import color_choices, screen_size, sound
+from breakout import Position, Speed, color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
-from breakout.paddle import Paddle
+from breakout.paddle import Paddle, PaddleConfig
 from breakout.powerups import PowerDown, PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import (
@@ -241,7 +241,7 @@ class Game:
                 paddle.move_right()
 
         for ball in self.state.ball_group.sprites():
-            self.state = ball.move(screen_size, self.state)
+            self.state = ball.move(self.state)
 
         for powerup in self.state.powerup_group.sprites():
             powerup.move(self.state)
@@ -313,14 +313,11 @@ class GameState:
             return
 
         # broke all bricks, go again
-        remaining_breakable = [
-            brick for brick in self.bricks.sprites() if brick.breakable
-        ]
-        if len(remaining_breakable) == 0:
+        if len(self.bricks.sprites()) == 0:
             self.level += 1
             for ball in self.ball_group.sprites():
-                ball.increase_speed()  # Increase speed for each ball
                 ball.reset_position()
+                ball.increase_speed()  # Increase speed for each ball
             self.launch_ball()
             self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
             Screens.GAME.add_element(self.bricks)
@@ -396,21 +393,13 @@ class GameState:
             power_up = self.paddle_group.sprites()[0]
         power_up_position: pygame.Rect = power_up.rect
 
-        # Get the current speed from an existing ball if available; otherwise, use the default
-        if self.ball_group.sprites():
-            current_speed = self.ball_group.sprites()[0].current_speed
-        else:
-            current_speed = BallConfig.DEFAULT_SPEED
-
-        # Create the new ball with the current speed (using a negative value for upward motion)
-        new_ball = Ball(
+        # Create the new ball with the current speed
+        Ball(
             self.ball_group,
-            x_position=power_up_position.center[0],
+            position=Position(power_up_position.center[0], power_up_position.center[1]),
             color=random.choice(color_choices),
-            speed_y=-current_speed,
+            speed=Speed(0, BallConfig.default_speed),
         )
-        # Ensure the new ball's speed is set properly
-        new_ball.current_speed = current_speed
 
     def add_paddle(self):
         """
@@ -420,9 +409,9 @@ class GameState:
         """
         Paddle(
             self.paddle_group,
-            x_position=self.paddle.x_position
-            - (Paddle.width // 2),  # in the center of the current paddle
-            width=Paddle.width * 2,  # twice as big
+            x_position=self.paddle.position.x
+            - (PaddleConfig.size.width // 2),  # in the center of the current paddle
+            width=PaddleConfig.size.width * 2,  # twice as big
             color=random.choice(color_choices),
             timeout=self.time
             + random.randint(
