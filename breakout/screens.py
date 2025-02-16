@@ -24,7 +24,7 @@ from typing import Literal
 import pygame
 from pygame.color import Color
 from pygame.font import SysFont
-
+from breakout.sound import SoundManager
 from breakout import screen_size
 
 # pylint: disable=no-member
@@ -285,6 +285,80 @@ class BlinkingMessage:
 
             # Blit the text on top of the rectangle.
             screen.blit(rendered_text, text_rect)
+
+
+class MusicToggle:
+    """GUI to allow user to turn off the background music"""
+
+    def __init__(self, x=10, y=10, font=None, initial_state=True):
+        self.x = x
+        self.y = y
+        self.music_on = initial_state
+        self.label = "MUSIC: "
+        self.text_on = "ON"
+        self.text_off = "OFF"
+        self.font = font if font else SysFont("courier", 16, bold=True)
+
+        # Colors for label and options.
+        self.label_color = pygame.Color("#0ffffd")
+        self.highlight_color = pygame.Color("#0ffffd")
+        self.normal_color = pygame.Color("gray")
+
+        self.label_surface = self.font.render(self.label, True, self.label_color)
+        self.label_rect = self.label_surface.get_rect(topleft=(x, y))
+
+        # Position ON and OFF texts to the right of the label.
+        self.on_offset = 5  # space between label and ON
+        self.between_offset = 10  # space between ON and OFF
+
+        self.on_surface = self.font.render(
+            self.text_on,
+            True,
+            self.highlight_color if self.music_on else self.normal_color,
+        )
+        self.off_surface = self.font.render(
+            self.text_off,
+            True,
+            self.normal_color if self.music_on else self.highlight_color,
+        )
+        self.on_rect = self.on_surface.get_rect(
+            topleft=(self.label_rect.right + self.on_offset, y)
+        )
+        self.off_rect = self.off_surface.get_rect(
+            topleft=(self.on_rect.right + self.between_offset, y)
+        )
+
+        # Set the music state.
+        if self.music_on:
+            SoundManager.play_background_music()
+        else:
+            SoundManager.stop_background_music()
+
+    def draw(self, surface: pygame.Surface):
+        # Draw the label.
+        surface.blit(self.label_surface, self.label_rect)
+        # Re-render ON and OFF texts according to state.
+        if self.music_on:
+            self.on_surface = self.font.render(self.text_on, True, self.highlight_color)
+            self.off_surface = self.font.render(self.text_off, True, self.normal_color)
+        else:
+            self.on_surface = self.font.render(self.text_on, True, self.normal_color)
+            self.off_surface = self.font.render(
+                self.text_off, True, self.highlight_color
+            )
+        surface.blit(self.on_surface, self.on_rect)
+        surface.blit(self.off_surface, self.off_rect)
+
+    def handle_event(self, event: pygame.event.Event):
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.on_rect.collidepoint(event.pos):
+                if not self.music_on:
+                    self.music_on = True
+                    SoundManager.play_background_music()
+            elif self.off_rect.collidepoint(event.pos):
+                if self.music_on:
+                    self.music_on = False
+                    SoundManager.stop_background_music()
 
 
 @dataclass

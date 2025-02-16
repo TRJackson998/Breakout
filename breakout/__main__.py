@@ -36,6 +36,7 @@ from breakout.screens import (
     ArrowButton,
     BlinkingMessage,
     Button,
+    MusicToggle,
     ScreenManager,
     Screens,
 )
@@ -89,6 +90,10 @@ class Game:
             Button("START GAME", lambda: self.switch_screen(Screens.GAME), "middle")
         )
         Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
+
+        # Create the MusicToggle
+        music_toggle = MusicToggle(initial_state=True)
+        Screens.START.add_element(music_toggle)
 
         # End Screen
         Screens.END.add_element(
