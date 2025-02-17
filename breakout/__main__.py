@@ -80,8 +80,6 @@ class Game:
         self.setup_screens()
         self.state = GameState()
 
-        sound.SoundManager.play_background_music()
-
     def setup_screens(self):
         """Add static button elements to START and END screens"""
         # Start Screen
