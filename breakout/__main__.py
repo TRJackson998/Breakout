@@ -36,6 +36,7 @@ from breakout.screens import (
     ArrowButton,
     BlinkingMessage,
     Button,
+    MusicToggle,
     ScreenManager,
     Screens,
 )
@@ -57,13 +58,13 @@ class Game:
         except Exception:
             base_path = Path(__file__).parent
         start_bg = pygame.image.load(
-            base_path.joinpath("textures", "StartScreen3.jpg")
+            base_path.joinpath("textures", "THE BREAKOUT.png")
         ).convert()
         game_bg = pygame.image.load(
-            base_path.joinpath("textures", "GameScreen.jpg")
+            base_path.joinpath("textures", "BlueBackground.png")
         ).convert()
         end_bg = pygame.image.load(
-            base_path.joinpath("textures", "EndScreen.jpg")
+            base_path.joinpath("textures", "BlueBackground.png")
         ).convert()
         # Assign the background image to the start screen.
         Screens.START.background_image = start_bg
@@ -79,8 +80,6 @@ class Game:
         self.setup_screens()
         self.state = GameState()
 
-        sound.SoundManager.play_background_music()
-
     def setup_screens(self):
         """Add static button elements to START and END screens"""
         # Start Screen
@@ -89,6 +88,11 @@ class Game:
             Button("START GAME", lambda: self.switch_screen(Screens.GAME), "middle")
         )
         Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
+
+        # Create the MusicToggle
+        music_toggle = MusicToggle(sound_on=True)
+        Screens.START.add_element(music_toggle)
+        Screens.END.add_element(music_toggle)
 
         # End Screen
         Screens.END.add_element(

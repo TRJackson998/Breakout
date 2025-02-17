@@ -29,6 +29,7 @@ pygame.mixer.init()
 
 
 class SoundManager:
+    sound_on = True
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = Path(sys._MEIPASS)
@@ -69,46 +70,46 @@ class SoundManager:
     @staticmethod
     def play_powerup():
         """Plays powerup sound"""
-        if SoundManager.powerup_sound:
+        if SoundManager.powerup_sound and SoundManager.sound_on:
             SoundManager.powerup_sound.play()
 
     @staticmethod
     def play_brick():
         """Plays brick hit sound"""
-        if SoundManager.brick_sound:
+        if SoundManager.brick_sound and SoundManager.sound_on:
             SoundManager.brick_sound.play()
 
     @staticmethod
     def play_paddle():
         """Plays paddle hit sound"""
-        if SoundManager.paddle_sound:
+        if SoundManager.paddle_sound and SoundManager.sound_on:
             SoundManager.paddle_sound.play()
 
     @staticmethod
     def play_wall():
         """Plays wall hit sound"""
-        if SoundManager.wall_sound:
+        if SoundManager.wall_sound and SoundManager.sound_on:
             SoundManager.wall_sound.play()
 
     @staticmethod
     def play_life_lost():
         """Plays life lost sound"""
-        if SoundManager.life_lost_sound:
+        if SoundManager.life_lost_sound and SoundManager.sound_on:
             SoundManager.life_lost_sound.play()
 
     @staticmethod
     def play_game_over():
         """Plays game over sound"""
         SoundManager.stop_background_music()
-        if SoundManager.game_over_sound:
+        if SoundManager.game_over_sound and SoundManager.sound_on:
             SoundManager.game_over_sound.play()
-        time.sleep(1)
-        SoundManager.play_background_music()
+            time.sleep(1)
+            SoundManager.play_background_music()
 
     @staticmethod
     def play_background_music(loops=-1):
         """Play the background music on loop."""
-        if SoundManager.background_music:
+        if SoundManager.background_music and SoundManager.sound_on:
             SoundManager.background_music.play(loops=loops)
 
     @staticmethod

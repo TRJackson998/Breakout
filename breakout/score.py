@@ -67,8 +67,8 @@ class NameInput:
     def __init__(self):
         self.font_size = max(screen_size.width // 20, 12)
         self.font = SysFont("courier", self.font_size)
-        self.active_color = pygame.Color("blue")
-        self.passive_color = pygame.Color("grey")
+        self.active_color = pygame.Color("green")
+        self.passive_color = pygame.Color("#0ffffd")
         self.active = False
         self.name = ""
         self.width = max(screen_size.width // 20, self.font_size * 3)
@@ -99,10 +99,10 @@ class NameInput:
         self.name = self.name[:3]
         if self.active:
             pygame.draw.rect(screen, self.active_color, self.rect)
-            name_surface = self.font.render(self.name, True, self.passive_color)
+            name_surface = self.font.render(self.name, True, pygame.Color("black"))
         else:
             pygame.draw.rect(screen, self.passive_color, self.rect)
-            name_surface = self.font.render(self.name, True, self.active_color)
+            name_surface = self.font.render(self.name, True, pygame.Color("black"))
         name_rect = name_surface.get_rect(center=self.rect.center)
         screen.blit(name_surface, name_rect)
 

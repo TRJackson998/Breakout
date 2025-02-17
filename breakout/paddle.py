@@ -31,8 +31,8 @@ from breakout import Position, Size, Speed, screen_size
 class PaddleConfig:
     """Configuration for Ball constants."""
 
-    size = Size(screen_size.width // 5, screen_size.height // 25)
-    initial_position = Position(screen_size.width // 2.5, screen_size.height // 1.25)
+    size = Size(100, 25)
+    initial_position = Position(200, 485)
     speed = Speed(5, 0)
     blink_interval = 600
     flicker_color = pygame.Color("black")

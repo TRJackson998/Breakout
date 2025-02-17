@@ -24,7 +24,7 @@ import pygame
 from breakout import screen_size
 from breakout.__main__ import GameState
 from breakout.paddle import Paddle
-from breakout.powerups import PowerUp, PowerupConfig
+from breakout.powerups import PowerDown, PowerUp, PowerupConfig
 from breakout.screens import Screens
 
 
@@ -135,3 +135,57 @@ def test_powerup_text_position_update():
         f"Expected text surface center {text_rect.center} "
         + "to match power-up center {powerup.rect.center}."
     )
+
+
+def test_powerdown_initialization():
+    """Test power-down initializes with correct attributes."""
+    powerdown = PowerDown(power=lambda: None)
+
+    assert powerdown.position.x >= PowerupConfig.size * 5
+    assert powerdown.position.x <= screen_size.width - PowerupConfig.size * 5
+    assert powerdown.position.y == PowerupConfig.initial_y
+    assert powerdown.speed == PowerupConfig.default_speed
+    assert not powerdown.exploded
+
+
+def test_powerdown_movement():
+    """Test power-down moves downward."""
+    powerdown = PowerDown(power=lambda: None)
+    initial_y = powerdown.position.y
+    powerdown.update_position()
+
+    assert (
+        powerdown.position.y > initial_y
+    ), f"Expected power-down to move down, but got {powerdown.position.y}"
+
+
+def test_powerdown_paddle_collision():
+    """Test power-down is collected when hitting the paddle."""
+    mock_power_effect = Mock()
+    paddle = Paddle()
+    powerdown = PowerDown(power=mock_power_effect)
+
+    powerdown.rect.bottom = paddle.rect.top + 1  # Ensure overlap with the paddle
+    powerdown.rect.centerx = paddle.rect.centerx
+    powerdown.speed.y = 2.5
+
+    # Simulate collision
+    powerdown.handle_paddle_collision(paddle)
+
+    # Assertions
+    assert powerdown.exploded
+    assert powerdown.speed.y == 0  # stopped moving
+
+
+def test_powerdown_falls_off_screen():
+    """Test power-down disappears when falling off the screen."""
+    state = GameState()  # Create game state
+    powerdown = PowerDown(power=lambda: None)
+
+    # Move power-down below the screen
+    powerdown.position.y = screen_size.height + 10
+    powerdown.move(state)  # Pass the correct game state
+
+    assert (
+        powerdown.alive() is False
+    ), "Expected power-down to be removed after falling off-screen."
