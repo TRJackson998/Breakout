@@ -94,6 +94,7 @@ class Game:
         # Create the MusicToggle
         music_toggle = MusicToggle(initial_state=True)
         Screens.START.add_element(music_toggle)
+        Screens.END.add_element(music_toggle)
 
         # End Screen
         Screens.END.add_element(
