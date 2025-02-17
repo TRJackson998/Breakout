@@ -432,6 +432,8 @@ class GameState:
             ball.reset_position()
         for paddle in self.paddle_group.sprites():
             paddle.reset_position()
+        for powerup in self.powerup_group.sprites():
+            powerup.kill()
 
         self.launched = False
 
