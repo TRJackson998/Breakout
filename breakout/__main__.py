@@ -74,8 +74,6 @@ class Game:
         self.setup_screens()
         self.state = GameState()
 
-        sound.SoundManager.play_background_music()
-
     def setup_screens(self):
         """Add static button elements to START and END screens"""
         # Start Screen
@@ -86,8 +84,9 @@ class Game:
         Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
 
         # Create the MusicToggle
-        music_toggle = MusicToggle(initial_state=True)
+        music_toggle = MusicToggle(sound_on=True)
         Screens.START.add_element(music_toggle)
+        Screens.END.add_element(music_toggle)
 
         # End Screen
         Screens.END.add_element(
@@ -139,7 +138,7 @@ class Game:
 
     def pause_game(self):
         """Pause the game"""
-        if self.state.paused:
+        if self.state.paused or self.state.current_screen != Screens.GAME:
             return
 
         self.state.pause_game()
@@ -437,6 +436,8 @@ class GameState:
             ball.reset_position()
         for paddle in self.paddle_group.sprites():
             paddle.reset_position()
+        for powerup in self.powerup_group.sprites():
+            powerup.kill()
 
         self.launched = False
 

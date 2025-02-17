@@ -121,9 +121,23 @@ class Brick(Sprite):
 
     @classmethod
     def create_brick_layout(cls, rows: int, cols: int, level: int):
-        """Orders and centers the brick grid layout with dynamic colors."""
+        """Orders and centers the brick grid layout with dynamic colors.
+
+        A fixed percentage per level, 10% each level and capped at 100%,
+        bricks are randomly marked as unbreakable by applying a texture.
+        """
         brick_group = pygame.sprite.Group()
         offset = 10  # Margin between bricks
+
+        total = rows * cols  # For 6 rows x 8 cols, total is 48.
+        chance = min(level * 0.1, 1.0)
+        extra_count = round(total * chance)
+
+        # Create a list of indices and randomly shuffle it.
+        indices = list(range(total))
+        random.shuffle(indices)
+        # Select exactly extra_count indices that will be 'unbreakable'.
+        selected = set(indices[:extra_count])
 
         # Calculate the total brick area width
         brick_area_width = cols * (BrickConfig.size.width + offset) - offset
@@ -134,24 +148,20 @@ class Brick(Sprite):
             BrickConfig.size.height * (offset // 5),
         )
 
-        # Load the brick texture
-        if level >= 1 and not hasattr(cls, "unbreakable_texture"):
+        # Load the brick texture if needed.
+        if not hasattr(cls, "unbreakable_texture"):
             cls.load_texture()
 
-        chance = min(level * 0.1, 1.0)
-
+        index = 0  # Running index for each brick.
         for row in range(rows):
             for col in range(cols):
-                # calculate position for this specific brick
                 position = Position(
                     start_position.x + col * (BrickConfig.size.width + offset),
                     start_position.y + row * (BrickConfig.size.height + offset),
                 )
-                # Assign colors based on row
                 color = assign_color(rows, row)
-                texture = False
-                if level >= 1 and random.random() < chance:
-                    texture = True
+                # Mark this brick as extra durable if its index is in the selected set.
+                texture = index in selected
                 brick_group.add(
                     cls(
                         brick_group,
@@ -160,6 +170,7 @@ class Brick(Sprite):
                         texture=texture,
                     )
                 )
+                index += 1
 
         return brick_group
 
