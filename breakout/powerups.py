@@ -107,8 +107,11 @@ class PowerUp(Sprite):
 
         # Update position
         self.update_position()
-        for paddle in screen_state.paddle_group.sprites():
-            self.handle_paddle_collision(paddle)
+
+        # Only collide with the last paddle in the group
+        paddle = list(screen_state.paddle_group.sprites())[-1]
+        self.handle_paddle_collision(paddle)
+
         if self.position.y >= screen_size.height:
             self.kill()
 

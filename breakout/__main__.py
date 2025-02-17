@@ -144,7 +144,7 @@ class Game:
 
     def pause_game(self):
         """Pause the game"""
-        if self.state.paused:
+        if self.state.paused or self.state.current_screen != Screens.GAME:
             return
 
         self.state.pause_game()
@@ -436,6 +436,8 @@ class GameState:
             ball.reset_position()
         for paddle in self.paddle_group.sprites():
             paddle.reset_position()
+        for powerup in self.powerup_group.sprites():
+            powerup.kill()
 
         self.launched = False
 
