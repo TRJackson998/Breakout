@@ -70,31 +70,31 @@ class SoundManager:
     @staticmethod
     def play_powerup():
         """Plays powerup sound"""
-        if SoundManager.powerup_sound:
+        if SoundManager.powerup_sound and SoundManager.sound_on:
             SoundManager.powerup_sound.play()
 
     @staticmethod
     def play_brick():
         """Plays brick hit sound"""
-        if SoundManager.brick_sound:
+        if SoundManager.brick_sound and SoundManager.sound_on:
             SoundManager.brick_sound.play()
 
     @staticmethod
     def play_paddle():
         """Plays paddle hit sound"""
-        if SoundManager.paddle_sound:
+        if SoundManager.paddle_sound and SoundManager.sound_on:
             SoundManager.paddle_sound.play()
 
     @staticmethod
     def play_wall():
         """Plays wall hit sound"""
-        if SoundManager.wall_sound:
+        if SoundManager.wall_sound and SoundManager.sound_on:
             SoundManager.wall_sound.play()
 
     @staticmethod
     def play_life_lost():
         """Plays life lost sound"""
-        if SoundManager.life_lost_sound:
+        if SoundManager.life_lost_sound and SoundManager.sound_on:
             SoundManager.life_lost_sound.play()
 
     @staticmethod
