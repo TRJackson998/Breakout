@@ -90,7 +90,7 @@ class Game:
         Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
 
         # Create the MusicToggle
-        music_toggle = MusicToggle(initial_state=True)
+        music_toggle = MusicToggle(sound_on=True)
         Screens.START.add_element(music_toggle)
         Screens.END.add_element(music_toggle)
 

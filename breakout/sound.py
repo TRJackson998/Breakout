@@ -29,6 +29,7 @@ pygame.mixer.init()
 
 
 class SoundManager:
+    sound_on = True
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = Path(sys._MEIPASS)
@@ -100,15 +101,15 @@ class SoundManager:
     def play_game_over():
         """Plays game over sound"""
         SoundManager.stop_background_music()
-        if SoundManager.game_over_sound:
+        if SoundManager.game_over_sound and SoundManager.sound_on:
             SoundManager.game_over_sound.play()
-        time.sleep(1)
-        SoundManager.play_background_music()
+            time.sleep(1)
+            SoundManager.play_background_music()
 
     @staticmethod
     def play_background_music(loops=-1):
         """Play the background music on loop."""
-        if SoundManager.background_music:
+        if SoundManager.background_music and SoundManager.sound_on:
             SoundManager.background_music.play(loops=loops)
 
     @staticmethod
