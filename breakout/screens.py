@@ -77,16 +77,15 @@ class Button:
     with fixed positioning - top middle and bottom. Most screens have 'middle' and 'bottom' buttons.
     """
 
-    # dynamically determine with screen size, never below 12pt font
-    _font = SysFont("courier", max(screen_size.width // 30, 14))
+    _font = SysFont("courier", 15, bold=True)
 
     def __init__(
         self,
         text: str,
         on_click,
         position: Literal["top", "middle", "bottom"],
-        color: pygame.Color = pygame.Color("blue"),
-        hover_color: pygame.Color = pygame.Color("gray"),
+        color: pygame.Color = pygame.Color("#0ffffd"),
+        hover_color: pygame.Color = pygame.Color("green"),
     ):
         self.text = text
         self.on_click = on_click
@@ -134,7 +133,11 @@ class Button:
             pygame.draw.rect(screen, self.color, self.rect)
             text_surface = Button._font.render(self.text, True, self.hover_color)
 
+        # Draw white border
+        pygame.draw.rect(screen, pygame.Color("white"), self.rect, 3)
+
         # get the center of the rectangle and blit the text onto the screen there
+        text_surface = Button._font.render(self.text, True, pygame.Color("black"))
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
 
