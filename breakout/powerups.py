@@ -26,6 +26,7 @@ Thomas Nugent
 """
 
 import math
+from pathlib import Path
 import random
 from dataclasses import astuple, dataclass
 from typing import Literal
@@ -151,6 +152,57 @@ class PowerUp(Sprite):
             center=(PowerupConfig.size, PowerupConfig.size)
         )  # Center text
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
+
+
+class ExtraLifePowerup(Sprite):
+    """A powerup that gives the player an extra life.
+    This powerup is uses a red_heart.png image.
+    """
+
+    def __init__(self, *groups, power=lambda: None):
+        super().__init__(*groups)
+        # Load the red heart image.
+        try:
+            base_path = Path(__file__).parent
+            heart_path = base_path.joinpath("textures", "red_heart.png")
+            self.image = pygame.image.load(str(heart_path)).convert_alpha()
+            # Scale to be a 20x20 heart
+            self.image = pygame.transform.scale(self.image, (20, 20))
+        except Exception as e:
+            print("Error loading heart image:", e)
+            # Will drop a transparent image
+            self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
+        self.rect = self.image.get_rect(
+            center=(random.randint(30, screen_size.width - 30), 15)
+        )
+        self.speed = Speed(0, 2.5)  # Falling speed
+        self.collect = power
+
+    def move(self, screen_state):
+        """Move the powerup downwards and handle collision with the paddle."""
+        self.rect.y += self.speed.y
+        # If the powerup falls off screen, kill it
+        if self.rect.top > screen_size.height:
+            self.kill()
+        # Check collision with the paddle.
+        for paddle in screen_state.paddle_group.sprites():
+            if self.rect.colliderect(paddle.rect):
+                sound.SoundManager.play_powerup()
+                self.collect()
+                self.kill()
+
+    def update_position(self):
+        """Update the powerup's position and check if it goes off-screen."""
+        self.rect.y += self.speed.y
+        if self.rect.top > screen_size.height:
+            self.kill()
+
+    def handle_paddle_collision(self, paddle):
+        """Call the powerup's effect if it collides with the paddle."""
+        if self.rect.colliderect(paddle.rect):
+            sound.SoundManager.play_powerup()
+            self.collect()
+            self.kill()
 
 
 class PowerDown(Sprite):
