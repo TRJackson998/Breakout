@@ -22,11 +22,10 @@ Thomas Nugent
 import random
 import sys
 from dataclasses import astuple
-from pathlib import Path
 
 import pygame
 
-from breakout import Position, Speed, color_choices, screen_size, sound
+from breakout import Position, Speed, base_path, color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle, PaddleConfig
@@ -52,11 +51,6 @@ class Game:
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
 
-        try:
-            # PyInstaller creates a temp folder and stores path in _MEIPASS
-            base_path = Path(sys._MEIPASS)
-        except Exception:
-            base_path = Path(__file__).parent
         start_bg = pygame.image.load(
             base_path.joinpath("textures", "THE BREAKOUT.png")
         ).convert()

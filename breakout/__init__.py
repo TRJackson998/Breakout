@@ -18,7 +18,9 @@ Thomas Nugent
 
 """
 
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 import pygame
 
@@ -65,6 +67,12 @@ color_choices = [
     pygame.Color("purple"),
     pygame.Color("pink"),
 ]
+
+try:
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    base_path = Path(sys._MEIPASS)
+except Exception:
+    base_path = Path(__file__).parent
 
 __all__ = [
     "ball",

@@ -26,7 +26,6 @@ Thomas Nugent
 """
 
 import math
-from pathlib import Path
 import random
 from dataclasses import astuple, dataclass
 from typing import Literal
@@ -35,7 +34,7 @@ import pygame
 from pygame.font import SysFont
 from pygame.sprite import Sprite
 
-from breakout import Position, Speed, color_choices, screen_size, sound
+from breakout import Position, Speed, base_path, color_choices, screen_size, sound
 from breakout.paddle import Paddle
 
 # pylint: disable=no-member
@@ -163,7 +162,6 @@ class ExtraLifePowerup(Sprite):
         super().__init__(*groups)
         # Load the red heart image.
         try:
-            base_path = Path(__file__).parent
             heart_path = base_path.joinpath("textures", "red_heart.png")
             self.image = pygame.image.load(str(heart_path)).convert_alpha()
             # Scale to be a 20x20 heart
