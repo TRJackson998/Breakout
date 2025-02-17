@@ -24,8 +24,9 @@ from typing import Literal
 import pygame
 from pygame.color import Color
 from pygame.font import SysFont
-from breakout.sound import SoundManager
+
 from breakout import screen_size
+from breakout.sound import SoundManager
 
 # pylint: disable=no-member
 
