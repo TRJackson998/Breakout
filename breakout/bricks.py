@@ -21,12 +21,11 @@ Thomas Nugent
 
 import random
 from dataclasses import astuple, dataclass
-from pathlib import Path
 
 import pygame
 from pygame.sprite import Sprite
 
-from breakout import Position, Size, screen_size
+from breakout import Position, Size, base_path, screen_size
 
 
 # pylint: disable=no-member
@@ -108,7 +107,6 @@ class Brick(Sprite):
     def load_texture(cls):
         """Load the unbreakable texture"""
         try:
-            base_path = Path(__file__).parent
             texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
             Brick.unbreakable_texture = pygame.image.load(
                 str(texture_path)

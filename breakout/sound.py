@@ -17,11 +17,11 @@ Terrence Jackson
 Thomas Nugent
 """
 
-import sys
 import time
-from pathlib import Path
 
 import pygame
+
+from breakout import base_path
 
 # Initialize the mixer (if not already initialized elsewhere)
 pygame.mixer.init()
@@ -29,13 +29,8 @@ pygame.mixer.init()
 
 
 class SoundManager:
-    sound_on = True
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = Path(sys._MEIPASS)
-    except Exception:
-        base_path = Path(__file__).parent
 
+    sound_on = True
     sound_path = base_path.joinpath("sounds")
 
     try:

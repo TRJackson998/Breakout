@@ -22,15 +22,14 @@ Thomas Nugent
 import random
 import sys
 from dataclasses import astuple
-from pathlib import Path
 
 import pygame
 
-from breakout import Position, Speed, color_choices, screen_size, sound
+from breakout import Position, Speed, base_path, color_choices, screen_size, sound
 from breakout.ball import Ball, BallConfig
 from breakout.bricks import Brick
 from breakout.paddle import Paddle, PaddleConfig
-from breakout.powerups import PowerDown, PowerUp
+from breakout.powerups import ExtraLifePowerup, PowerDown, PowerUp
 from breakout.score import LivesDisplay, NameInput, Scoreboard, ScoreDisplay
 from breakout.screens import (
     ArrowButton,
@@ -52,11 +51,6 @@ class Game:
         pygame.display.set_caption("Breakout")
         self.clock = pygame.time.Clock()
 
-        try:
-            # PyInstaller creates a temp folder and stores path in _MEIPASS
-            base_path = Path(sys._MEIPASS)
-        except Exception:
-            base_path = Path(__file__).parent
         start_bg = pygame.image.load(
             base_path.joinpath("textures", "THE BREAKOUT.png")
         ).convert()
@@ -306,6 +300,7 @@ class GameState:
                 power=self.add_ball,
             ),
             lambda: PowerDown(self.powerup_group, power=self.lose_life),
+            lambda: ExtraLifePowerup(self.powerup_group, power=self.add_life),
         ]
 
     def update(self):
@@ -422,6 +417,11 @@ class GameState:
                 self.min_wait_time, self.max_wait_time
             ),  # when it should disappear
         )
+
+    def add_life(self):
+        """Adds a life to player's existing quantity"""
+        self.lives += 1
+        self.lives_display.update(self.lives)
 
     def lose_life(self):
         """Lose a life"""
