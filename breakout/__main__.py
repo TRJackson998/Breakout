@@ -140,7 +140,7 @@ class Game:
 
     def pause_game(self):
         """Pause the game"""
-        if self.state.paused:
+        if self.state.paused or self.state.current_screen != Screens.GAME:
             return
 
         self.state.pause_game()
