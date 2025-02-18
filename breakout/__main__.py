@@ -305,6 +305,9 @@ class GameState:
 
     def update(self):
         """Update the game based on the current state"""
+        self.score_display.update(self.score)
+        self.lives_display.update(self.lives)
+
         if self.game_is_over:
             self.current_screen = Screens.END
         if self.current_screen != Screens.GAME or self.paused:
@@ -337,9 +340,6 @@ class GameState:
             if paddle.timeout:
                 # temp paddle, update it
                 paddle.check_timeout(self.time)
-
-        self.score_display.update(self.score)
-        self.lives_display.update(self.lives)
 
     def add_powerup(self):
         """
