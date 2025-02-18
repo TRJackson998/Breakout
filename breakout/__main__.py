@@ -194,6 +194,7 @@ class Game:
                 and event.key == pygame.K_UP
             ):
                 self.state.launch_ball()
+                self.up_arrow.pressed = False
                 self.state.current_screen.elements.remove(self.up_arrow)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 if self.state.paused:
@@ -216,12 +217,12 @@ class Game:
         if self.up_arrow.pressed:
             self.state.launch_ball()
             if self.up_arrow in self.state.current_screen.elements:
+                self.up_arrow.pressed = False
                 self.state.current_screen.elements.remove(self.up_arrow)
 
         # if the ball is waiting for launch, ensure the up arrow is on screen.
         if not self.state.launched:
             if self.up_arrow not in self.state.current_screen.elements:
-                self.up_arrow = ArrowButton("up")
                 self.state.current_screen.add_element(self.up_arrow)
             return
 
@@ -305,6 +306,9 @@ class GameState:
 
     def update(self):
         """Update the game based on the current state"""
+        self.score_display.update(self.score)
+        self.lives_display.update(self.lives)
+
         if self.game_is_over:
             self.current_screen = Screens.END
         if self.current_screen != Screens.GAME or self.paused:
@@ -337,9 +341,6 @@ class GameState:
             if paddle.timeout:
                 # temp paddle, update it
                 paddle.check_timeout(self.time)
-
-        self.score_display.update(self.score)
-        self.lives_display.update(self.lives)
 
     def add_powerup(self):
         """
