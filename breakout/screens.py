@@ -250,8 +250,8 @@ class BlinkingMessage:
         self,
         text: str,
         pos: tuple[int, int] = None,
-        text_color: pygame.Color = pygame.Color("white"),
-        background_color: pygame.Color = pygame.Color("blue"),
+        text_color: pygame.Color = pygame.Color("black"),
+        background_color: pygame.Color = pygame.Color("#0ffffd"),
         blink_interval: int = 1000,
         padding: int = 10,
     ):
