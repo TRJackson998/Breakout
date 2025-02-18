@@ -116,7 +116,7 @@ class NameInput:
 class ScoreDisplay:
     """Tracks and displays the current score."""
 
-    _font = SysFont("stencil", max(screen_size.width // 30, 12))
+    _font = SysFont("courier", 14, bold=True)
 
     def __init__(self, score: int = 0):
         self.current_score = score
@@ -128,7 +128,7 @@ class ScoreDisplay:
     def draw(self, screen: pygame.Surface):
         """Draw the current score on the screen."""
         current_score_text = ScoreDisplay._font.render(
-            f"Current Score: {self.current_score}", True, pygame.Color("white")
+            f"Current Score: {self.current_score}", True, pygame.Color("black")
         )
         screen.blit(
             current_score_text, (0, screen_size.height - screen_size.height // 15)
@@ -138,7 +138,7 @@ class ScoreDisplay:
 class LivesDisplay:
     """Displays the player's remaining lives."""
 
-    _font = SysFont("stencil", max(screen_size.width // 30, 12))
+    _font = SysFont("courier", 14, bold=True)
 
     def __init__(self, lives=2):
         self.lives = lives
@@ -151,6 +151,6 @@ class LivesDisplay:
         """Draw the lives display on the screen."""
         # Draw the lives text above the current score
         lives_text = LivesDisplay._font.render(
-            f"Lives: {self.lives}", True, pygame.Color("white")
+            f"Lives: {self.lives}", True, pygame.Color("black")
         )
         screen.blit(lives_text, (0, screen_size.height - screen_size.height // 15 - 30))

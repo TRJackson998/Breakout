@@ -176,7 +176,7 @@ class ExtraLifePowerup(Sprite):
         self.rect = self.image.get_rect(
             center=(random.randint(30, screen_size.width - 30), 15)
         )
-        self.speed = Speed(0, 2.5)  # Falling speed
+        self.speed = Speed(0, 4.5)  # Falling speed
         self.collect = power
 
     def move(self, screen_state):
