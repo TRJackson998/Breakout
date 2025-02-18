@@ -194,6 +194,7 @@ class Game:
                 and event.key == pygame.K_UP
             ):
                 self.state.launch_ball()
+                self.up_arrow.pressed = False
                 self.state.current_screen.elements.remove(self.up_arrow)
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 if self.state.paused:
@@ -216,6 +217,7 @@ class Game:
         if self.up_arrow.pressed:
             self.state.launch_ball()
             if self.up_arrow in self.state.current_screen.elements:
+                self.up_arrow.pressed = False
                 self.state.current_screen.elements.remove(self.up_arrow)
 
         # if the ball is waiting for launch, ensure the up arrow is on screen.
