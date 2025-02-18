@@ -309,7 +309,7 @@ class PowerDown(Sprite):
         """Update the powerdown because the player hit it"""
         self.exploded = True
         self.explode_time = pygame.time.get_ticks()
-        self.speed.y = 0
+        self.speed = Speed(0, 0)
         self.generate_explosion()
 
     def generate_explosion(self):

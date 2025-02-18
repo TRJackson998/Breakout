@@ -276,7 +276,7 @@ class GameState:
         self.paddle = Paddle(self.paddle_group)
         self.score_display = ScoreDisplay(self.score)
         self.lives_display = LivesDisplay(self.lives)
-        self.launch_message = BlinkingMessage("Press ↑ to Launch!")
+        self.launch_message = BlinkingMessage("Press Up to Launch!")
         self.pause_message = BlinkingMessage("Paused!", blink_interval=500)
         self.current_screen: ScreenManager = screen
 

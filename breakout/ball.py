@@ -190,10 +190,12 @@ class Ball(Sprite):
             self.speed.x = random.choice([-self.speed.x, self.speed.x])
         else:
             self.speed.x *= -1
+        self.update_position()
 
     def bounce_y(self):
         """Reverse the vertical direction of the ball."""
         self.speed.y *= -1
+        self.update_position()
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
