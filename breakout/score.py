@@ -116,7 +116,7 @@ class NameInput:
 class ScoreDisplay:
     """Tracks and displays the current score."""
 
-    _font = SysFont("courier", max(screen_size.width // 30, 12))
+    _font = SysFont("stencil", max(screen_size.width // 30, 12))
 
     def __init__(self, score: int = 0):
         self.current_score = score
@@ -138,7 +138,7 @@ class ScoreDisplay:
 class LivesDisplay:
     """Displays the player's remaining lives."""
 
-    _font = SysFont("courier", max(screen_size.width // 30, 12))
+    _font = SysFont("stencil", max(screen_size.width // 30, 12))
 
     def __init__(self, lives=2):
         self.lives = lives
