@@ -223,7 +223,6 @@ class Game:
         # if the ball is waiting for launch, ensure the up arrow is on screen.
         if not self.state.launched:
             if self.up_arrow not in self.state.current_screen.elements:
-                self.up_arrow = ArrowButton("up")
                 self.state.current_screen.add_element(self.up_arrow)
             return
 
