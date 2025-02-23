@@ -1,7 +1,7 @@
 """
 Breakout Init
 =============
-Package init for resources shared accross the whole project
+Package init for resources shared across the whole project
 
 Class
 -----
@@ -18,6 +18,7 @@ Thomas Nugent
 
 """
 
+# pylint: disable=no-member,protected-access
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -71,7 +72,7 @@ color_choices = [
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS
     base_path = Path(sys._MEIPASS)
-except Exception:
+except AttributeError:
     base_path = Path(__file__).parent
 
 __all__ = [
