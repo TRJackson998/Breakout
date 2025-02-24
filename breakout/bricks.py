@@ -31,7 +31,7 @@ from breakout import Position, Size, base_path, screen_size
 # pylint: disable=no-member
 @dataclass
 class BrickConfig:
-    """Configuration for Ball constants."""
+    """Configuration for Brick constants."""
 
     size = Size(51, 25)
     border_radius = 5
@@ -47,6 +47,15 @@ class Brick(Sprite):
         position: Position | tuple = Position(0, 0),
         texture: bool = False
     ):
+        """
+        Initialize a Brick.
+
+        Args:
+            groups: Sprite groups to add the brick to.
+            color: The color of the brick.
+            position: The position where the brick is placed.
+            texture: If True, marks the brick as unbreakable and applies a texture.
+        """
         super().__init__(
             *groups,
         )
@@ -105,7 +114,7 @@ class Brick(Sprite):
 
     @classmethod
     def load_texture(cls):
-        """Load the unbreakable texture"""
+        """Load the unbreakable texture (Multi-hit bricks will be wearing this texture)"""
         try:
             texture_path = base_path.joinpath("textures", "unbreakable_texture.jpg")
             Brick.unbreakable_texture = pygame.image.load(
@@ -115,16 +124,21 @@ class Brick(Sprite):
                 Brick.unbreakable_texture, astuple(BrickConfig.size)
             )
             print("Texture loaded successfully from", texture_path)
-        except Exception as e:
+        except (FileNotFoundError, pygame.error) as e:
             print("Error loading texture:", e)
             Brick.unbreakable_texture = None
 
     @classmethod
     def create_brick_layout(cls, rows: int, cols: int, level: int):
-        """Orders and centers the brick grid layout with dynamic colors.
+        """
+        Order and center the brick grid layout with dynamic colors.
+        A fixed percentage per level (10% per level, capped at 100%)
+        are randomly marked as multi-hit.
 
-        A fixed percentage per level, 10% each level and capped at 100%,
-        bricks are randomly marked as unbreakable by applying a texture.
+        Args:
+            rows: Number of rows in the brick layout.
+            cols: Number of columns in the brick layout.
+            level: The current game level, used to determine the percentage of unbreakable bricks.
         """
         brick_group = pygame.sprite.Group()
         offset = 10  # Margin between bricks
@@ -177,8 +191,11 @@ class Brick(Sprite):
 
 def assign_color(rows: int, row: int):
     """
-    Pick what color the brick will be based on which row
-    it is in out of the total rows
+    Determine the brick's color based on its row position.
+
+    Args:
+        rows: Total number of rows.
+        row: The row index for the current brick.
     """
     first_quarter = max(1, rows // 4)
     if row < first_quarter:

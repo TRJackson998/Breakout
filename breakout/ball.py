@@ -63,7 +63,8 @@ class Ball(Sprite):
             position: Starting Position of the ball.
             radius: Radius of the ball.
             color: The ball's color.
-            speed: A Speed object for the ball's velocity. If None, a default random direction is used.
+            speed: A Speed object for the ball's velocity.
+            If None, a default random direction is used.
         """
         super().__init__(*groups)
         self.position = position
