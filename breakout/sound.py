@@ -1,7 +1,9 @@
 """
 Sound
 =======
-Handle the sound files and add sound effects to the game.
+Handles sound files and sound effects for the game.
+This module initializes the pygame mixer and provides a SoundManager class
+that loads and plays sound effects and background music from the game's sounds folder.
 
 Class
 -----
@@ -29,6 +31,12 @@ pygame.mixer.init()
 
 
 class SoundManager:
+    """
+    Manages sound effects and background music for the game.
+
+    Sound files are loaded from the "sounds" directory located at base_path.
+    If a sound file fails to load, its attribute is set to None.
+    """
 
     sound_on = True
     sound_path = base_path.joinpath("sounds")
@@ -43,7 +51,7 @@ class SoundManager:
         background_music = pygame.mixer.Sound(
             sound_path.joinpath("background_music.mp3")
         )
-    except Exception as e:
+    except (FileNotFoundError, pygame.error) as e:
         print("Error loading sound effects:", e)
         powerup_sound = None
         brick_sound = None
