@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 import pygame
-from pygame.color import Color
+from pygame import Color
 from pygame.font import SysFont
 
 from breakout import screen_size
@@ -33,8 +33,9 @@ from breakout.sound import SoundManager
 
 class ScreenManager:
     """
-    Class to contain various elements of a screen and draw them
-    Theoretically should only be instantiated in this script
+    Manages a game screen by storing its visual elements and optional background image.
+    Provides methods to add elements, draw the screen, and propagate events to the elements.
+    This class is intended to be instantiated only within this module.
     """
 
     def __init__(self, elements: list, background_image: pygame.Surface = None):
@@ -214,7 +215,7 @@ class ArrowButton:
 
         self.direction = direction
 
-    def draw(self, screen: pygame.surface.Surface):
+    def draw(self, screen: pygame.surface.Surface):  # pylint: disable=I1101
         """
         Screen elements need to be able to draw themselves
         Write the button text using the font
@@ -339,7 +340,7 @@ class MusicToggle:
             SoundManager.stop_background_music()
 
     def draw(self, surface: pygame.Surface):
-        # Draw the label.
+        """Draw the music toggle control on the screen."""
         surface.blit(self.label_surface, self.label_rect)
         # Re-render ON and OFF texts according to state.
         if SoundManager.sound_on:
@@ -354,6 +355,7 @@ class MusicToggle:
         surface.blit(self.off_surface, self.off_rect)
 
     def handle_event(self, event: pygame.event.Event):
+        """Handle mouse click events to toggle background music on or off."""
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             if self.on_rect.collidepoint(event.pos):
                 if not SoundManager.sound_on:
