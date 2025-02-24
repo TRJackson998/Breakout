@@ -187,7 +187,7 @@ class ExtraLifePowerup(Sprite):
             self.image = pygame.image.load(str(heart_path)).convert_alpha()
             # Scale to be a 20x20 heart
             self.image = pygame.transform.scale(self.image, (20, 20))
-        except Exception as e:
+        except (FileNotFoundError, pygame.error) as e:
             print("Error loading heart image:", e)
             # Will drop a transparent image
             self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
