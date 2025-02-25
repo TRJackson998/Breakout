@@ -227,7 +227,10 @@ class Game:
 
         # if the ball is waiting for launch, ensure the up arrow is on screen.
         if not self.state.launched:
-            if self.up_arrow not in self.state.current_screen.elements:
+            if (
+                self.up_arrow not in self.state.current_screen.elements
+                and not self.state.new_level_wait
+            ):
                 self.state.current_screen.add_element(self.up_arrow)
             return
 
@@ -275,6 +278,7 @@ class GameState:
         self.score = 0  # Default starting score
         self.lives = 3  # Default starting lives
         self.time = 0
+        self.new_level_wait = False
         self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
         self.ball_group = pygame.sprite.Group()
         self.powerup_group = pygame.sprite.Group()
@@ -324,13 +328,29 @@ class GameState:
 
         # broke all bricks, go again
         if len(self.bricks.sprites()) == 0:
+            self.new_level_wait = True
             self.level += 1
             for ball in self.ball_group.sprites():
                 ball.reset_position()
-                ball.increase_speed()  # Increase speed for each ball
-            self.launch_ball()
+                ball.speed = Speed(0, 0)
+            for paddle in self.paddle_group.sprites():
+                paddle.reset_position()
+            self.launched = False
+            self.launch_message = BlinkingMessage(
+                [f"Level {self.level}", "3...", "2...", "1...", "Go!"],
+                blink_interval=600,
+            )
             self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
             Screens.GAME.add_element(self.bricks)
+
+        if self.new_level_wait and not self.launch_message.text_list:
+            for ball in self.ball_group.sprites():
+                ball.increase_speed()  # Increase speed for each ball
+            self.launch_ball()
+            self.launch_message = BlinkingMessage(
+                "Press Up to Launch!", blink_interval=700
+            )
+            self.new_level_wait = False
 
         if not self.launched:
             if self.launch_message not in self.current_screen.elements:

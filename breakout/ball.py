@@ -93,8 +93,11 @@ class Ball(Sprite):
         BallConfig.default_speed = min(
             BallConfig.default_speed * factor, BallConfig.max_speed
         )
-        self.speed.x = min(self.speed.x * factor, BallConfig.max_speed)
-        self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
+
+        if self.speed.y == 0:
+            self.speed.y = min(-BallConfig.default_speed * factor, BallConfig.max_speed)
+        else:
+            self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
 
         self.speed.x = 0
 

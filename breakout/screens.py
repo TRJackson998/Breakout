@@ -257,6 +257,11 @@ class BlinkingMessage:
         padding: int = 10,
     ):
         self.text = text
+        self.text_list = []
+        if isinstance(text, list):
+            self.text = text[0]
+            self.text_list = text[1:] + ["Filler"]
+
         self.text_color = text_color
         self.background_color = background_color
         self.padding = padding
@@ -275,6 +280,8 @@ class BlinkingMessage:
         if now - self.last_toggle > self.blink_interval:
             self.visible = not self.visible
             self.last_toggle = now
+            if not self.visible and self.text_list:
+                self.text = self.text_list.pop(0)
 
         if self.visible:
             # Render the text.
