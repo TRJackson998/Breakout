@@ -346,6 +346,9 @@ class GameState:
         if self.new_level_wait and not self.launch_message.text_list:
             for ball in self.ball_group.sprites():
                 ball.increase_speed()  # Increase speed for each ball
+            if self.level % 2 == 0:
+                for paddle in self.paddle_group.sprites():
+                    paddle.increase_speed()
             self.launch_ball()
             self.launch_message = BlinkingMessage(
                 "Press Up to Launch!", blink_interval=700
