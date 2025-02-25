@@ -82,7 +82,7 @@ class Ball(Sprite):
             speed
             if speed
             else Speed(
-                random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
+                0,
                 -BallConfig.default_speed,
             )
         )
@@ -95,6 +95,8 @@ class Ball(Sprite):
         )
         self.speed.x = min(self.speed.x * factor, BallConfig.max_speed)
         self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
+
+        self.speed.x = 0
 
     def move(self, screen_state):
         """
@@ -211,6 +213,6 @@ class Ball(Sprite):
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
-        self.speed = Speed(random.choice([-self.speed.x, self.speed.x]), -self.speed.y)
+        self.speed = Speed(0, -self.speed.y)
         self.position = BallConfig.initial_position
         self.rect.center = astuple(self.position)
