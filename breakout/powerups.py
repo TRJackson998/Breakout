@@ -2,13 +2,14 @@
 Powerups
 ========
 Implement the Powerups object and related interactions/physics
-Subclass of BreakoutSprite
+
 
 Powers
 ------
 Paddle size bigger
 Extra ball
 Lose a life
+Gain a life
 
 Class
 -----
@@ -52,7 +53,10 @@ class PowerupConfig:
 
 
 class PowerUp(Sprite):
-    """Handle power up execution"""
+    """A generic powerup that moves downward,
+    flickers by changing its color, and triggers
+    a specified power effect when collected.
+    """
 
     def __init__(
         self,
@@ -61,6 +65,15 @@ class PowerUp(Sprite):
         shape: Literal["circle", "rectangle"] = "circle",
         color: int = random.choice(list(range(len(color_choices))))
     ):
+        """
+        Initialize a generic powerup.
+
+        Args:
+            groups: One or more pygame.sprite.Group instances to add the powerup to.
+            power: A callable to execute when the powerup is collected.
+            shape: The shape of the powerup ('circle' or 'rectangle').
+            color: An index into the color_choices list determining the initial color.
+        """
         super().__init__(*groups)
         self.position = Position(
             random.randint(
@@ -99,7 +112,10 @@ class PowerUp(Sprite):
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
     def move(self, screen_state):
-        """Handles movement and collision with walls, paddle, and bricks."""
+        """
+        Update the powerup's state: blink, update position, handle paddle collision,
+        and self-destruction if it falls off-screen.
+        """
         now = pygame.time.get_ticks()
         if now - self.last_toggle > PowerupConfig.blink_interval:
             self.last_toggle = now
@@ -126,14 +142,16 @@ class PowerUp(Sprite):
         self.image.blit(self.text_surface, text_rect)  # Draw text onto self.image
 
     def handle_paddle_collision(self, paddle: Paddle):
-        """Handle collisions with the paddle"""
+        """Handle collisions with the paddle
+        If collision is detected while falling,
+        trigger the powerup's effect and remove it."""
         if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
             sound.SoundManager.play_powerup()
             self.collect()
             self.kill()
 
     def change_color(self):
-        """Handles the power up color changes"""
+        """Cycle through available colors to create a flickering effect."""
         self.color += 1
         if self.color == len(color_choices):
             self.color = 0
@@ -169,7 +187,7 @@ class ExtraLifePowerup(Sprite):
             self.image = pygame.image.load(str(heart_path)).convert_alpha()
             # Scale to be a 20x20 heart
             self.image = pygame.transform.scale(self.image, (20, 20))
-        except Exception as e:
+        except (FileNotFoundError, pygame.error) as e:
             print("Error loading heart image:", e)
             # Will drop a transparent image
             self.image = pygame.Surface((20, 20), pygame.SRCALPHA)
@@ -292,12 +310,12 @@ class PowerDown(Sprite):
         self.rect.y = self.position.y
 
     def handle_paddle_collision(self, paddle: Paddle):
-        """Handle collisions with the paddle"""
+        """Check for collision with the paddle. If collided, trigger explosion."""
         if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
             self.explode()
 
     def change_color(self):
-        """Redraw flickering spark at the end of the fuse"""
+        """Redraw flickering spark at the end of the fuse."""
         fuse_color = random.choice(
             [pygame.Color("red"), pygame.Color("orange"), pygame.Color("yellow")]
         )  # Simulates flickering
@@ -313,7 +331,8 @@ class PowerDown(Sprite):
         self.generate_explosion()
 
     def generate_explosion(self):
-        """Create the graphics for the explosion"""
+        """Trigger the explosion: stop movement, display an explosion effect,
+        and update state so that after a delay the negative effect is applied."""
         size = PowerupConfig.size * 4
         outer_explosion = self.generate_explosion_points(size)
         middle_explosion = self.generate_explosion_points(size * 0.7)
@@ -324,7 +343,8 @@ class PowerDown(Sprite):
         pygame.draw.polygon(self.image, pygame.Color("yellow"), inner_explosion)
 
     def generate_explosion_points(self, size: int) -> list[int]:
-        """Do the math to generate the points on the screen for each explosion layer"""
+        """Generate a list of (x, y) coordinate tuples
+        representing the explosion polygon vertices."""
         points = []
         num_spikes = 12
         angle_step = 360 / num_spikes

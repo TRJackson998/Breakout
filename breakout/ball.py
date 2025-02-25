@@ -57,9 +57,14 @@ class Ball(Sprite):
     ):
         """
         Initialize the ball.
+
         Args:
-            groups: Sprite groups to add the ball to.
-            color: The color of the ball.
+            groups: One or more pygame.sprite.Group instances to add the ball to.
+            position: Starting Position of the ball.
+            radius: Radius of the ball.
+            color: The ball's color.
+            speed: A Speed object for the ball's velocity.
+            If None, a default random direction is used.
         """
         super().__init__(*groups)
         self.position = position
@@ -92,7 +97,14 @@ class Ball(Sprite):
         self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
 
     def move(self, screen_state):
-        """Handles movement and collision with walls, paddle, and bricks."""
+        """
+        Handles movement and collision with walls, paddle, and bricks.
+
+        Args:
+            screen_state: The current game state (including score, lives, etc.).
+
+        Returns the updated screen_state after handling collisions and possible life loss.
+        """
         # Update position
         self.update_position()
 

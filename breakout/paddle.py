@@ -29,12 +29,12 @@ from breakout import Position, Size, Speed, screen_size
 
 @dataclass
 class PaddleConfig:
-    """Configuration for Ball constants."""
+    """Configuration for Paddle constants."""
 
     size = Size(100, 25)
     initial_position = Position(200, 485)
     speed = Speed(5, 0)
-    blink_interval = 600
+    blink_interval = 600  # in milliseconds
     flicker_color = pygame.Color("black")
 
 
@@ -49,6 +49,17 @@ class Paddle(Sprite):
         width: int = None,
         timeout: int = None
     ):
+        """
+        Initialize the paddle.
+
+        Args:
+            groups: One or more pygame.sprite.Group instances to add the paddle to.
+            color: The paddle's color. Defaults to white.
+            x_position: Optional x-coordinate for the paddle.
+                If None, uses PaddleConfig's initial position.
+            width: Optional width for the paddle. If None, uses PaddleConfig's default width.
+            timeout: If set, the paddle disappears after 'timeout' milliseconds (used for powerups).
+        """
         super().__init__(
             *groups,
         )

@@ -80,7 +80,10 @@ class NameInput:
         self.rect = self.image.get_rect(center=(self.x_position, self.y_position))
 
     def handle_event(self, event: pygame.event.Event):
-        """If this button is clicked, run the function associated with it"""
+        """
+        Processes mouse and keyboard events to update the name input field.
+        Activates the input field on mouse click and updates the name with keyboard input.
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.active = self.rect.collidepoint(event.pos)
         if self.active and event.type == pygame.KEYDOWN:
@@ -114,7 +117,7 @@ class NameInput:
 
 
 class ScoreDisplay:
-    """Tracks and displays the current score."""
+    """Tracks and displays the current score in real-time."""
 
     _font = SysFont("courier", 14, bold=True)
 
@@ -136,7 +139,7 @@ class ScoreDisplay:
 
 
 class LivesDisplay:
-    """Displays the player's remaining lives."""
+    """Displays the player's remaining lives on the screen."""
 
     _font = SysFont("courier", 14, bold=True)
 

@@ -3,6 +3,7 @@ Breakout
 ========
 Manages the core game loop, screen transitions, and overall game logic. 
 Handles user input, game state changes, and object initialization for gameplay.
+When this module is ran directly, it launches the breakout game. 
 
 Class
 -----
@@ -69,7 +70,7 @@ class Game:
         self.right_arrow = ArrowButton("right")
         self.up_arrow = ArrowButton("up")
         self.scoreboard = Scoreboard()
-        self.name_imput = NameInput()
+        self.name_input = NameInput()
 
         self.setup_screens()
         self.state = GameState()
@@ -260,7 +261,9 @@ class Game:
 
 
 class GameState:
-    """Manages the game's current state and flags for transitions."""
+    """Manages the game's current state and flags for transitions.
+    initializes default values (level, score, lives), tracks powerups,
+    and updates the game state based on in-game events."""
 
     def __init__(self, screen: ScreenManager = Screens.START):
         """Reset the game state for a new game."""
