@@ -95,7 +95,7 @@ class Game:
         )
         Screens.END.add_element(Button("QUIT", self.quit_game, "bottom"))
         Screens.END.add_element(self.scoreboard)
-        Screens.END.add_element(self.name_imput)
+        Screens.END.add_element(self.name_input)
         Screens.END.add_element(Button("SUBMIT", self.save_score, "top"))
 
     def switch_screen(self, screen: Screens):
@@ -172,17 +172,17 @@ class Game:
 
     def save_score(self):
         """Saves the current score to the leaderboard and resets it."""
-        if not self.name_imput.name:
+        if not self.name_input.name:
             return
         self.scoreboard.top_scores[self.state.score] = (
-            self.name_imput.name.upper()
+            self.name_input.name.upper()
         )  # update this player's top score
         self.scoreboard.top_scores = dict(
             sorted(
                 self.scoreboard.top_scores.items(), key=lambda x: x[0], reverse=True
             )[:10]
         )  # Sort, only keep only the top 10 scores
-        self.name_imput.name = ""
+        self.name_input.name = ""
 
     def handle_events(self):
         """Handle all events in the game loop"""
