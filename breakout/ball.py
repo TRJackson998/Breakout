@@ -88,17 +88,23 @@ class Ball(Sprite):
         )
         self.rect = self.image.get_rect(center=astuple(self.position))
 
-    def increase_speed(self, factor=1.5):
+    def increase_speed(self, speed=None):
         """Increase the ball's current speed by a factor without exceeding max_speed."""
-        BallConfig.default_speed = min(
-            BallConfig.default_speed * factor, BallConfig.max_speed
-        )
+        if not speed:
+            factor = 1.5
+            BallConfig.default_speed = min(
+                BallConfig.default_speed * factor, BallConfig.max_speed
+            )
 
-        if self.speed.y == 0:
-            self.speed.y = min(-BallConfig.default_speed * factor, BallConfig.max_speed)
+            if self.speed.y == 0:
+                self.speed.y = min(
+                    -BallConfig.default_speed * factor, BallConfig.max_speed
+                )
+            else:
+                self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
         else:
-            self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
-
+            self.speed.y = speed
+            BallConfig.default_speed = speed
         self.speed.x = 0
 
     def move(self, screen_state):
