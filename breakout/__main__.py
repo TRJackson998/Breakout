@@ -345,7 +345,7 @@ class GameState:
                 paddle.reset_position()
             self.launched = False
             self.launch_message = BlinkingMessage(
-                [f"Level {self.level}", "3...", "2...", "1...", "Go!"],
+                [f"Level {self.level}", "Ready?", "Go!"],
                 blink_interval=600,
             )
             rows = random.randint(4, 6)
