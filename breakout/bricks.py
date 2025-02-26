@@ -167,24 +167,27 @@ class Brick(Sprite):
             cls.load_texture()
 
         index = 0  # Running index for each brick.
-        for row in range(rows):
-            for col in range(cols):
-                position = Position(
-                    start_position.x + col * (BrickConfig.size.width + offset),
-                    start_position.y + row * (BrickConfig.size.height + offset),
+        design = [(x, y) for x in range(rows) for y in range(cols)]
+        if level != 1:
+            design = random.choice([design, generate_random_design(rows, cols)])
+
+        for row, col in design:
+            position = Position(
+                start_position.x + col * (BrickConfig.size.width + offset),
+                start_position.y + row * (BrickConfig.size.height + offset),
+            )
+            color = assign_color(rows, row)
+            # Mark this brick as extra durable if its index is in the selected set.
+            texture = index in selected
+            brick_group.add(
+                cls(
+                    brick_group,
+                    color=color,
+                    position=position,
+                    texture=texture,
                 )
-                color = assign_color(rows, row)
-                # Mark this brick as extra durable if its index is in the selected set.
-                texture = index in selected
-                brick_group.add(
-                    cls(
-                        brick_group,
-                        color=color,
-                        position=position,
-                        texture=texture,
-                    )
-                )
-                index += 1
+            )
+            index += 1
 
         return brick_group
 
@@ -208,3 +211,35 @@ def assign_color(rows: int, row: int):
         # Rest are green
         color = pygame.Color("green")
     return color
+
+
+def generate_random_design(rows: int, cols: int):
+    """
+    Generate a list of row-col indices forming a random shape within a given grid.
+    The shape can be a triangle, circle, or diagonal pattern.
+    """
+    random.seed()
+    shape_type = random.choice(["triangle", "circle", "diagonal"])
+    selected_indices = set()
+
+    if shape_type == "triangle":
+        for r in range(rows):
+            for c in range(r + 1):  # Creates a right triangle shape
+                selected_indices.add((r, c))
+
+    elif shape_type == "circle":
+        center = (rows // 2, cols // 2)
+        radius = min(rows, cols) // 3
+        for r in range(rows):
+            for c in range(cols):
+                if (r - center[0]) ** 2 + (c - center[1]) ** 2 <= radius**2:
+                    selected_indices.add((r, c))
+
+    elif shape_type == "diagonal":
+        thickness = random.randint(1, cols // 2)
+        for r in range(rows):
+            for c in range(cols):
+                if abs(r - c) < thickness:  # Randomized diagonal thickness
+                    selected_indices.add((r, c))
+
+    return list(selected_indices)

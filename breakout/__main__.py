@@ -42,6 +42,7 @@ from breakout.screens import (
 )
 
 # pylint: disable=no-member
+random.seed()
 
 
 class Game:
@@ -340,7 +341,11 @@ class GameState:
                 [f"Level {self.level}", "3...", "2...", "1...", "Go!"],
                 blink_interval=600,
             )
-            self.bricks = Brick.create_brick_layout(rows=6, cols=8, level=self.level)
+            rows = random.randint(4, 6)
+            cols = random.randint(6, 8)
+            self.bricks = Brick.create_brick_layout(
+                rows=rows, cols=cols, level=self.level
+            )
             Screens.GAME.add_element(self.bricks)
 
         if self.new_level_wait and not self.launch_message.text_list:
