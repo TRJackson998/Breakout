@@ -207,6 +207,13 @@ class Game:
                     self.resume_game()
                 else:
                     self.pause_game()
+            if event.type == pygame.USEREVENT + 1:
+                sound.SoundManager.current_music += 1
+                if sound.SoundManager.current_music == len(
+                    sound.SoundManager.background_music
+                ):
+                    sound.SoundManager.current_music = 0
+                sound.SoundManager.play_background_music()
 
             self.state.current_screen.handle_event(event)
 

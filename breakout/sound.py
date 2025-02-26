@@ -48,9 +48,11 @@ class SoundManager:
         wall_sound = pygame.mixer.Sound(sound_path.joinpath("wall_sound.wav"))
         life_lost_sound = pygame.mixer.Sound(sound_path.joinpath("life_lost.wav"))
         game_over_sound = pygame.mixer.Sound(sound_path.joinpath("game_over.wav"))
-        background_music = pygame.mixer.Sound(
-            sound_path.joinpath("background_music.mp3")
-        )
+        background_music = [
+            pygame.mixer.Sound(sound_path.joinpath("background_music1.mp3")),
+            pygame.mixer.Sound(sound_path.joinpath("background_music2.mp3")),
+            pygame.mixer.Sound(sound_path.joinpath("background_music3.mp3")),
+        ]
     except (FileNotFoundError, pygame.error) as e:
         print("Error loading sound effects:", e)
         powerup_sound = None
@@ -69,6 +71,10 @@ class SoundManager:
         life_lost_sound,
         game_over_sound,
     ]
+    music_channel = pygame.mixer.Channel(1)
+    current_music = 0
+    music_channel.set_endevent(pygame.USEREVENT + 1)
+    music_channel.play(background_music[current_music])
 
     @staticmethod
     def play_powerup():
@@ -110,16 +116,20 @@ class SoundManager:
             SoundManager.play_background_music()
 
     @staticmethod
-    def play_background_music(loops=-1):
+    def play_background_music():
         """Play the background music on loop."""
         if SoundManager.background_music and SoundManager.sound_on:
-            SoundManager.background_music.play(loops=loops)
+            SoundManager.music_channel.unpause()
+            if not SoundManager.music_channel.get_busy():
+                SoundManager.music_channel.play(
+                    SoundManager.background_music[SoundManager.current_music]
+                )
 
     @staticmethod
     def stop_background_music():
         """Stops the background screen music."""
         if SoundManager.background_music:
-            SoundManager.background_music.stop()
+            SoundManager.music_channel.pause()
 
     @staticmethod
     def stop_other_sounds():
