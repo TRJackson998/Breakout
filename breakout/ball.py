@@ -121,8 +121,11 @@ class Ball(Sprite):
 
         # Handle collisions
         self.handle_wall_collisions()
-        for paddle in screen_state.paddle_group.sprites():
-            self.handle_paddle_collision(paddle)
+
+        # only interact with the last paddle, in case of powerup paddle
+        paddle = screen_state.paddle_group.sprites()[-1]
+        self.handle_paddle_collision(paddle)
+
         points = self.handle_brick_collisions(screen_state.bricks)
         screen_state.score += points
 
