@@ -92,7 +92,7 @@ def test_save_score():
     """Ensure scores are saved and sorted correctly."""
     game = Game()
     game.state.score = 500
-    game.name_imput.name = "XYZ"
+    game.name_input.name = "XYZ"
 
     game.save_score()
 

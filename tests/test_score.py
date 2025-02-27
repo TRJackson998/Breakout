@@ -27,7 +27,7 @@ def test_scoreboard_initialization():
     """Test that the scoreboard initializes correctly."""
     scoreboard = Scoreboard()
     assert isinstance(scoreboard.top_scores, dict)
-    assert scoreboard.top_scores == {-1: "AAA"}
+    assert not scoreboard.top_scores
 
 
 def test_scoreboard_draw():

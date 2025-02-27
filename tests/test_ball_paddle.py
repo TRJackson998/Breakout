@@ -33,7 +33,7 @@ def test_ball_initialization():
     """Test ball initializes with correct attributes."""
     ball = Ball()
     assert ball.position == BallConfig.initial_position
-    assert ball.speed.x in [-BallConfig.default_speed, BallConfig.default_speed]
+    assert ball.speed.x == 0
     assert ball.speed.y == -BallConfig.default_speed
     assert ball.color == Color("white")
 
