@@ -213,6 +213,11 @@ class Game:
                 ):
                     sound.SoundManager.current_music = 0
                 sound.SoundManager.play_background_music()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                if self.state.current_screen == Screens.START:
+                    self.switch_screen(Screens.GAME)
+                if self.state.current_screen == Screens.END:
+                    self.save_score()
 
             self.state.current_screen.handle_event(event)
 
