@@ -340,6 +340,10 @@ class GameState:
         if len(self.bricks.sprites()) == 0:
             self.new_level_wait = True
             self.level += 1
+            self.max_wait_time -= 1000
+            self.min_wait_time -= 1000
+            self.min_wait_time = max(self.min_wait_time, 0)
+            self.max_wait_time = max(self.max_wait_time, 1000)
             for ball in self.ball_group.sprites():
                 ball.reset_position()
                 ball.speed = Speed(0, 0)
