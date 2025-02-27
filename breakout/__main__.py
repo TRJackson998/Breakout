@@ -197,11 +197,9 @@ class Game:
             if (
                 event.type == pygame.KEYDOWN
                 and self.up_arrow in self.state.current_screen.elements
-                and event.key == pygame.K_UP
+                and (event.key == pygame.K_UP or event.key == pygame.K_w)
             ):
-                self.state.launch_ball()
-                self.up_arrow.pressed = False
-                self.state.current_screen.elements.remove(self.up_arrow)
+                self.launch()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 if self.state.paused:
                     self.resume_game()
@@ -228,10 +226,7 @@ class Game:
 
         # Check for GUI arrow press for launching the ball.
         if self.up_arrow.pressed:
-            self.state.launch_ball()
-            if self.up_arrow in self.state.current_screen.elements:
-                self.up_arrow.pressed = False
-                self.state.current_screen.elements.remove(self.up_arrow)
+            self.launch()
 
         # if the ball is waiting for launch, ensure the up arrow is on screen.
         if not self.state.launched:
@@ -244,6 +239,13 @@ class Game:
 
         # Ball has been launched, allow movement.
         self.move_game_pieces()
+
+    def launch(self):
+        "Launch the ball and remove the up arrow from the screen"
+        self.state.launch_ball()
+        if self.up_arrow in self.state.current_screen.elements:
+            self.up_arrow.pressed = False
+            self.state.current_screen.elements.remove(self.up_arrow)
 
     def move_game_pieces(self):
         """Move the paddles, balls, and powerups on the screen"""
