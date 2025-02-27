@@ -80,11 +80,11 @@ class NameInput:
             if event.key == pygame.K_BACKSPACE:
                 # get text input from 0 to -1 i.e. end.
                 self.name = self.name[:-1]
-
-            # Unicode standard is used for string
-            # formation
-            else:
-                self.name += event.unicode
+            elif event.key in range(pygame.K_a, pygame.K_z + 1):
+                self.name += (
+                    event.unicode
+                )  # Unicode standard is used for string formation
+                self.name = str.upper(self.name)
 
     def draw(self, screen: pygame.Surface):
         """Draw the name input field."""
