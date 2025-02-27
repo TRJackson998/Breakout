@@ -130,7 +130,7 @@ class Ball(Sprite):
         screen_state.score += points
 
         # Handle bottom screen collision (losing a life or ending the game)
-        if self.position.y >= screen_size.height:
+        if self.position.y >= (paddle.rect.bottom + self.radius):
             group = self.groups()[0]
             if len(group.sprites()) > 1:
                 # There's more balls, losing this one doesn't lose a life
