@@ -62,10 +62,14 @@ class Game:
         end_bg = pygame.image.load(
             base_path.joinpath("textures", "BlueBackground.png")
         ).convert()
+        help_bg = pygame.image.load(
+            base_path.joinpath("textures", "help_screen.png")
+        ).convert()
         # Assign the background image to the start screen.
         Screens.START.background_image = start_bg
         Screens.GAME.background_image = game_bg
         Screens.END.background_image = end_bg
+        Screens.HELP.background_image = help_bg
 
         self.left_arrow = ArrowButton("left")
         self.right_arrow = ArrowButton("right")
@@ -79,11 +83,13 @@ class Game:
     def setup_screens(self):
         """Add static button elements to START and END screens"""
         # Start Screen
-
         Screens.START.add_element(
             Button("START GAME", lambda: self.switch_screen(Screens.GAME), "middle")
         )
         Screens.START.add_element(Button("QUIT", self.quit_game, "bottom"))
+        Screens.START.add_element(
+            Button("HELP", lambda: self.switch_screen(Screens.HELP), "top_right")
+        )
 
         # Create the MusicToggle
         music_toggle = MusicToggle(sound_on=True)
@@ -98,6 +104,15 @@ class Game:
         Screens.END.add_element(self.scoreboard)
         Screens.END.add_element(self.name_input)
         Screens.END.add_element(Button("SUBMIT", self.save_score, "top"))
+        Screens.END.add_element(
+            Button("HELP", lambda: self.switch_screen(Screens.HELP), "top_right")
+        )
+
+        # Help Screen
+        Screens.HELP.add_element(
+            Button("START GAME", lambda: self.switch_screen(Screens.GAME), "middle")
+        )
+        Screens.HELP.add_element(Button("QUIT", self.quit_game, "bottom"))
 
     def switch_screen(self, screen: Screens):
         """
@@ -125,6 +140,9 @@ class Game:
         Screens.GAME.add_element(Button("PAUSE GAME", self.pause_game, "middle"))
         Screens.GAME.add_element(
             Button("END GAME", lambda: self.switch_screen(Screens.END), "bottom")
+        )
+        Screens.GAME.add_element(
+            Button("HELP", lambda: self.switch_screen(Screens.HELP), "top_right")
         )
         Screens.GAME.add_element(self.left_arrow)
         Screens.GAME.add_element(self.right_arrow)
@@ -218,6 +236,8 @@ class Game:
                     self.switch_screen(Screens.GAME)
                 if self.state.current_screen == Screens.END:
                     self.save_score()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_F1:
+                self.switch_screen(Screens.HELP)
 
             self.state.current_screen.handle_event(event)
 

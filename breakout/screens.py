@@ -85,7 +85,7 @@ class Button:
         self,
         text: str,
         on_click,
-        position: Literal["top", "middle", "bottom"],
+        position: Literal["top", "middle", "bottom", "top_right"],
         color: pygame.Color = pygame.Color("#0ffffd"),
         hover_color: pygame.Color = pygame.Color("green"),
     ):
@@ -112,6 +112,11 @@ class Button:
         elif position == "top":
             x = screen_size.width // 2
             y = screen_size.width // 40 + height // 2
+        elif position == "top_right":
+            width //= 2
+            height //= 2
+            x = screen_size.width - width
+            y = 0
         else:
             raise ValueError("Not a valid button position")
 
@@ -385,3 +390,4 @@ class Screens:
     START = ScreenManager([])
     GAME = ScreenManager([])
     END = ScreenManager([])
+    HELP = ScreenManager([])
