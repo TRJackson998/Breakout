@@ -161,7 +161,9 @@ class Ball(Sprite):
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
-        if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
+        if self.speed.y > 0 and self.rect.clipline(
+            paddle.rect.topleft, paddle.rect.topright
+        ):
             self.bounce_y()
             SoundManager.play_paddle()
             self.position.y = paddle.rect.top - self.rect.height
@@ -178,6 +180,12 @@ class Ball(Sprite):
                     BallConfig.max_speed,
                 ),
             )
+        elif self.speed.y > 0 and (
+            self.rect.clipline(paddle.rect.topleft, paddle.rect.bottomleft)
+            or self.rect.clipline(paddle.rect.topright, paddle.rect.bottomright)
+        ):
+            self.bounce_x()
+            SoundManager.play_paddle()
 
     def handle_brick_collisions(self, bricks: pygame.sprite.Group) -> int:
         """Handle collisions with bricks and return points scored."""
