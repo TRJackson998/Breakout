@@ -34,7 +34,7 @@ class Scoreboard:
 
     def __init__(self):
         self.text_color = pygame.Color("white")
-        self.top_scores = {-1: "AAA"}
+        self.top_scores = {}
 
     def draw(self, screen: pygame.Surface):
         """Draws the scoreboard on the screen."""
@@ -48,17 +48,6 @@ class Scoreboard:
             entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
             score_text = Scoreboard._font.render(entry_text, True, self.text_color)
             screen.blit(score_text, (screen_size.width // 5, 110 + i * 30))
-
-        for i in range(10 - len(self.top_scores)):
-            score = -1
-            name = "AAA"
-            formatted_score = f"{score:,}"  # Format score with commas
-            entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
-            score_text = Scoreboard._font.render(entry_text, True, self.text_color)
-            screen.blit(
-                score_text,
-                (screen_size.width // 5, 110 + (i + len(self.top_scores)) * 30),
-            )
 
 
 class NameInput:
