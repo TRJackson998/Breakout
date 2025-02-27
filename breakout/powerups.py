@@ -145,7 +145,9 @@ class PowerUp(Sprite):
         """Handle collisions with the paddle
         If collision is detected while falling,
         trigger the powerup's effect and remove it."""
-        if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
+        if self.speed.y > 0 and self.rect.clipline(
+            paddle.rect.topleft, paddle.rect.topright
+        ):
             sound.SoundManager.play_powerup()
             self.collect()
             self.kill()
