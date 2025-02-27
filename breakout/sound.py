@@ -71,10 +71,11 @@ class SoundManager:
         life_lost_sound,
         game_over_sound,
     ]
-    music_channel = pygame.mixer.Channel(1)
-    current_music = 0
-    music_channel.set_endevent(pygame.USEREVENT + 1)
-    music_channel.play(background_music[current_music])
+    if background_music:
+        music_channel = pygame.mixer.Channel(1)
+        current_music = 0
+        music_channel.set_endevent(pygame.USEREVENT + 1)
+        music_channel.play(background_music[current_music])
 
     @staticmethod
     def play_powerup():
