@@ -42,12 +42,13 @@ def test_name_input_initialization():
     """Test that the name input initializes correctly."""
     name_input = NameInput()
     assert name_input.name == ""
-    assert name_input.active is False
+    assert name_input.active is True
 
 
 def test_name_input_handle_mouse_event():
     """Test mouse click activation in the NameInput field."""
     name_input = NameInput()
+    name_input.active = False
 
     event = pygame.event.Event(pygame.MOUSEBUTTONDOWN, {"pos": name_input.rect.center})
     name_input.handle_event(event)
