@@ -38,7 +38,7 @@ class BallConfig:
     """Configuration for Ball constants."""
 
     radius = 10
-    default_speed = 3.0
+    default_speed = 4.0
     max_speed = 5.0
     initial_position = Position(250, 475)
     color = pygame.Color("white")

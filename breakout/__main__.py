@@ -356,7 +356,7 @@ class GameState:
         if self.new_level_wait and not self.launch_message.text_list:
             for ball in self.ball_group.sprites():
                 ball.increase_speed(
-                    pow(1.375, self.level) + 2
+                    pow(1.375, self.level) + 3
                 )  # Increase speed for each ball
             if self.level % 2 == 0:
                 for paddle in self.paddle_group.sprites():
