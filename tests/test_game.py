@@ -65,7 +65,13 @@ def test_pause_and_resume_game():
     game = Game()
     game.start_new_game()
 
+    # Don't pause the game because ball hasn't launched/not the right screen
+    game.pause_game()
+    assert not game.state.paused
+
     # Pause the game
+    game.switch_screen(Screens.GAME)
+    game.launch()
     game.pause_game()
     assert game.state.paused
 

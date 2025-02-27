@@ -85,7 +85,7 @@ def test_ball_paddle_collision():
     ball.handle_paddle_collision(paddle)
 
     # Collide with paddle
-    ball.rect.center = paddle.rect.center  # Place ball on the paddle
+    ball.rect.center = paddle.rect.topleft  # Place ball just above the paddle
     ball.speed.y = 2.5  # traveling down
     ball.handle_paddle_collision(paddle)
     assert (
