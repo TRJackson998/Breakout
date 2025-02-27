@@ -128,7 +128,7 @@ class PowerUp(Sprite):
         paddle = list(screen_state.paddle_group.sprites())[-1]
         self.handle_paddle_collision(paddle)
 
-        if self.position.y >= screen_size.height:
+        if self.position.y >= paddle.position.y:
             self.kill()
 
     def update_position(self):
@@ -200,21 +200,15 @@ class ExtraLifePowerup(Sprite):
     def move(self, screen_state):
         """Move the powerup downwards and handle collision with the paddle."""
         self.rect.y += self.speed.y
-        # If the powerup falls off screen, kill it
-        if self.rect.top > screen_size.height:
-            self.kill()
-        # Check collision with the paddle.
-        for paddle in screen_state.paddle_group.sprites():
-            if self.rect.colliderect(paddle.rect):
-                sound.SoundManager.play_powerup()
-                self.collect()
-                self.kill()
 
-    def update_position(self):
-        """Update the powerup's position and check if it goes off-screen."""
-        self.rect.y += self.speed.y
-        if self.rect.top > screen_size.height:
+        # If the powerup falls off screen, kill it
+        paddle = list(screen_state.paddle_group.sprites())[-1]
+        if self.rect.top > paddle.position.y:
             self.kill()
+
+        # Only collide with the last paddle in the group
+        paddle = list(screen_state.paddle_group.sprites())[-1]
+        self.handle_paddle_collision(paddle)
 
     def handle_paddle_collision(self, paddle):
         """Call the powerup's effect if it collides with the paddle."""
@@ -299,9 +293,12 @@ class PowerDown(Sprite):
 
         # Update position
         self.update_position()
-        for paddle in screen_state.paddle_group.sprites():
-            self.handle_paddle_collision(paddle)
-        if self.position.y >= screen_size.height:
+
+        # Only collide with the last paddle in the group
+        paddle = list(screen_state.paddle_group.sprites())[-1]
+        self.handle_paddle_collision(paddle)
+
+        if self.position.y >= paddle.position.y:
             self.kill()
 
     def update_position(self):
