@@ -58,7 +58,7 @@ class NameInput:
         self.font = SysFont("courier", self.font_size)
         self.active_color = pygame.Color("green")
         self.passive_color = pygame.Color("#0ffffd")
-        self.active = False
+        self.active = True
         self.name = ""
         self.width = max(screen_size.width // 20, self.font_size * 3)
         self.height = max(screen_size.width // 20, self.font_size)

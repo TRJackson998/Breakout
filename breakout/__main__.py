@@ -125,7 +125,6 @@ class Game:
             self.start_new_game()
         elif screen == Screens.END:
             self.state.game_over()
-            self.name_input.active = True
 
     def start_new_game(self):
         """
