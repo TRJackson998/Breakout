@@ -33,7 +33,7 @@ def test_ball_initialization():
     """Test ball initializes with correct attributes."""
     ball = Ball()
     assert ball.position == BallConfig.initial_position
-    assert ball.speed.x in [-BallConfig.default_speed, BallConfig.default_speed]
+    assert ball.speed.x == 0
     assert ball.speed.y == -BallConfig.default_speed
     assert ball.color == Color("white")
 
@@ -85,7 +85,7 @@ def test_ball_paddle_collision():
     ball.handle_paddle_collision(paddle)
 
     # Collide with paddle
-    ball.rect.center = paddle.rect.center  # Place ball on the paddle
+    ball.rect.center = paddle.rect.topleft  # Place ball just above the paddle
     ball.speed.y = 2.5  # traveling down
     ball.handle_paddle_collision(paddle)
     assert (

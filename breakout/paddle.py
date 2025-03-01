@@ -82,6 +82,11 @@ class Paddle(Sprite):
         # Initialize the rectangle for positioning
         self.rect = self.image.get_rect(topleft=astuple(self.position))
 
+    def increase_speed(self):
+        """Increase the ball's current speed by a factor without exceeding max_speed."""
+        self.speed.x += 1
+        PaddleConfig.speed = self.speed
+
     def reset_position(self):
         """Reset the paddle to its initial position."""
         self.image = pygame.Surface(astuple(self.size))

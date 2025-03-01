@@ -85,7 +85,7 @@ class Button:
         self,
         text: str,
         on_click,
-        position: Literal["top", "middle", "bottom"],
+        position: Literal["top", "middle", "bottom", "top_right"],
         color: pygame.Color = pygame.Color("#0ffffd"),
         hover_color: pygame.Color = pygame.Color("green"),
     ):
@@ -112,6 +112,11 @@ class Button:
         elif position == "top":
             x = screen_size.width // 2
             y = screen_size.width // 40 + height // 2
+        elif position == "top_right":
+            width //= 2
+            height //= 2
+            x = screen_size.width - width
+            y = 0
         else:
             raise ValueError("Not a valid button position")
 
@@ -257,6 +262,11 @@ class BlinkingMessage:
         padding: int = 10,
     ):
         self.text = text
+        self.text_list = []
+        if isinstance(text, list):
+            self.text = text[0]
+            self.text_list = text[1:] + ["Filler"]
+
         self.text_color = text_color
         self.background_color = background_color
         self.padding = padding
@@ -275,6 +285,8 @@ class BlinkingMessage:
         if now - self.last_toggle > self.blink_interval:
             self.visible = not self.visible
             self.last_toggle = now
+            if not self.visible and self.text_list:
+                self.text = self.text_list.pop(0)
 
         if self.visible:
             # Render the text.
@@ -378,3 +390,4 @@ class Screens:
     START = ScreenManager([])
     GAME = ScreenManager([])
     END = ScreenManager([])
+    HELP = ScreenManager([])

@@ -34,7 +34,7 @@ class Scoreboard:
 
     def __init__(self):
         self.text_color = pygame.Color("white")
-        self.top_scores = {-1: "AAA"}
+        self.top_scores = {}
 
     def draw(self, screen: pygame.Surface):
         """Draws the scoreboard on the screen."""
@@ -49,17 +49,6 @@ class Scoreboard:
             score_text = Scoreboard._font.render(entry_text, True, self.text_color)
             screen.blit(score_text, (screen_size.width // 5, 110 + i * 30))
 
-        for i in range(10 - len(self.top_scores)):
-            score = -1
-            name = "AAA"
-            formatted_score = f"{score:,}"  # Format score with commas
-            entry_text = f"{formatted_score}{'.' * (20 - len(name) - len(formatted_score))}{name}"
-            score_text = Scoreboard._font.render(entry_text, True, self.text_color)
-            screen.blit(
-                score_text,
-                (screen_size.width // 5, 110 + (i + len(self.top_scores)) * 30),
-            )
-
 
 class NameInput:
     """Handles user input for entering a name."""
@@ -69,7 +58,7 @@ class NameInput:
         self.font = SysFont("courier", self.font_size)
         self.active_color = pygame.Color("green")
         self.passive_color = pygame.Color("#0ffffd")
-        self.active = False
+        self.active = True
         self.name = ""
         self.width = max(screen_size.width // 20, self.font_size * 3)
         self.height = max(screen_size.width // 20, self.font_size)
@@ -91,11 +80,11 @@ class NameInput:
             if event.key == pygame.K_BACKSPACE:
                 # get text input from 0 to -1 i.e. end.
                 self.name = self.name[:-1]
-
-            # Unicode standard is used for string
-            # formation
-            else:
-                self.name += event.unicode
+            elif event.key in range(pygame.K_a, pygame.K_z + 1):
+                self.name += (
+                    event.unicode
+                )  # Unicode standard is used for string formation
+                self.name = str.upper(self.name)
 
     def draw(self, screen: pygame.Surface):
         """Draw the name input field."""

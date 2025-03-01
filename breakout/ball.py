@@ -38,7 +38,7 @@ class BallConfig:
     """Configuration for Ball constants."""
 
     radius = 10
-    default_speed = 3.0
+    default_speed = 4.0
     max_speed = 5.0
     initial_position = Position(250, 475)
     color = pygame.Color("white")
@@ -82,19 +82,30 @@ class Ball(Sprite):
             speed
             if speed
             else Speed(
-                random.choice([-BallConfig.default_speed, BallConfig.default_speed]),
+                0,
                 -BallConfig.default_speed,
             )
         )
         self.rect = self.image.get_rect(center=astuple(self.position))
 
-    def increase_speed(self, factor=1.5):
+    def increase_speed(self, speed=None):
         """Increase the ball's current speed by a factor without exceeding max_speed."""
-        BallConfig.default_speed = min(
-            BallConfig.default_speed * factor, BallConfig.max_speed
-        )
-        self.speed.x = min(self.speed.x * factor, BallConfig.max_speed)
-        self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
+        if not speed:
+            factor = 1.5
+            BallConfig.default_speed = min(
+                BallConfig.default_speed * factor, BallConfig.max_speed
+            )
+
+            if self.speed.y == 0:
+                self.speed.y = min(
+                    -BallConfig.default_speed * factor, BallConfig.max_speed
+                )
+            else:
+                self.speed.y = min(self.speed.y * factor, BallConfig.max_speed)
+        else:
+            self.speed.y = speed
+            BallConfig.default_speed = speed
+        self.speed.x = 0
 
     def move(self, screen_state):
         """
@@ -110,13 +121,16 @@ class Ball(Sprite):
 
         # Handle collisions
         self.handle_wall_collisions()
-        for paddle in screen_state.paddle_group.sprites():
-            self.handle_paddle_collision(paddle)
+
+        # only interact with the last paddle, in case of powerup paddle
+        paddle = screen_state.paddle_group.sprites()[-1]
+        self.handle_paddle_collision(paddle)
+
         points = self.handle_brick_collisions(screen_state.bricks)
         screen_state.score += points
 
         # Handle bottom screen collision (losing a life or ending the game)
-        if self.position.y >= screen_size.height:
+        if self.position.y >= (paddle.rect.bottom + self.radius):
             group = self.groups()[0]
             if len(group.sprites()) > 1:
                 # There's more balls, losing this one doesn't lose a life
@@ -147,7 +161,9 @@ class Ball(Sprite):
 
     def handle_paddle_collision(self, paddle: Paddle):
         """Handle collisions with the paddle"""
-        if self.speed.y > 0 and self.rect.colliderect(paddle.rect):
+        if self.speed.y > 0 and self.rect.clipline(
+            paddle.rect.topleft, paddle.rect.topright
+        ):
             self.bounce_y()
             SoundManager.play_paddle()
             self.position.y = paddle.rect.top - self.rect.height
@@ -164,6 +180,12 @@ class Ball(Sprite):
                     BallConfig.max_speed,
                 ),
             )
+        elif self.speed.y > 0 and (
+            self.rect.clipline(paddle.rect.topleft, paddle.rect.bottomleft)
+            or self.rect.clipline(paddle.rect.topright, paddle.rect.bottomright)
+        ):
+            self.bounce_x()
+            SoundManager.play_paddle()
 
     def handle_brick_collisions(self, bricks: pygame.sprite.Group) -> int:
         """Handle collisions with bricks and return points scored."""
@@ -211,6 +233,6 @@ class Ball(Sprite):
 
     def reset_position(self):
         """Resets ball to starting position and waits for launch."""
-        self.speed = Speed(random.choice([-self.speed.x, self.speed.x]), -self.speed.y)
+        self.speed = Speed(0, -self.speed.y)
         self.position = BallConfig.initial_position
         self.rect.center = astuple(self.position)

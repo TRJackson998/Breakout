@@ -167,24 +167,25 @@ class Brick(Sprite):
             cls.load_texture()
 
         index = 0  # Running index for each brick.
-        for row in range(rows):
-            for col in range(cols):
-                position = Position(
-                    start_position.x + col * (BrickConfig.size.width + offset),
-                    start_position.y + row * (BrickConfig.size.height + offset),
+        design = generate_random_design(rows, cols)
+
+        for row, col in design:
+            position = Position(
+                start_position.x + col * (BrickConfig.size.width + offset),
+                start_position.y + row * (BrickConfig.size.height + offset),
+            )
+            color = assign_color(rows, row)
+            # Mark this brick as extra durable if its index is in the selected set.
+            texture = index in selected
+            brick_group.add(
+                cls(
+                    brick_group,
+                    color=color,
+                    position=position,
+                    texture=texture,
                 )
-                color = assign_color(rows, row)
-                # Mark this brick as extra durable if its index is in the selected set.
-                texture = index in selected
-                brick_group.add(
-                    cls(
-                        brick_group,
-                        color=color,
-                        position=position,
-                        texture=texture,
-                    )
-                )
-                index += 1
+            )
+            index += 1
 
         return brick_group
 
@@ -208,3 +209,64 @@ def assign_color(rows: int, row: int):
         # Rest are green
         color = pygame.Color("green")
     return color
+
+
+def generate_random_design(rows: int, cols: int):
+    """
+    Generate a list of row-col indices forming a random shape within a given grid.
+    The shape can be a triangle or diagonal pattern.
+    """
+    random.seed()
+    shape_type = random.choice(
+        ["rtriangle", "ltriangle", "utriangle", "dtriangle", "ldiagonal", "rdiagonal"]
+    )
+    selected_indices = set()
+
+    if shape_type == "rtriangle":
+        for r in range(rows):
+            for c in range(r + 1):  # Creates a right triangle shape
+                selected_indices.add((r, c))
+    elif shape_type == "ltriangle":
+        for r in range(rows):
+            for c in range(
+                cols - r - 1, cols
+            ):  # Adjusts the column to create a left triangle
+                selected_indices.add((r, c))
+    if shape_type == "utriangle":
+        mid_col = 4  # middle column to center the triangle
+        for r in range(rows):
+            # Calculate the width of the triangle at each row
+            width = r * 2  # Increase the width as the row number increases
+            start_col = mid_col - (width // 2)  # Start of the base of the triangle
+            end_col = mid_col + (width // 2)  # End of the base of the triangle
+
+            # Add points within the current row's triangle width
+            for c in range(start_col, end_col):
+                if 0 <= c < cols:
+                    selected_indices.add((r, c))
+    elif shape_type == "dtriangle":
+        mid_col = 4  # middle column to center the triangle
+        for r in range(rows):
+            # Calculate the width of the triangle at each row
+            width = (rows - r) * 2 - 1  # Decrease the width as the row number increases
+            start_col = mid_col - (width // 2)  # Start of the base of the triangle
+            end_col = mid_col + (width // 2)  # End of the base of the triangle
+
+            # Add points within the current row's triangle width
+            for c in range(start_col, end_col):
+                if 0 <= c < cols:
+                    selected_indices.add((r, c))
+    elif shape_type == "ldiagonal":
+        thickness = random.randint(3, 5)
+        for r in range(rows):
+            for c in range(cols):
+                if abs((r - c) % rows) < thickness:  # Randomized diagonal thickness
+                    selected_indices.add((r, c))
+    elif shape_type == "rdiagonal":
+        thickness = random.randint(3, 5)
+        for r in range(rows):
+            for c in range(cols):
+                if abs((r + c) % rows - (rows - 1)) < thickness:
+                    selected_indices.add((r, c))
+
+    return list(selected_indices)
