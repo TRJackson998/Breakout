@@ -42,16 +42,18 @@ class SoundManager:
     sound_path = base_path.joinpath("sounds")
 
     try:
-        powerup_sound = pygame.mixer.Sound(sound_path.joinpath("powerup_catch.wav"))
-        brick_sound = pygame.mixer.Sound(sound_path.joinpath("brick_hit.wav"))
-        paddle_sound = pygame.mixer.Sound(sound_path.joinpath("wall_sound.wav"))
-        wall_sound = pygame.mixer.Sound(sound_path.joinpath("wall_sound.wav"))
-        life_lost_sound = pygame.mixer.Sound(sound_path.joinpath("life_lost.wav"))
-        game_over_sound = pygame.mixer.Sound(sound_path.joinpath("game_over.wav"))
+        powerup_sound = pygame.mixer.Sound(
+            str(sound_path.joinpath("powerup_catch.wav"))
+        )
+        brick_sound = pygame.mixer.Sound(str(sound_path.joinpath("brick_hit.wav")))
+        paddle_sound = pygame.mixer.Sound(str(sound_path.joinpath("wall_sound.wav")))
+        wall_sound = pygame.mixer.Sound(str(sound_path.joinpath("wall_sound.wav")))
+        life_lost_sound = pygame.mixer.Sound(str(sound_path.joinpath("life_lost.wav")))
+        game_over_sound = pygame.mixer.Sound(str(sound_path.joinpath("game_over.wav")))
         background_music = [
-            pygame.mixer.Sound(sound_path.joinpath("background_music1.mp3")),
-            pygame.mixer.Sound(sound_path.joinpath("background_music2.mp3")),
-            pygame.mixer.Sound(sound_path.joinpath("background_music3.mp3")),
+            pygame.mixer.Sound(str(sound_path.joinpath("background_music1.mp3"))),
+            pygame.mixer.Sound(str(sound_path.joinpath("background_music2.mp3"))),
+            pygame.mixer.Sound(str(sound_path.joinpath("background_music3.mp3"))),
         ]
     except (FileNotFoundError, pygame.error) as e:
         print("Error loading sound effects:", e)

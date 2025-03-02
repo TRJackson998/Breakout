@@ -54,16 +54,16 @@ class Game:
         self.clock = pygame.time.Clock()
 
         start_bg = pygame.image.load(
-            base_path.joinpath("textures", "THE BREAKOUT.png")
+            str(base_path.joinpath("textures", "THE BREAKOUT.png"))
         ).convert()
         game_bg = pygame.image.load(
-            base_path.joinpath("textures", "BlueBackground2.png")
+            str(base_path.joinpath("textures", "BlueBackground2.png"))
         ).convert()
         end_bg = pygame.image.load(
-            base_path.joinpath("textures", "BlueBackground.png")
+            str(base_path.joinpath("textures", "BlueBackground.png"))
         ).convert()
         help_bg = pygame.image.load(
-            base_path.joinpath("textures", "help_screen.png")
+            str(base_path.joinpath("textures", "help_screen.png"))
         ).convert()
         # Assign the background image to the start screen.
         Screens.START.background_image = start_bg
